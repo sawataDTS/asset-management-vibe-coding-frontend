@@ -178,7 +178,7 @@ export default function Page() {
   return (
     <DashboardShell title="Overview">
       {/* Executive Signals (hero panel) */}
-      <section className="rounded-3xl border border-border bg-[#F0F9FF] p-6 shadow-[0_1px_0_rgba(15,23,42,0.04)] sm:p-8">
+      <section className="rounded-2xl border border-border bg-[#F0F9FF] p-6 shadow-[0_1px_0_rgba(15,23,42,0.04)] sm:p-8">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div className="min-w-0">
             <div className="text-sm text-muted-foreground">
@@ -262,7 +262,7 @@ export default function Page() {
               />
             </div>
 
-            <div className="rounded-3xl border border-border bg-muted/40 p-5">
+            <div className="rounded-2xl border border-border bg-muted/40 p-5">
               <div className="flex items-center justify-between gap-3">
                 <div className="text-sm font-medium tracking-tight">Readiness Summary</div>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
@@ -281,14 +281,14 @@ export default function Page() {
                 rising in a single region. Recommend proactive refresh on top 10 expiring devices.
               </div>
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-2xl border border-border bg-background p-4">
+                <div className="rounded-xl border border-border bg-background p-4">
                   <div className="text-xs font-medium text-muted-foreground">Highest Exposure</div>
                   <div className="mt-1 text-sm font-medium">Warranty cliff (60d)</div>
                   <div className="mt-1 text-xs text-muted-foreground">
                     31 devices · 4 teams impacted
                   </div>
                 </div>
-                <div className="rounded-2xl border border-border bg-background p-4">
+                <div className="rounded-xl border border-border bg-background p-4">
                   <div className="text-xs font-medium text-muted-foreground">Most Concentrated</div>
                   <div className="mt-1 text-sm font-medium">Apple fleet</div>
                   <div className="mt-1 text-xs text-muted-foreground">62% share · stable</div>
