@@ -29,7 +29,7 @@ export function DataTable<T>({
   className?: string
 }) {
   return (
-    <div className={cn("overflow-hidden rounded-2xl ring-1 ring-border/60", className)}>
+    <div className={cn("overflow-hidden rounded-xl ring-1 ring-border/60", className)}>
       <Table>
         <TableHeader>
           <TableRow className="bg-muted/30 hover:bg-muted/30">

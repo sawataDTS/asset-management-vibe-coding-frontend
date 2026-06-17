@@ -28,7 +28,7 @@ export function KpiCard({
         <div className="flex items-center gap-3">
           <div
             className={cn(
-              "grid size-10 place-items-center rounded-2xl bg-muted/60 ring-1 ring-border/60",
+              "grid size-10 place-items-center rounded-xl bg-muted/60 ring-1 ring-border/60",
               iconColor.replace("text-", "bg-") + "/10"
             )}
           >

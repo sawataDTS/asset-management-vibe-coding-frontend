@@ -25,7 +25,7 @@ export function MetricCard({
   return (
     <DashboardCard className={cn("p-5", className)}>
       <div className="flex items-start gap-3">
-        <div className="grid size-9 place-items-center rounded-2xl bg-background/80 ring-1 ring-border/60">
+        <div className="grid size-9 place-items-center rounded-xl bg-background/80 ring-1 ring-border/60">
           <Icon className={cn("size-4", iconColor)} />
         </div>
         <div className="min-w-0 flex-1">

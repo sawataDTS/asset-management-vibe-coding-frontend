@@ -76,7 +76,7 @@ export function AppSidebar() {
     >
       <SidebarHeader className="px-3 py-3">
         <div className="flex items-center gap-2 px-2">
-          <div className="grid size-9 place-items-center rounded-2xl bg-primary/10 text-primary ring-1 ring-primary/15">
+          <div className="grid size-9 place-items-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15">
             <PackageIcon className="size-4" />
           </div>
           <div className="min-w-0">
@@ -110,7 +110,7 @@ export function AppSidebar() {
                     <SidebarMenuButton
                       asChild
                       isActive={active}
-                      className="rounded-xl px-2.5 py-2 text-[13px]"
+                      className="rounded-lg px-2.5 py-2 text-[13px]"
                     >
                       <Link href={item.href}>
                         <item.icon />
@@ -126,7 +126,7 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="px-3 pb-3">
-        <div className="flex items-center justify-between rounded-2xl border border-border bg-background px-3 py-2">
+        <div className="flex items-center justify-between rounded-xl border border-border bg-background px-3 py-2">
           <div className="flex min-w-0 items-center gap-2">
             <Avatar size="sm">
               <AvatarFallback>MR</AvatarFallback>
