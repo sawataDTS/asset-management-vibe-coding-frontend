@@ -189,8 +189,9 @@ export default function Page() {
               Portfolio Analytics Overview
             </div>
             <div className="mt-3 max-w-3xl text-sm leading-relaxed text-muted-foreground">
-              Live KPIs synthesized from utilization, ingestion cadence, renewal pressure, and vendor-led seat
-              concentration—designed for executive readiness reviews and audit-grade reporting.
+              Live KPIs synthesized from utilization, ingestion cadence, renewal
+              pressure, and vendor-led seat concentration—designed for executive
+              readiness reviews and audit-grade reporting.
             </div>
           </div>
 
@@ -234,7 +235,11 @@ export default function Page() {
                 label="Total Assets"
                 value="1,460"
                 helper="Across all tracked endpoints."
-                trend={{ direction: "up", value: "+6.1%", label: "8-month trailing" }}
+                trend={{
+                  direction: "up",
+                  value: "+6.1%",
+                  label: "8-month trailing",
+                }}
               />
               <KpiCard
                 icon={CpuIcon}
@@ -242,7 +247,11 @@ export default function Page() {
                 label="Assigned"
                 value="972"
                 helper="Actively in use by employees."
-                trend={{ direction: "up", value: "+3.4%", label: "vs last month" }}
+                trend={{
+                  direction: "up",
+                  value: "+3.4%",
+                  label: "vs last month",
+                }}
               />
               <KpiCard
                 icon={WrenchIcon}
@@ -250,7 +259,11 @@ export default function Page() {
                 label="In Repair"
                 value="14"
                 helper="Awaiting parts or service return."
-                trend={{ direction: "down", value: "-2", label: "week-over-week" }}
+                trend={{
+                  direction: "down",
+                  value: "-2",
+                  label: "week-over-week",
+                }}
               />
               <KpiCard
                 icon={HardDriveIcon}
@@ -258,13 +271,19 @@ export default function Page() {
                 label="Warranty Expiring"
                 value="31"
                 helper="Devices expiring in the next 60 days."
-                trend={{ direction: "up", value: "+7", label: "since last review" }}
+                trend={{
+                  direction: "up",
+                  value: "+7",
+                  label: "since last review",
+                }}
               />
             </div>
 
             <div className="rounded-2xl border border-border bg-muted/40 p-5">
               <div className="flex items-center justify-between gap-3">
-                <div className="text-sm font-medium tracking-tight">Readiness Summary</div>
+                <div className="text-sm font-medium tracking-tight">
+                  Readiness Summary
+                </div>
                 <div className="flex items-center gap-2 text-xs text-muted-foreground">
                   <span className="inline-flex items-center gap-1">
                     <span className="size-2 rounded-full bg-emerald-500/70" />
@@ -277,21 +296,30 @@ export default function Page() {
                 </div>
               </div>
               <div className="mt-3 text-sm leading-relaxed text-muted-foreground">
-                Overall posture remains strong. Repairs are concentrated in two cohorts and warranty pressure is
-                rising in a single region. Recommend proactive refresh on top 10 expiring devices.
+                Overall posture remains strong. Repairs are concentrated in two
+                cohorts and warranty pressure is rising in a single region.
+                Recommend proactive refresh on top 10 expiring devices.
               </div>
               <div className="mt-4 grid gap-3 sm:grid-cols-2">
                 <div className="rounded-xl border border-border bg-background p-4">
-                  <div className="text-xs font-medium text-muted-foreground">Highest Exposure</div>
-                  <div className="mt-1 text-sm font-medium">Warranty cliff (60d)</div>
+                  <div className="text-xs font-medium text-muted-foreground">
+                    Highest Exposure
+                  </div>
+                  <div className="mt-1 text-sm font-medium">
+                    Warranty cliff (60d)
+                  </div>
                   <div className="mt-1 text-xs text-muted-foreground">
                     31 devices · 4 teams impacted
                   </div>
                 </div>
                 <div className="rounded-xl border border-border bg-background p-4">
-                  <div className="text-xs font-medium text-muted-foreground">Most Concentrated</div>
+                  <div className="text-xs font-medium text-muted-foreground">
+                    Most Concentrated
+                  </div>
                   <div className="mt-1 text-sm font-medium">Apple fleet</div>
-                  <div className="mt-1 text-xs text-muted-foreground">62% share · stable</div>
+                  <div className="mt-1 text-xs text-muted-foreground">
+                    62% share · stable
+                  </div>
                 </div>
               </div>
             </div>

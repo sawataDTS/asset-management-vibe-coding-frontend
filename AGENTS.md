@@ -178,7 +178,7 @@ If a rule must be broken, explain why in the response.
 
 ## Screenshot Usage Rule
 
-Screenshots are reference material only.
+Screenshots (including Asset360) are reference material only.
 
 Use screenshots for:
 
@@ -186,6 +186,7 @@ Use screenshots for:
 - Workflow
 - Content hierarchy
 - Business logic
+- Module organization
 
 Never copy:
 
@@ -195,5 +196,6 @@ Never copy:
 - Shadows
 - Spacing values
 - Component appearance
+- Gradients or badge/pill styling
 
-All UI must follow DESIGN.md.
+All UI must follow DESIGN.md and the AssetOps design language (Linear / Ramp / Stripe / Vercel aesthetic).

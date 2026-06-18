@@ -4,7 +4,46 @@
 
 The **Overview page** (`app/dashboard/page.tsx`) is the canonical reference for layout, typography, spacing, and component usage. All new pages and refactors must match its visual language.
 
-Hardware and Software pages were built by other tools and **do not** follow this system. Do not copy their KPI cards, headings, or badge patterns.
+---
+
+## 0. Brand direction & external references
+
+### Aesthetic
+
+Modern SaaS — in the spirit of **Linear**, **Ramp**, **Stripe Dashboard**, and **Vercel**:
+
+- Light, calm surfaces with crisp hierarchy
+- Restrained indigo primary accent
+- Soft borders over heavy shadows
+- Consistent spacing, radius, and typography across every page
+
+### Asset360 screenshots
+
+Asset360 is a **workflow and layout reference only**. Use it for:
+
+- Page structure
+- Module organization
+- Information hierarchy
+- User workflows
+
+**Never copy from Asset360:**
+
+- Colors, gradients, or tints
+- Shadows or elevation
+- Component styling (cards, badges, pills, buttons)
+- Typography scale or arbitrary pixel sizes
+
+All visual styling must come from this design system (`DESIGN.md` + `app/globals.css`).
+
+### Cross-page consistency
+
+Intake, Hardware, Software, Employees, and Overview must feel like **one product**:
+
+- Same spacing rhythm (`mt-6` / `mt-10`, `gap-3` / `gap-4`, `p-5` / `p-6`)
+- Same `DashboardCard` surfaces (`#FFFFFF`, `rounded-xl`, soft ring)
+- Same typography scale (`text-sm` body, `text-base` section titles)
+- Same icon treatment (`size-4`, muted until active)
+- Same color palette (background, surface, primary, sidebar states)
 
 ---
 
@@ -15,7 +54,7 @@ Hardware and Software pages were built by other tools and **do not** follow this
 | **Calm enterprise**         | Light surfaces, soft borders, restrained color. No heavy shadows or loud gradients.                              |
 | **Composable sections**     | Each screen is stacked `<section>` blocks with consistent vertical rhythm.                                       |
 | **Shared components first** | Use `components/dashboard/*` before inventing one-off markup.                                                    |
-| **Semantic tokens**         | Prefer `text-muted-foreground`, `border-border`, `bg-muted/40` over raw hex (except the hero tint below).        |
+| **Semantic tokens**         | Prefer `text-muted-foreground`, `border-border`, `bg-card` over raw hex (except approved tokens below).          |
 | **Information hierarchy**   | Page title lives in `DashboardShell`. Section titles use `SectionHeader`. Card titles are `text-sm font-medium`. |
 
 ---
@@ -26,14 +65,19 @@ Defined in `app/globals.css`. Use Tailwind semantic classes — do not hardcode 
 
 ### Colors
 
-| Token                | Light value | Usage                      |
-| -------------------- | ----------- | -------------------------- |
-| `--background`       | `#F8FAFC`   | App background             |
-| `--foreground`       | `#0F172A`   | Primary text               |
-| `--muted-foreground` | `#64748B`   | Secondary text, labels     |
-| `--primary`          | `#4F46E5`   | Primary actions, charts    |
-| `--border`           | `#E2E8F0`   | Borders, rings             |
-| Hero panel tint      | `#F0F9FF`   | Overview hero section only |
+| Token                | Light value | Usage                                      |
+| -------------------- | ----------- | ------------------------------------------ |
+| `--background`       | `#F8FAFC`   | App background                             |
+| `--card` (surface)   | `#FFFFFF`   | Cards, panels, table containers            |
+| `--foreground`       | `#0F172A`   | Primary text                               |
+| `--muted-foreground` | `#64748B`   | Secondary text, labels                     |
+| `--primary`          | `#4F46E5`   | Primary actions, charts, active nav text   |
+| `--border`           | `#E2E8F0`   | Borders, rings, sidebar right border       |
+| Hero panel tint      | `#F0F9FF`   | Overview hero section only                 |
+| `--sidebar-hover`    | `#F5F3FF`   | Sidebar nav item hover                     |
+| `--sidebar-active`   | `#EEF2FF`   | Sidebar nav item active background         |
+| `--sidebar-nav-tracking`      | `-0.01em` | Nav links, footer name/email, sign out     |
+| `--sidebar-section-tracking`  | `0.06em`  | “WORKSPACE” label, powered-by attribution  |
 
 ### Icon accent colors (KPI / metric cards)
 
@@ -56,9 +100,11 @@ Icon containers: `rounded-xl bg-muted/60 ring-1 ring-border/60` (via `KpiCard`) 
 | KPI value                   | `text-2xl font-semibold tracking-tight`                      |
 | Table primary cell          | `font-medium text-foreground` (no custom `text-[13.5px]`)    |
 | Monospace data (IDs, dates) | `font-mono text-sm tabular-nums`                             |
-| Sidebar nav link            | `text-sm`, `min-h-10`, `px-4 py-2.5`, `gap-3`, `rounded-lg`  |
-| Sidebar user name / role    | `text-sm` — name `font-medium`, role `text-muted-foreground` |
-| Sidebar group label         | `text-xs font-medium uppercase tracking-wider text-muted-foreground/80` |
+| Sidebar nav link            | `text-sm` (14px), `font-medium`, `h-9` (36px), `px-3`, `gap-3`, `rounded-lg`, `tracking-sidebar-nav` (`-0.01em`) |
+| Sidebar nav icon            | `size-4` (16px), `strokeWidth={1.75}`, muted until hover/active                                                    |
+| Sidebar user name / email   | name `text-sm font-semibold`, email `text-xs`, both `tracking-sidebar-nav`                                         |
+| Sidebar group label         | `text-xs font-medium uppercase tracking-sidebar-section` (`0.06em`) `text-muted-foreground`                        |
+| Sidebar footer attribution  | `text-xs tracking-sidebar-section text-muted-foreground` centered                                                  |
 
 **Do not use:** `font-bold` for KPI values, `uppercase tracking-wider` for labels, or arbitrary pixel font sizes like `text-[11.5px]`.
 
@@ -75,12 +121,15 @@ Icon containers: `rounded-xl bg-muted/60 ring-1 ring-border/60` (via `KpiCard`) 
 
 ### Sidebar
 
-- Background: `#F8FAFC` (`bg-[#F8FAFC]` in `app-sidebar.tsx`)
-- Nav links: `text-sm`, `min-h-10`, `px-4 py-2.5`, `gap-3`, `rounded-lg`
-- Hover / active: neutral `bg-secondary` — not primary tint; active uses `font-medium` + `text-foreground`
-- Section label: `text-xs uppercase tracking-wider text-muted-foreground/80`
-- Icons: thin stroke (`strokeWidth={1.75}`), `size-4`, muted until hover/active
-- User footer: `text-sm` for name and role
+- Background: `#F8FAFC` (`bg-sidebar`)
+- Right border: `#E2E8F0` (`border-sidebar-border`)
+- Nav links: `text-sm` (14px), `font-medium`, `h-9` (36px), `px-3`, `gap-3`, `rounded-lg`, `tracking-sidebar-nav` (`-0.01em`)
+- Nav icons: `size-4` (16px), `strokeWidth={1.75}`
+- Section label: `text-xs uppercase tracking-sidebar-section` (`0.06em`)
+- Hover: `#F5F3FF` (`bg-sidebar-hover`)
+- Active background: `#EEF2FF` (`bg-sidebar-active`)
+- Active text: `#4F46E5` (`text-primary`)
+- Footer: centered “Powered by AssetOps”, user card (name + email, no avatar), **Sign out** row (`h-9`, icon + label)
 - Do not change sidebar structure when building feature pages
 
 ---

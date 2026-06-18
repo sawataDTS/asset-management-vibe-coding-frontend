@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import {
   BarChart3Icon,
   Building2Icon,
@@ -11,6 +11,7 @@ import {
   HomeIcon,
   InboxIcon,
   Layers3Icon,
+  LogOutIcon,
   PackageIcon,
   SettingsIcon,
   UsersIcon,
@@ -30,7 +31,6 @@ import {
   SidebarMenuItem,
   SidebarSeparator,
 } from "@/components/ui/sidebar"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { cn } from "@/lib/utils"
 
 const nav = [
@@ -46,45 +46,57 @@ const nav = [
     icon: WorkflowIcon,
   },
   { label: "Requests", href: "/dashboard/requests", icon: FileTextIcon },
-
   { label: "Reports", href: "/dashboard/reports", icon: BarChart3Icon },
   { label: "Settings", href: "/dashboard/settings", icon: SettingsIcon },
 ] as const
 
+const navItemClass = cn(
+  "!h-9 !min-h-9 !gap-3 !overflow-visible !rounded-lg !px-3 text-sm leading-5 font-medium tracking-sidebar-nav transition-colors",
+  "text-sidebar-foreground/90",
+  "hover:!bg-sidebar-hover hover:!text-foreground",
+  "data-[active=true]:!bg-sidebar-active data-[active=true]:!text-primary",
+  "data-[active=true]:hover:!bg-sidebar-active data-[active=true]:hover:!text-primary",
+  "[&_svg]:!size-4 [&_svg]:shrink-0 [&_svg]:text-muted-foreground",
+  "hover:[&_svg]:text-foreground",
+  "data-[active=true]:[&_svg]:!text-primary",
+  "[&_span]:min-w-0 [&_span]:truncate"
+)
+
 export function AppSidebar() {
   const pathname = usePathname()
+  const router = useRouter()
+
+  const handleSignOut = () => {
+    router.push("/")
+  }
 
   return (
     <Sidebar
       variant="sidebar"
       collapsible="offcanvas"
-      className="border-r border-sidebar-border bg-[#F8FAFC]"
+      className="border-r border-sidebar-border bg-sidebar"
     >
-      <SidebarHeader className="px-3 py-3">
-        <div className="flex items-center gap-2 px-2">
-          <div className="grid size-9 place-items-center rounded-xl bg-primary/10 text-primary ring-1 ring-primary/15">
-            <PackageIcon className="size-4" />
+      <SidebarHeader className="p-3">
+        <Link href="/dashboard" className="flex min-w-0 items-center gap-3">
+          <div className="grid size-8 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary ring-1 ring-primary/15">
+            <PackageIcon className="size-4" strokeWidth={1.75} />
           </div>
-          <div className="min-w-0">
-            <div className="truncate text-sm font-semibold tracking-tight">
-              DTskill Services
-            </div>
-            <div className="truncate text-xs text-muted-foreground">
-              Enterprise workspace
-            </div>
+          <div className="flex min-w-0 flex-wrap items-center gap-1 truncate font-display text-sm leading-5 font-semibold tracking-sidebar-nav text-foreground">
+            <span>DTskill</span>
+            <span className="text-primary">Services</span>
           </div>
-        </div>
+        </Link>
       </SidebarHeader>
 
       <SidebarSeparator />
 
-      <SidebarContent className="px-1">
-        <SidebarGroup>
-          <SidebarGroupLabel className="px-2 text-[11px] font-semibold tracking-wider text-muted-foreground">
-            WORKSPACE
+      <SidebarContent className="flex-1 space-y-1 p-3">
+        <SidebarGroup className="p-0">
+          <SidebarGroupLabel className="mb-1 h-auto px-0 py-1.5 text-xs font-medium tracking-sidebar-section text-muted-foreground uppercase">
+            Workspace
           </SidebarGroupLabel>
           <SidebarGroupContent>
-            <SidebarMenu className="gap-1">
+            <SidebarMenu className="space-y-1">
               {nav.map((item) => {
                 const active =
                   item.href === "/dashboard"
@@ -96,18 +108,10 @@ export function AppSidebar() {
                     <SidebarMenuButton
                       asChild
                       isActive={active}
-                      className={cn(
-                        "rounded-xl px-2.5 py-2 text-[13px] text-sidebar-foreground transition-colors",
-                        "hover:!bg-primary/5 hover:!text-foreground",
-                        "data-[active=true]:!bg-primary/10 data-[active=true]:!text-primary data-[active=true]:!font-medium",
-                        "data-[active=true]:hover:!bg-primary/10 data-[active=true]:hover:!text-primary",
-                        "[&_svg]:text-muted-foreground",
-                        "hover:[&_svg]:text-foreground",
-                        "data-[active=true]:[&_svg]:!text-primary"
-                      )}
+                      className={navItemClass}
                     >
                       <Link href={item.href}>
-                        <item.icon />
+                        <item.icon strokeWidth={1.75} />
                         <span>{item.label}</span>
                       </Link>
                     </SidebarMenuButton>
@@ -119,21 +123,30 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="px-3 pb-3">
-        <div className="flex items-center justify-between rounded-xl border border-border bg-background px-3 py-2">
-          <div className="flex min-w-0 items-center gap-2">
-            <Avatar size="sm">
-              <AvatarFallback>MR</AvatarFallback>
-            </Avatar>
-            <div className="min-w-0">
-              <div className="truncate text-xs font-medium">Mahesh Raja</div>
-              <div className="truncate text-[11px] text-muted-foreground">
-                Admin · IT Ops
-              </div>
-            </div>
-          </div>
-          <div className="text-[11px] text-muted-foreground">MR</div>
+      <SidebarFooter className="gap-0 border-t border-sidebar-border p-3">
+        <div className="rounded-xl border border-border px-4 py-3.5">
+          <p className="text-sm leading-snug font-semibold tracking-sidebar-nav text-foreground">
+            Mahesh Raja
+          </p>
+          <p className="mt-1 text-xs leading-snug tracking-sidebar-nav text-muted-foreground">
+            mahesh@dtskill.com
+          </p>
         </div>
+
+        <button
+          type="button"
+          onClick={handleSignOut}
+          className={cn(
+            "mt-1 flex h-9 w-full items-center gap-3 rounded-lg px-3 text-sm leading-5 font-medium tracking-sidebar-nav text-foreground transition-colors",
+            "hover:bg-sidebar-hover"
+          )}
+        >
+          <LogOutIcon
+            className="size-4 shrink-0 text-muted-foreground"
+            strokeWidth={1.75}
+          />
+          Sign out
+        </button>
       </SidebarFooter>
     </Sidebar>
   )
