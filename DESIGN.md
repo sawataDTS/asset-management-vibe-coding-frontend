@@ -10,13 +10,13 @@ Hardware and Software pages were built by other tools and **do not** follow this
 
 ## 1. Design principles
 
-| Principle | What it means |
-|-----------|---------------|
-| **Calm enterprise** | Light surfaces, soft borders, restrained color. No heavy shadows or loud gradients. |
-| **Composable sections** | Each screen is stacked `<section>` blocks with consistent vertical rhythm. |
-| **Shared components first** | Use `components/dashboard/*` before inventing one-off markup. |
-| **Semantic tokens** | Prefer `text-muted-foreground`, `border-border`, `bg-muted/40` over raw hex (except the hero tint below). |
-| **Information hierarchy** | Page title lives in `DashboardShell`. Section titles use `SectionHeader`. Card titles are `text-sm font-medium`. |
+| Principle                   | What it means                                                                                                    |
+| --------------------------- | ---------------------------------------------------------------------------------------------------------------- |
+| **Calm enterprise**         | Light surfaces, soft borders, restrained color. No heavy shadows or loud gradients.                              |
+| **Composable sections**     | Each screen is stacked `<section>` blocks with consistent vertical rhythm.                                       |
+| **Shared components first** | Use `components/dashboard/*` before inventing one-off markup.                                                    |
+| **Semantic tokens**         | Prefer `text-muted-foreground`, `border-border`, `bg-muted/40` over raw hex (except the hero tint below).        |
+| **Information hierarchy**   | Page title lives in `DashboardShell`. Section titles use `SectionHeader`. Card titles are `text-sm font-medium`. |
 
 ---
 
@@ -26,14 +26,14 @@ Defined in `app/globals.css`. Use Tailwind semantic classes — do not hardcode 
 
 ### Colors
 
-| Token | Light value | Usage |
-|-------|-------------|-------|
-| `--background` | `#F8FAFC` | App background |
-| `--foreground` | `#0F172A` | Primary text |
-| `--muted-foreground` | `#64748B` | Secondary text, labels |
-| `--primary` | `#4F46E5` | Primary actions, charts |
-| `--border` | `#E2E8F0` | Borders, rings |
-| Hero panel tint | `#F0F9FF` | Overview hero section only |
+| Token                | Light value | Usage                      |
+| -------------------- | ----------- | -------------------------- |
+| `--background`       | `#F8FAFC`   | App background             |
+| `--foreground`       | `#0F172A`   | Primary text               |
+| `--muted-foreground` | `#64748B`   | Secondary text, labels     |
+| `--primary`          | `#4F46E5`   | Primary actions, charts    |
+| `--border`           | `#E2E8F0`   | Borders, rings             |
+| Hero panel tint      | `#F0F9FF`   | Overview hero section only |
 
 ### Icon accent colors (KPI / metric cards)
 
@@ -47,34 +47,40 @@ Icon containers: `rounded-xl bg-muted/60 ring-1 ring-border/60` (via `KpiCard`) 
 
 ### Typography
 
-| Element | Classes |
-|---------|---------|
-| Hero headline | `text-4xl font-semibold tracking-tight sm:text-5xl` |
-| Section title | `text-base font-medium tracking-tight` (via `SectionHeader`) |
-| Card / chart title | `text-sm font-medium tracking-tight` |
-| Body / description | `text-sm leading-relaxed text-muted-foreground` |
-| KPI value | `text-2xl font-semibold tracking-tight` |
-| Table primary cell | `font-medium text-foreground` (no custom `text-[13.5px]`) |
-| Monospace data (IDs, dates) | `font-mono text-sm tabular-nums` |
-| Sidebar label | `text-[13px]` |
+| Element                     | Classes                                                      |
+| --------------------------- | ------------------------------------------------------------ |
+| Hero headline               | `text-4xl font-semibold tracking-tight sm:text-5xl`          |
+| Section title               | `text-base font-medium tracking-tight` (via `SectionHeader`) |
+| Card / chart title          | `text-sm font-medium tracking-tight`                         |
+| Body / description          | `text-sm leading-relaxed text-muted-foreground`              |
+| KPI value                   | `text-2xl font-semibold tracking-tight`                      |
+| Table primary cell          | `font-medium text-foreground` (no custom `text-[13.5px]`)    |
+| Monospace data (IDs, dates) | `font-mono text-sm tabular-nums`                             |
+| Sidebar nav link            | `text-sm`, `min-h-10`, `px-4 py-2.5`, `gap-3`, `rounded-lg`  |
+| Sidebar user name / role    | `text-sm` — name `font-medium`, role `text-muted-foreground` |
+| Sidebar group label         | `text-xs font-medium uppercase tracking-wider text-muted-foreground/80` |
 
 **Do not use:** `font-bold` for KPI values, `uppercase tracking-wider` for labels, or arbitrary pixel font sizes like `text-[11.5px]`.
 
 ### Spacing & layout
 
-| Pattern | Classes |
-|---------|---------|
-| Section gap (major) | `mt-10` between top-level sections; `mt-6` between related subsections |
-| Grid gap | `gap-3` or `gap-4` |
-| Card padding | `p-5` or `p-6` on `DashboardCard` |
-| Hero padding | `p-6 sm:p-8` |
-| Border radius | `rounded-xl` for cards; `rounded-2xl` for hero panels and nested callouts |
-| Card shadow | `shadow-[0_1px_0_rgba(15,23,42,0.04)]` on hero only; `DashboardCard` handles the rest |
+| Pattern             | Classes                                                                               |
+| ------------------- | ------------------------------------------------------------------------------------- |
+| Section gap (major) | `mt-10` between top-level sections; `mt-6` between related subsections                |
+| Grid gap            | `gap-3` or `gap-4`                                                                    |
+| Card padding        | `p-5` or `p-6` on `DashboardCard`                                                     |
+| Hero padding        | `p-6 sm:p-8`                                                                          |
+| Border radius       | `rounded-xl` for cards; `rounded-2xl` for hero panels and nested callouts             |
+| Card shadow         | `shadow-[0_1px_0_rgba(15,23,42,0.04)]` on hero only; `DashboardCard` handles the rest |
 
 ### Sidebar
 
 - Background: `#F8FAFC` (`bg-[#F8FAFC]` in `app-sidebar.tsx`)
-- Active item: shadcn `SidebarMenuButton` with `isActive`
+- Nav links: `text-sm`, `min-h-10`, `px-4 py-2.5`, `gap-3`, `rounded-lg`
+- Hover / active: neutral `bg-secondary` — not primary tint; active uses `font-medium` + `text-foreground`
+- Section label: `text-xs uppercase tracking-wider text-muted-foreground/80`
+- Icons: thin stroke (`strokeWidth={1.75}`), `size-4`, muted until hover/active
+- User footer: `text-sm` for name and role
 - Do not change sidebar structure when building feature pages
 
 ---
@@ -196,12 +202,12 @@ For software statuses (`Active`, `Expiring Soon`, `Expired`), add a sibling comp
 
 ### Buttons
 
-| Use case | Variant |
-|----------|---------|
-| Primary CTA | `<Button>` default |
-| Secondary | `<Button variant="outline">` — hero CTAs may add `bg-white/70` |
-| Table row actions | `<Button variant="ghost" size="icon-sm" className="size-8 rounded-lg">` |
-| Destructive row action | add `text-destructive hover:bg-destructive/10` |
+| Use case               | Variant                                                                 |
+| ---------------------- | ----------------------------------------------------------------------- |
+| Primary CTA            | `<Button>` default                                                      |
+| Secondary              | `<Button variant="outline">` — hero CTAs may add `bg-white/70`          |
+| Table row actions      | `<Button variant="ghost" size="icon-sm" className="size-8 rounded-lg">` |
+| Destructive row action | add `text-destructive hover:bg-destructive/10`                          |
 
 **Do not:** `animate-pulse` on icons, oversized icons in CTAs.
 
@@ -334,24 +340,24 @@ export default function ModulePage() {
 
 These appear in `hardware/page.tsx` and `software/page.tsx` from other AI tools. **Refactor away from these when touching those files.**
 
-| Anti-pattern | Correct approach |
-|--------------|------------------|
-| Custom KPI cards with `flex items-center gap-3` and `font-bold` | Use `KpiCard` |
-| Labels like `text-[11.5px] uppercase tracking-wider` | `KpiCard` `label` prop (sentence case) |
-| Duplicate `<h1>` page title inside card while shell also has title | `SectionHeader` only; shell handles header bar |
-| Inline `Badge` style maps for statuses in page files | `StatusBadge` or shared status component |
-| `text-[13.5px]`, `h-4.5`, `h-8.5` arbitrary sizes | Standard `text-sm`, `text-xs`, default component sizes |
-| Custom progress bars in table cells | Extract a `SeatUtilization` component if needed |
-| `PlusIcon` with `animate-pulse` | Static icon, no animation |
-| Nested cards with inconsistent `rounded-lg` vs `rounded-xl` | `DashboardCard` + `rounded-xl` everywhere |
+| Anti-pattern                                                       | Correct approach                                       |
+| ------------------------------------------------------------------ | ------------------------------------------------------ |
+| Custom KPI cards with `flex items-center gap-3` and `font-bold`    | Use `KpiCard`                                          |
+| Labels like `text-[11.5px] uppercase tracking-wider`               | `KpiCard` `label` prop (sentence case)                 |
+| Duplicate `<h1>` page title inside card while shell also has title | `SectionHeader` only; shell handles header bar         |
+| Inline `Badge` style maps for statuses in page files               | `StatusBadge` or shared status component               |
+| `text-[13.5px]`, `h-4.5`, `h-8.5` arbitrary sizes                  | Standard `text-sm`, `text-xs`, default component sizes |
+| Custom progress bars in table cells                                | Extract a `SeatUtilization` component if needed        |
+| `PlusIcon` with `animate-pulse`                                    | Static icon, no animation                              |
+| Nested cards with inconsistent `rounded-lg` vs `rounded-xl`        | `DashboardCard` + `rounded-xl` everywhere              |
 
 ---
 
 ## 6. Copy & tone
 
 - Professional, concise, operations-focused
-- Descriptions explain *why the section matters*, not feature marketing
-- Example: *"Operational posture across inventory readiness, repairs, and warranty pressure."*
+- Descriptions explain _why the section matters_, not feature marketing
+- Example: _"Operational posture across inventory readiness, repairs, and warranty pressure."_
 - Counts: `"{n} asset{n !== 1 && 's'} listed"` in muted `text-sm`
 - Empty states: state the problem + suggest one action
 
@@ -396,11 +402,43 @@ Before finishing any dashboard UI work, verify:
 
 ## 9. Reference files
 
-| File | Role |
-|------|------|
-| `app/dashboard/page.tsx` | **Canonical UI reference** |
-| `components/dashboard/*` | Shared dashboard components |
-| `app/globals.css` | Design tokens |
-| `components/dashboard/app-sidebar.tsx` | Navigation structure |
-| `app/dashboard/hardware/page.tsx` | Aligned with design system |
-| `app/dashboard/software/page.tsx` | Aligned with design system |
+| File                                   | Role                        |
+| -------------------------------------- | --------------------------- |
+| `app/dashboard/page.tsx`               | **Canonical UI reference**  |
+| `components/dashboard/*`               | Shared dashboard components |
+| `app/globals.css`                      | Design tokens               |
+| `components/dashboard/app-sidebar.tsx` | Navigation structure        |
+| `app/dashboard/hardware/page.tsx`      | Aligned with design system  |
+| `app/dashboard/software/page.tsx`      | Aligned with design system  |
+
+## 10. Component Reuse Rules
+
+Before creating any component:
+
+1. Search `components/ui`
+2. Search `components/dashboard`
+3. Reuse existing component if one exists
+4. Extend existing component before creating a new one
+
+Never create:
+
+- Custom Button
+- Custom Input
+- Custom Select
+- Custom Dialog
+- Custom Drawer
+- Custom Table
+- Custom Badge
+- Custom Tabs
+- Custom Tooltip
+- Custom Popover
+
+Use existing shadcn/ui components.
+
+If a component does not exist:
+
+- Generate it through shadcn CLI
+- Place inside `components/ui`
+- Follow existing component patterns
+
+Creating duplicate components is prohibited.
