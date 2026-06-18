@@ -31,12 +31,12 @@
   --chart-5: #6366f1;
   --sidebar: #f8fafc;
   --sidebar-foreground: #334155;
-  --sidebar-primary: #2563eb;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #eaf4ff;
-  --sidebar-accent-foreground: #2563eb;
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: color-mix(in oklab, var(--primary) 10%, white);
+  --sidebar-accent-foreground: var(--primary);
   --sidebar-border: #e2e8f0;
-  --sidebar-ring: #2563eb;
+  --sidebar-ring: var(--primary);
   --font-sans: Inter, -apple-system, sans-serif;
   --font-serif: Georgia, serif;
   --font-mono: JetBrains Mono, monospace;

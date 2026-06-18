@@ -4,19 +4,12 @@ import * as React from "react"
 import { useState, useMemo, useEffect } from "react"
 import {
   ActivityIcon,
-  BoxesIcon,
-  CpuIcon,
-  HardDriveIcon,
-  WrenchIcon,
   SearchIcon,
   PlusIcon,
-  ClockIcon,
   UserIcon,
   PencilIcon,
   Trash2Icon,
   HistoryIcon,
-  UserCheckIcon,
-  CheckCircle2Icon,
   AlertTriangleIcon,
 } from "lucide-react"
 import { Toaster, toast } from "sonner"
@@ -25,6 +18,8 @@ import { DashboardShell } from "@/components/dashboard/dashboard-shell"
 import { DataTable, type ColumnDef } from "@/components/dashboard/data-table"
 import { StatusBadge, type AssetStatus } from "@/components/dashboard/status-badge"
 import { DashboardCard } from "@/components/dashboard/dashboard-card"
+import { FilterToolbar } from "@/components/dashboard/filter-toolbar"
+import { PageHeader } from "@/components/dashboard/page-header"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
@@ -364,7 +359,7 @@ export default function HardwarePage() {
     }
   }, [selectedAsset, activeModal])
 
-  // KPI Calculations
+  // KPI Calculations (used for page meta)
   const kpis = useMemo(() => {
     const total = assets.length
     const assigned = assets.filter((a) => a.status === "Assigned").length
@@ -614,8 +609,8 @@ export default function HardwarePage() {
       header: "Asset",
       cell: (row) => (
         <div className="min-w-0">
-          <div className="font-semibold text-foreground text-[13.5px]">{row.name}</div>
-          <div className="text-[11.5px] font-medium text-muted-foreground">{row.tag}</div>
+          <div className="truncate font-medium text-foreground">{row.name}</div>
+          <div className="text-xs text-muted-foreground">{row.tag}</div>
         </div>
       ),
       className: "w-[24%]",
@@ -623,7 +618,7 @@ export default function HardwarePage() {
     {
       key: "category",
       header: "Category",
-      cell: (row) => <span className="text-muted-foreground font-medium">{row.category}</span>,
+      cell: (row) => <span className="text-sm text-muted-foreground">{row.category}</span>,
       className: "w-[12%]",
     },
     {
@@ -636,8 +631,8 @@ export default function HardwarePage() {
       key: "assignee",
       header: "Assignee",
       cell: (row) => (
-        <span className="font-medium text-foreground">
-          {row.assignee ? row.assignee : <span className="text-muted-foreground/50">—</span>}
+        <span className="text-sm text-foreground">
+          {row.assignee || <span className="text-muted-foreground">—</span>}
         </span>
       ),
       className: "w-[14%]",
@@ -645,15 +640,15 @@ export default function HardwarePage() {
     {
       key: "supplier",
       header: "Supplier",
-      cell: (row) => <span className="text-muted-foreground font-medium">{row.supplier}</span>,
+      cell: (row) => <span className="text-sm text-muted-foreground">{row.supplier}</span>,
       className: "w-[12%]",
     },
     {
       key: "location",
       header: "Location",
       cell: (row) => (
-        <span className="text-muted-foreground font-medium">
-          {row.location !== "—" ? row.location : <span className="text-muted-foreground/50">—</span>}
+        <span className="text-sm text-muted-foreground">
+          {row.location !== "—" ? row.location : "—"}
         </span>
       ),
       className: "w-[12%]",
@@ -662,7 +657,7 @@ export default function HardwarePage() {
       key: "warranty",
       header: "Warranty",
       cell: (row) => (
-        <span className="font-mono text-xs text-muted-foreground font-medium">{row.warranty}</span>
+        <span className="font-mono text-sm tabular-nums text-muted-foreground">{row.warranty}</span>
       ),
       className: "w-[14%]",
     },
@@ -723,96 +718,39 @@ export default function HardwarePage() {
   ]
 
   return (
-    <DashboardShell title="Hardware Inventory">
+    <DashboardShell
+      title="Hardware Inventory"
+      actions={
+        <Button onClick={() => handleOpenModal("add")}>
+          <PlusIcon className="size-4" />
+          Add Asset
+        </Button>
+      }
+    >
       <Toaster position="top-right" closeButton richColors />
 
-      {/* KPI Overview Grid */}
-      <section className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        <DashboardCard className="p-4 flex items-center gap-3">
-          <div className="size-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-600">
-            <BoxesIcon className="size-5" />
-          </div>
-          <div>
-            <div className="text-2xl font-bold">{kpis.total}</div>
-            <div className="text-[11.5px] font-semibold text-muted-foreground uppercase tracking-wider">Total Hardware</div>
-          </div>
-        </DashboardCard>
+      <PageHeader
+        eyebrow="Inventory"
+        title="Hardware Inventory"
+        description="Track laptops, monitors, peripherals, and their assignment status across your organization."
+        meta={`${kpis.total} assets total · ${kpis.assigned} assigned · ${kpis.inStock} in stock`}
+      />
 
-        <DashboardCard className="p-4 flex items-center gap-3">
-          <div className="size-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-600">
-            <CpuIcon className="size-5" />
-          </div>
-          <div>
-            <div className="text-2xl font-bold">{kpis.assigned}</div>
-            <div className="text-[11.5px] font-semibold text-muted-foreground uppercase tracking-wider">Assigned</div>
-          </div>
-        </DashboardCard>
-
-        <DashboardCard className="p-4 flex items-center gap-3">
-          <div className="size-10 rounded-xl bg-sky-500/10 flex items-center justify-center text-sky-600">
-            <HardDriveIcon className="size-5" />
-          </div>
-          <div>
-            <div className="text-2xl font-bold">{kpis.inStock}</div>
-            <div className="text-[11.5px] font-semibold text-muted-foreground uppercase tracking-wider">In Stock</div>
-          </div>
-        </DashboardCard>
-
-        <DashboardCard className="p-4 flex items-center gap-3">
-          <div className="size-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600">
-            <WrenchIcon className="size-5" />
-          </div>
-          <div>
-            <div className="text-2xl font-bold">{kpis.inRepair}</div>
-            <div className="text-[11.5px] font-semibold text-muted-foreground uppercase tracking-wider">In Repair</div>
-          </div>
-        </DashboardCard>
-
-        <DashboardCard className="p-4 flex items-center gap-3">
-          <div className="size-10 rounded-xl bg-slate-500/10 flex items-center justify-center text-slate-600">
-            <CheckCircle2Icon className="size-5" />
-          </div>
-          <div>
-            <div className="text-2xl font-bold">{kpis.retired}</div>
-            <div className="text-[11.5px] font-semibold text-muted-foreground uppercase tracking-wider">Retired</div>
-          </div>
-        </DashboardCard>
-      </section>
-
-      {/* Main Inventory Panel */}
-      <DashboardCard className="p-6">
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between mb-6">
-          <div className="min-w-0">
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">Hardware Inventory</h1>
-            <p className="mt-1 text-sm text-muted-foreground font-medium">
-              {filteredAssets.length} asset{filteredAssets.length !== 1 && "s"} listed
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Button onClick={() => handleOpenModal("add")} className="rounded-lg font-medium">
-              <PlusIcon className="size-4 mr-2 animate-pulse" />
-              Add Asset
-            </Button>
-          </div>
-        </div>
-
-        {/* Filter controls row */}
-        <div className="flex flex-wrap items-center gap-3 mb-6">
-          <div className="relative flex-1 min-w-[240px]">
-            <SearchIcon className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground/75" />
+      <DashboardCard className="mt-6 overflow-hidden">
+        <FilterToolbar>
+          <div className="relative min-w-[240px] flex-1">
+            <SearchIcon className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search by name, tag, serial, or supplier..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 h-8.5 rounded-lg border-border"
+              className="rounded-lg bg-background pl-9"
             />
           </div>
 
           <NativeSelect
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="h-8.5"
           >
             <NativeSelectOption value="All Statuses">All Statuses</NativeSelectOption>
             <NativeSelectOption value="In Stock">In Stock</NativeSelectOption>
@@ -824,7 +762,6 @@ export default function HardwarePage() {
           <NativeSelect
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="h-8.5"
           >
             <NativeSelectOption value="All Categories">All Categories</NativeSelectOption>
             <NativeSelectOption value="Laptop">Laptops</NativeSelectOption>
@@ -833,18 +770,21 @@ export default function HardwarePage() {
             <NativeSelectOption value="Accessories">Accessories</NativeSelectOption>
             <NativeSelectOption value="Other">Other</NativeSelectOption>
           </NativeSelect>
-        </div>
+        </FilterToolbar>
 
-        {/* Data Table */}
-        <div className="mt-4">
+        <div className="p-4">
           {filteredAssets.length > 0 ? (
-            <DataTable columns={columns} rows={filteredAssets} />
+            <DataTable
+              columns={columns}
+              rows={filteredAssets}
+              className="ring-0"
+            />
           ) : (
-            <div className="flex flex-col items-center justify-center p-12 text-center rounded-xl border border-dashed border-border/60 bg-muted/10">
-              <AlertTriangleIcon className="size-8 text-muted-foreground/60 mb-2" />
-              <div className="font-semibold text-foreground text-sm">No hardware assets found</div>
-              <div className="text-xs text-muted-foreground mt-1 max-w-[280px]">
-                Try adjusting your search query or filters to find the hardware inventory items.
+            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border/60 bg-muted/10 p-12 text-center">
+              <AlertTriangleIcon className="mb-2 size-8 text-muted-foreground/60" />
+              <div className="text-sm font-medium text-foreground">No hardware assets found</div>
+              <div className="mt-1 max-w-sm text-sm text-muted-foreground">
+                Try adjusting your search query or filters to find inventory items.
               </div>
             </div>
           )}
@@ -853,7 +793,7 @@ export default function HardwarePage() {
 
       {/* 1. Add / Edit Asset Modal */}
       <Dialog open={activeModal === "add" || activeModal === "edit"} onOpenChange={handleCloseModal}>
-        <DialogContent className="sm:max-w-md rounded-xl p-5 border border-border bg-popover text-foreground">
+        <DialogContent className="rounded-xl p-5 sm:max-w-md">
           <DialogHeader>
             <DialogTitle>{activeModal === "add" ? "Register New Hardware Asset" : "Edit Asset Details"}</DialogTitle>
             <DialogDescription>
@@ -863,7 +803,7 @@ export default function HardwarePage() {
 
           <form onSubmit={handleSaveAsset} className="space-y-4 py-2">
             <div className="grid gap-1.5">
-              <Label htmlFor="asset-name" className="text-xs font-semibold text-muted-foreground">Asset Name</Label>
+              <Label htmlFor="asset-name" className="text-xs font-medium text-muted-foreground">Asset Name</Label>
               <Input
                 id="asset-name"
                 placeholder="e.g. Macbook Pro 14” (M3 Pro)"
@@ -875,7 +815,7 @@ export default function HardwarePage() {
 
             <div className="grid grid-cols-2 gap-3">
               <div className="grid gap-1.5">
-                <Label htmlFor="asset-tag" className="text-xs font-semibold text-muted-foreground">Asset Tag</Label>
+                <Label htmlFor="asset-tag" className="text-xs font-medium text-muted-foreground">Asset Tag</Label>
                 <Input
                   id="asset-tag"
                   placeholder="e.g. LAP-0012"
@@ -885,7 +825,7 @@ export default function HardwarePage() {
                 />
               </div>
               <div className="grid gap-1.5">
-                <Label htmlFor="asset-serial" className="text-xs font-semibold text-muted-foreground">Serial Number</Label>
+                <Label htmlFor="asset-serial" className="text-xs font-medium text-muted-foreground">Serial Number</Label>
                 <Input
                   id="asset-serial"
                   placeholder="S/N: Apple-..."
@@ -897,7 +837,7 @@ export default function HardwarePage() {
 
             <div className="grid grid-cols-2 gap-3">
               <div className="grid gap-1.5">
-                <Label htmlFor="asset-category" className="text-xs font-semibold text-muted-foreground">Category</Label>
+                <Label htmlFor="asset-category" className="text-xs font-medium text-muted-foreground">Category</Label>
                 <NativeSelect
                   id="asset-category"
                   value={formCategory}
@@ -912,7 +852,7 @@ export default function HardwarePage() {
                 </NativeSelect>
               </div>
               <div className="grid gap-1.5">
-                <Label htmlFor="asset-supplier" className="text-xs font-semibold text-muted-foreground">Supplier</Label>
+                <Label htmlFor="asset-supplier" className="text-xs font-medium text-muted-foreground">Supplier</Label>
                 <NativeSelect
                   id="asset-supplier"
                   value={formSupplier}
@@ -931,7 +871,7 @@ export default function HardwarePage() {
 
             <div className="grid grid-cols-2 gap-3">
               <div className="grid gap-1.5">
-                <Label htmlFor="asset-location" className="text-xs font-semibold text-muted-foreground">Location</Label>
+                <Label htmlFor="asset-location" className="text-xs font-medium text-muted-foreground">Location</Label>
                 <Input
                   id="asset-location"
                   placeholder="HQ - Bangalore"
@@ -940,7 +880,7 @@ export default function HardwarePage() {
                 />
               </div>
               <div className="grid gap-1.5">
-                <Label htmlFor="asset-warranty" className="text-xs font-semibold text-muted-foreground">Warranty Expiry Date</Label>
+                <Label htmlFor="asset-warranty" className="text-xs font-medium text-muted-foreground">Warranty Expiry Date</Label>
                 <Input
                   id="asset-warranty"
                   type="date"
@@ -964,7 +904,7 @@ export default function HardwarePage() {
 
       {/* 2. Assign / Unassign Dialog */}
       <Dialog open={activeModal === "assign"} onOpenChange={handleCloseModal}>
-        <DialogContent className="sm:max-w-md rounded-xl p-5 bg-popover text-foreground">
+        <DialogContent className="rounded-xl p-5 sm:max-w-md">
           <DialogHeader>
             <DialogTitle>
               {selectedAsset?.status === "Assigned" ? "Deallocate Hardware Asset" : "Allocate Hardware Asset"}
@@ -980,20 +920,20 @@ export default function HardwarePage() {
             <form onSubmit={handleAssignSubmit} className="space-y-4 py-2">
               {selectedAsset.status === "Assigned" ? (
                 <div className="p-4 rounded-lg bg-muted/40 border border-border">
-                  <div className="text-xs text-muted-foreground font-semibold">CURRENT ASSIGNEE</div>
+                  <div className="text-xs font-medium text-muted-foreground">Current assignee</div>
                   <div className="mt-1 flex items-center gap-2">
-                    <div className="size-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">
+                    <div className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-xs font-medium text-primary">
                       {selectedAsset.assignee.substring(0, 2).toUpperCase()}
                     </div>
                     <div>
-                      <div className="font-semibold text-sm">{selectedAsset.assignee}</div>
+                      <div className="text-sm font-medium">{selectedAsset.assignee}</div>
                       <div className="text-xs text-muted-foreground">Assigned on active tenure</div>
                     </div>
                   </div>
                 </div>
               ) : (
                 <div className="grid gap-2">
-                  <Label htmlFor="employee-select" className="text-xs font-semibold text-muted-foreground">Select Active Employee</Label>
+                  <Label htmlFor="employee-select" className="text-xs font-medium text-muted-foreground">Select Active Employee</Label>
                   <NativeSelect
                     id="employee-select"
                     value={selectedAssignee}
@@ -1024,7 +964,7 @@ export default function HardwarePage() {
 
       {/* 3. Repair / Diagnostic Dialog */}
       <Dialog open={activeModal === "repair"} onOpenChange={handleCloseModal}>
-        <DialogContent className="sm:max-w-md rounded-xl p-5 bg-popover text-foreground">
+        <DialogContent className="rounded-xl p-5 sm:max-w-md">
           <DialogHeader>
             <DialogTitle>
               {selectedAsset?.status === "Repair" ? "Repair Diagnostic Completion" : "Initiate Repair Lifecycle"}
@@ -1041,7 +981,7 @@ export default function HardwarePage() {
               {selectedAsset.status === "Repair" ? (
                 <>
                   <div className="grid gap-2">
-                    <Label htmlFor="repair-diag-notes" className="text-xs font-semibold text-muted-foreground font-mono">Closing Diagnostic Notes</Label>
+                    <Label htmlFor="repair-diag-notes" className="font-mono text-xs font-medium text-muted-foreground">Closing diagnostic notes</Label>
                     <Input
                       id="repair-diag-notes"
                       placeholder="e.g. Replaced display panel. Tested successfully."
@@ -1073,7 +1013,7 @@ export default function HardwarePage() {
               ) : (
                 <form onSubmit={(e) => handleRepairSubmit(e, "repair")} className="space-y-4">
                   <div className="grid gap-1.5">
-                    <Label htmlFor="repair-reason" className="text-xs font-semibold text-muted-foreground">Reason for Service</Label>
+                    <Label htmlFor="repair-reason" className="text-xs font-medium text-muted-foreground">Reason for Service</Label>
                     <NativeSelect
                       id="repair-reason"
                       value={repairReason}
@@ -1089,7 +1029,7 @@ export default function HardwarePage() {
                   </div>
 
                   <div className="grid gap-1.5">
-                    <Label htmlFor="repair-incident-notes" className="text-xs font-semibold text-muted-foreground">Diagnostic Notes</Label>
+                    <Label htmlFor="repair-incident-notes" className="text-xs font-medium text-muted-foreground">Diagnostic Notes</Label>
                     <Input
                       id="repair-incident-notes"
                       placeholder="Describe symptoms, device drops, or issues"
@@ -1115,7 +1055,7 @@ export default function HardwarePage() {
 
       {/* 4. Timeline Audit History Dialog */}
       <Dialog open={activeModal === "history"} onOpenChange={handleCloseModal}>
-        <DialogContent className="sm:max-w-md rounded-xl p-5 bg-popover text-foreground">
+        <DialogContent className="rounded-xl p-5 sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Audit & Activity Tracking</DialogTitle>
             <DialogDescription>
@@ -1132,7 +1072,7 @@ export default function HardwarePage() {
                     <div className="absolute -left-[31px] top-1.5 size-2.5 rounded-full bg-primary ring-4 ring-popover" />
                     <div>
                       <div className="flex items-center justify-between gap-2">
-                        <span className="font-semibold text-xs text-foreground">{evt.action}</span>
+                        <span className="text-xs font-medium text-foreground">{evt.action}</span>
                         <span className="font-mono text-[10px] text-muted-foreground">{evt.date}</span>
                       </div>
                       <div className="text-[11.5px] text-muted-foreground mt-0.5">
@@ -1160,7 +1100,7 @@ export default function HardwarePage() {
 
       {/* 5. Delete Confirmation Dialog */}
       <Dialog open={activeModal === "delete"} onOpenChange={handleCloseModal}>
-        <DialogContent className="sm:max-w-md rounded-xl p-5 bg-popover text-foreground">
+        <DialogContent className="rounded-xl p-5 sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-destructive">
               <AlertTriangleIcon className="size-5" />

@@ -178,7 +178,7 @@ export default function Page() {
   return (
     <DashboardShell title="Overview">
       {/* Executive Signals (hero panel) */}
-      <section className="rounded-2xl border border-border bg-[#F0F9FF] p-6 shadow-[0_1px_0_rgba(15,23,42,0.04)] sm:p-8">
+      <section className="rounded-2xl border border-border bg-[#F5F3FF] p-6 shadow-[0_1px_0_rgba(15,23,42,0.04)] sm:p-8">
         <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
           <div className="min-w-0">
             <div className="text-sm text-muted-foreground">

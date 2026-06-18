@@ -5,8 +5,6 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
   BarChart3Icon,
-  BellIcon,
-  BotIcon,
   Building2Icon,
   FileTextIcon,
   HardDriveIcon,
@@ -15,7 +13,6 @@ import {
   Layers3Icon,
   PackageIcon,
   SettingsIcon,
-  ShieldCheckIcon,
   UsersIcon,
   WorkflowIcon,
 } from "lucide-react"
@@ -34,6 +31,7 @@ import {
   SidebarSeparator,
 } from "@/components/ui/sidebar"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
+import { cn } from "@/lib/utils"
 
 const nav = [
   { label: "Overview", href: "/dashboard", icon: HomeIcon },
@@ -41,11 +39,6 @@ const nav = [
   { label: "Hardware", href: "/dashboard/hardware", icon: HardDriveIcon },
   { label: "Software", href: "/dashboard/software", icon: Layers3Icon },
   { label: "Suppliers", href: "/dashboard/suppliers", icon: Building2Icon },
-  {
-    label: "Compliance & Certifications",
-    href: "/dashboard/compliance",
-    icon: ShieldCheckIcon,
-  },
   { label: "Employees", href: "/dashboard/employees", icon: UsersIcon },
   {
     label: "Employee Lifecycle",
@@ -53,14 +46,7 @@ const nav = [
     icon: WorkflowIcon,
   },
   { label: "Requests", href: "/dashboard/requests", icon: FileTextIcon },
-  { label: "Campaigns", href: "/dashboard/campaigns", icon: PackageIcon },
-  {
-    label: "Integrations",
-    href: "/dashboard/integrations",
-    icon: BarChart3Icon,
-  },
-  { label: "AI Assist", href: "/dashboard/ai-assist", icon: BotIcon },
-  { label: "Reminders", href: "/dashboard/reminders", icon: BellIcon },
+
   { label: "Reports", href: "/dashboard/reports", icon: BarChart3Icon },
   { label: "Settings", href: "/dashboard/settings", icon: SettingsIcon },
 ] as const
@@ -110,7 +96,15 @@ export function AppSidebar() {
                     <SidebarMenuButton
                       asChild
                       isActive={active}
-                      className="rounded-lg px-2.5 py-2 text-[13px]"
+                      className={cn(
+                        "rounded-xl px-2.5 py-2 text-[13px] text-sidebar-foreground transition-colors",
+                        "hover:!bg-primary/5 hover:!text-foreground",
+                        "data-[active=true]:!bg-primary/10 data-[active=true]:!text-primary data-[active=true]:!font-medium",
+                        "data-[active=true]:hover:!bg-primary/10 data-[active=true]:hover:!text-primary",
+                        "[&_svg]:text-muted-foreground",
+                        "hover:[&_svg]:text-foreground",
+                        "data-[active=true]:[&_svg]:!text-primary"
+                      )}
                     >
                       <Link href={item.href}>
                         <item.icon />
@@ -144,4 +138,3 @@ export function AppSidebar() {
     </Sidebar>
   )
 }
-

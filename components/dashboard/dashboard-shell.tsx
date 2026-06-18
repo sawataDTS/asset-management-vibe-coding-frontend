@@ -9,10 +9,12 @@ import { cn } from "@/lib/utils"
 
 export function DashboardShell({
   title,
+  actions,
   children,
   className,
 }: {
   title: string
+  actions?: React.ReactNode
   children: React.ReactNode
   className?: string
 }) {
@@ -35,6 +37,7 @@ export function DashboardShell({
               </div>
             </div>
             <div className="flex items-center gap-3">
+              {actions}
               <Avatar size="sm">
                 <AvatarFallback>MR</AvatarFallback>
               </Avatar>

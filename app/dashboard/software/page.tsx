@@ -3,8 +3,6 @@
 import * as React from "react"
 import { useState, useMemo, useEffect } from "react"
 import {
-  ActivityIcon,
-  BoxesIcon,
   Layers3Icon,
   UsersIcon,
   CreditCardIcon,
@@ -18,14 +16,16 @@ import {
   BadgeCheckIcon,
   XIcon,
   UserPlusIcon,
-  DollarSignIcon,
-  ShieldCheckIcon,
 } from "lucide-react"
 import { Toaster, toast } from "sonner"
 
 import { DashboardShell } from "@/components/dashboard/dashboard-shell"
 import { DataTable, type ColumnDef } from "@/components/dashboard/data-table"
 import { DashboardCard } from "@/components/dashboard/dashboard-card"
+import { LicenseStatusBadge } from "@/components/dashboard/license-status-badge"
+import { SeatUtilization } from "@/components/dashboard/seat-utilization"
+import { FilterToolbar } from "@/components/dashboard/filter-toolbar"
+import { PageHeader } from "@/components/dashboard/page-header"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { NativeSelect, NativeSelectOption } from "@/components/ui/native-select"
@@ -474,12 +474,12 @@ export default function SoftwarePage() {
       header: "Software Plan",
       cell: (row) => (
         <div className="min-w-0">
-          <div className="font-semibold text-foreground text-[13.5px]">{row.name}</div>
-          <div className="text-[11px] font-medium text-muted-foreground flex items-center gap-1">
-            <Badge variant="outline" className="text-[10px] px-1.5 h-4.5 font-medium border-border/40">
+          <div className="truncate font-medium text-foreground">{row.name}</div>
+          <div className="mt-0.5 flex items-center gap-1.5 text-xs text-muted-foreground">
+            <Badge variant="outline" className="h-5 px-1.5 text-xs font-medium">
               {row.category}
             </Badge>
-            <span className="truncate max-w-[120px]">{row.supplier}</span>
+            <span className="truncate">{row.supplier}</span>
           </div>
         </div>
       ),
@@ -488,58 +488,30 @@ export default function SoftwarePage() {
     {
       key: "seats",
       header: "Seat Allocation & Utilization",
-      cell: (row) => {
-        const ratio = row.totalSeats > 0 ? (row.assignedSeats / row.totalSeats) * 100 : 0
-        const isFull = ratio >= 100
-        const isWarning = ratio >= 80
-
-        return (
-          <div className="w-[180px] space-y-1.5">
-            <div className="flex items-center justify-between text-xs font-semibold">
-              <span className="text-foreground">{row.assignedSeats} / {row.totalSeats} seats</span>
-              <span className="text-muted-foreground">{Math.round(ratio)}% filled</span>
-            </div>
-            <div className="w-full h-2 rounded-full bg-muted/60 overflow-hidden">
-              <div
-                className={`h-full transition-all duration-300 rounded-full ${isFull ? "bg-red-500" : isWarning ? "bg-amber-500" : "bg-primary"
-                  }`}
-                style={{ width: `${Math.min(ratio, 100)}%` }}
-              />
-            </div>
-          </div>
-        )
-      },
+      cell: (row) => (
+        <SeatUtilization assigned={row.assignedSeats} total={row.totalSeats} />
+      ),
       className: "w-[24%]",
     },
     {
       key: "status",
       header: "Status",
-      cell: (row) => {
-        const styleMap = {
-          Active: "bg-emerald-500/10 text-emerald-700 border-emerald-500/20 dark:bg-emerald-500/20 dark:text-emerald-400",
-          "Expiring Soon": "bg-amber-500/10 text-amber-700 border-amber-500/20 dark:bg-amber-500/20 dark:text-amber-400",
-          Expired: "bg-red-500/10 text-red-700 border-red-500/20 dark:bg-red-500/20 dark:text-red-400",
-        }
-
-        return (
-          <Badge variant="outline" className={`h-6 rounded-full border px-2 text-xs font-semibold ${styleMap[row.status]}`}>
-            {row.status}
-          </Badge>
-        )
-      },
+      cell: (row) => <LicenseStatusBadge status={row.status} />,
       className: "w-[12%]",
     },
     {
       key: "cost",
       header: "Subscription Cost",
-      cell: (row) => <span className="text-foreground font-semibold font-mono text-[13px]">{row.cost}</span>,
+      cell: (row) => (
+        <span className="font-mono text-sm font-medium tabular-nums text-foreground">{row.cost}</span>
+      ),
       className: "w-[12%]",
     },
     {
       key: "renewal",
       header: "Renewal Date",
       cell: (row) => (
-        <span className="font-mono text-xs text-muted-foreground font-medium">{row.renewalDate}</span>
+        <span className="font-mono text-sm tabular-nums text-muted-foreground">{row.renewalDate}</span>
       ),
       className: "w-[12%]",
     },
@@ -591,96 +563,39 @@ export default function SoftwarePage() {
   ]
 
   return (
-    <DashboardShell title="Software Subscriptions">
+    <DashboardShell
+      title="Software Subscriptions"
+      actions={
+        <Button onClick={() => handleOpenModal("add")}>
+          <PlusIcon className="size-4" />
+          Add Subscription
+        </Button>
+      }
+    >
       <Toaster position="top-right" closeButton richColors />
 
-      {/* KPI Overview Grid */}
-      <section className="mb-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-        <DashboardCard className="p-4 flex items-center gap-3">
-          <div className="size-10 rounded-xl bg-indigo-500/10 flex items-center justify-center text-indigo-600">
-            <Layers3Icon className="size-5" />
-          </div>
-          <div>
-            <div className="text-2xl font-bold">{kpis.totalLicenses}</div>
-            <div className="text-[11.5px] font-semibold text-muted-foreground uppercase tracking-wider">Total Subscriptions</div>
-          </div>
-        </DashboardCard>
+      <PageHeader
+        eyebrow="Apps, subscriptions & licensing"
+        title="Software Subscriptions"
+        description="Track seat allocation, renewal dates, and subscription spend across vendors."
+        meta={`${kpis.totalLicenses} subscriptions total · ${kpis.assignedSeats} seats assigned · ${kpis.availableSeats} seats available · ${kpis.monthlySpend} spend`}
+      />
 
-        <DashboardCard className="p-4 flex items-center gap-3">
-          <div className="size-10 rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-600">
-            <UsersIcon className="size-5" />
-          </div>
-          <div>
-            <div className="text-2xl font-bold">{kpis.assignedSeats}</div>
-            <div className="text-[11.5px] font-semibold text-muted-foreground uppercase tracking-wider">Seats Assigned</div>
-          </div>
-        </DashboardCard>
-
-        <DashboardCard className="p-4 flex items-center gap-3">
-          <div className="size-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-600">
-            <ShieldCheckIcon className="size-5" />
-          </div>
-          <div>
-            <div className="text-2xl font-bold">{kpis.availableSeats}</div>
-            <div className="text-[11.5px] font-semibold text-muted-foreground uppercase tracking-wider">Seats Available</div>
-          </div>
-        </DashboardCard>
-
-        <DashboardCard className="p-4 flex items-center gap-3">
-          <div className="size-10 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600">
-            <ClockIcon className="size-5" />
-          </div>
-          <div>
-            <div className="text-2xl font-bold">{kpis.expiringSoon}</div>
-            <div className="text-[11.5px] font-semibold text-muted-foreground uppercase tracking-wider">Expiring Soon</div>
-          </div>
-        </DashboardCard>
-
-        <DashboardCard className="p-4 flex items-center gap-3">
-          <div className="size-10 rounded-xl bg-rose-500/10 flex items-center justify-center text-rose-600">
-            <CreditCardIcon className="size-5" />
-          </div>
-          <div>
-            <div className="text-2xl font-bold">{kpis.monthlySpend}</div>
-            <div className="text-[11.5px] font-semibold text-muted-foreground uppercase tracking-wider">Monthly Spend</div>
-          </div>
-        </DashboardCard>
-      </section>
-
-      {/* Software Licenses Management Card */}
-      <DashboardCard className="p-6">
-        <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between mb-6">
-          <div className="min-w-0">
-            <h1 className="text-2xl font-semibold tracking-tight text-foreground">Software Licenses</h1>
-            <p className="mt-1 text-sm text-muted-foreground font-medium">
-              {filteredLicenses.length} subscription{filteredLicenses.length !== 1 && "s"} registered
-            </p>
-          </div>
-
-          <div className="flex items-center gap-2">
-            <Button onClick={() => handleOpenModal("add")} className="rounded-lg font-medium">
-              <PlusIcon className="size-4 mr-2" />
-              Add Subscription
-            </Button>
-          </div>
-        </div>
-
-        {/* Filter Toolbar */}
-        <div className="flex flex-wrap items-center gap-3 mb-6">
-          <div className="relative flex-1 min-w-[240px]">
-            <SearchIcon className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground/75" />
+      <DashboardCard className="mt-6 overflow-hidden">
+        <FilterToolbar>
+          <div className="relative min-w-[240px] flex-1">
+            <SearchIcon className="absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground" />
             <Input
               placeholder="Search by license name, supplier, or key..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-9 h-8.5 rounded-lg border-border"
+              className="rounded-lg bg-background pl-9"
             />
           </div>
 
           <NativeSelect
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
-            className="h-8.5"
           >
             <NativeSelectOption value="All Statuses">All Statuses</NativeSelectOption>
             <NativeSelectOption value="Active">Active</NativeSelectOption>
@@ -691,7 +606,6 @@ export default function SoftwarePage() {
           <NativeSelect
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="h-8.5"
           >
             <NativeSelectOption value="All Categories">All Categories</NativeSelectOption>
             <NativeSelectOption value="Developer Tools">Developer Tools</NativeSelectOption>
@@ -699,18 +613,17 @@ export default function SoftwarePage() {
             <NativeSelectOption value="Collaboration">Collaboration</NativeSelectOption>
             <NativeSelectOption value="Productivity">Productivity</NativeSelectOption>
           </NativeSelect>
-        </div>
+        </FilterToolbar>
 
-        {/* Licenses Data Table */}
-        <div className="mt-4">
+        <div className="p-4">
           {filteredLicenses.length > 0 ? (
-            <DataTable columns={columns} rows={filteredLicenses} />
+            <DataTable columns={columns} rows={filteredLicenses} className="ring-0" />
           ) : (
-            <div className="flex flex-col items-center justify-center p-12 text-center rounded-xl border border-dashed border-border/60 bg-muted/10">
-              <AlertTriangleIcon className="size-8 text-muted-foreground/60 mb-2" />
-              <div className="font-semibold text-foreground text-sm">No software subscriptions found</div>
-              <div className="text-xs text-muted-foreground mt-1 max-w-[280px]">
-                Try adjusting your search query or filters to find the licenses subscriptions.
+            <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-border/60 bg-muted/10 p-12 text-center">
+              <AlertTriangleIcon className="mb-2 size-8 text-muted-foreground/60" />
+              <div className="text-sm font-medium text-foreground">No software subscriptions found</div>
+              <div className="mt-1 max-w-sm text-sm text-muted-foreground">
+                Try adjusting your search query or filters to find license subscriptions.
               </div>
             </div>
           )}
@@ -719,7 +632,7 @@ export default function SoftwarePage() {
 
       {/* 1. Add / Edit Subscription Dialog */}
       <Dialog open={activeModal === "add" || activeModal === "edit"} onOpenChange={handleCloseModal}>
-        <DialogContent className="sm:max-w-md rounded-xl p-5 bg-popover text-foreground">
+        <DialogContent className="rounded-xl p-5 sm:max-w-md">
           <DialogHeader>
             <DialogTitle>{activeModal === "add" ? "Register Software Subscription" : "Modify Subscription Plan"}</DialogTitle>
             <DialogDescription>
@@ -729,7 +642,7 @@ export default function SoftwarePage() {
 
           <form onSubmit={handleSaveLicense} className="space-y-4 py-2">
             <div className="grid gap-1.5">
-              <Label htmlFor="license-name" className="text-xs font-semibold text-muted-foreground">Software Name</Label>
+              <Label htmlFor="license-name" className="text-xs font-medium text-muted-foreground">Software Name</Label>
               <Input
                 id="license-name"
                 placeholder="e.g. GitHub Enterprise"
@@ -741,7 +654,7 @@ export default function SoftwarePage() {
 
             <div className="grid grid-cols-2 gap-3">
               <div className="grid gap-1.5">
-                <Label htmlFor="license-supplier" className="text-xs font-semibold text-muted-foreground">Supplier / Publisher</Label>
+                <Label htmlFor="license-supplier" className="text-xs font-medium text-muted-foreground">Supplier / Publisher</Label>
                 <Input
                   id="license-supplier"
                   placeholder="e.g. Adobe Inc."
@@ -751,7 +664,7 @@ export default function SoftwarePage() {
                 />
               </div>
               <div className="grid gap-1.5">
-                <Label htmlFor="license-category" className="text-xs font-semibold text-muted-foreground">Category</Label>
+                <Label htmlFor="license-category" className="text-xs font-medium text-muted-foreground">Category</Label>
                 <NativeSelect
                   id="license-category"
                   value={formCategory}
@@ -768,7 +681,7 @@ export default function SoftwarePage() {
 
             <div className="grid grid-cols-3 gap-3">
               <div className="grid gap-1.5 col-span-1">
-                <Label htmlFor="license-seats" className="text-xs font-semibold text-muted-foreground">Total Seats</Label>
+                <Label htmlFor="license-seats" className="text-xs font-medium text-muted-foreground">Total Seats</Label>
                 <Input
                   id="license-seats"
                   type="number"
@@ -779,7 +692,7 @@ export default function SoftwarePage() {
                 />
               </div>
               <div className="grid gap-1.5 col-span-1">
-                <Label htmlFor="license-cost" className="text-xs font-semibold text-muted-foreground">Billing Model</Label>
+                <Label htmlFor="license-cost" className="text-xs font-medium text-muted-foreground">Billing Model</Label>
                 <Input
                   id="license-cost"
                   placeholder="e.g. $450/mo"
@@ -788,7 +701,7 @@ export default function SoftwarePage() {
                 />
               </div>
               <div className="grid gap-1.5 col-span-1">
-                <Label htmlFor="license-renewal" className="text-xs font-semibold text-muted-foreground">Renewal Date</Label>
+                <Label htmlFor="license-renewal" className="text-xs font-medium text-muted-foreground">Renewal Date</Label>
                 <Input
                   id="license-renewal"
                   type="date"
@@ -799,7 +712,7 @@ export default function SoftwarePage() {
             </div>
 
             <div className="grid gap-1.5">
-              <Label htmlFor="license-key" className="text-xs font-semibold text-muted-foreground">License / Activation Key</Label>
+              <Label htmlFor="license-key" className="text-xs font-medium text-muted-foreground">License / Activation Key</Label>
               <Input
                 id="license-key"
                 placeholder="Product serial key or subscription URL"
@@ -809,7 +722,7 @@ export default function SoftwarePage() {
             </div>
 
             <div className="grid gap-1.5">
-              <Label htmlFor="license-desc" className="text-xs font-semibold text-muted-foreground">Product Description</Label>
+              <Label htmlFor="license-desc" className="text-xs font-medium text-muted-foreground">Product Description</Label>
               <Input
                 id="license-desc"
                 placeholder="Details about packages, seats limits, or access teams..."
@@ -832,7 +745,7 @@ export default function SoftwarePage() {
 
       {/* 2. Seats Allocation Manager Dialog */}
       <Dialog open={activeModal === "seats"} onOpenChange={handleCloseModal}>
-        <DialogContent className="sm:max-w-md rounded-xl p-5 bg-popover text-foreground">
+        <DialogContent className="rounded-xl p-5 sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Manage License Seats Allocation</DialogTitle>
             <DialogDescription>
@@ -843,17 +756,17 @@ export default function SoftwarePage() {
           {selectedLicense && (
             <div className="space-y-5 py-2">
               {/* Utilization progress bar detail */}
-              <div className="p-4 rounded-lg bg-muted/40 border border-border">
-                <div className="flex justify-between items-center text-xs font-semibold text-muted-foreground mb-1.5">
-                  <span>SEAT UTILIZATION CAPACITY</span>
-                  <span className="text-foreground">{selectedLicense.assignedSeats} / {selectedLicense.totalSeats} seats allocated</span>
+              <div className="rounded-xl border border-border bg-muted/40 p-4">
+                <div className="mb-2 flex items-center justify-between text-xs text-muted-foreground">
+                  <span className="font-medium">Seat utilization</span>
+                  <span className="text-foreground">
+                    {selectedLicense.assignedSeats} / {selectedLicense.totalSeats} seats allocated
+                  </span>
                 </div>
-                <div className="w-full h-2 rounded-full bg-muted overflow-hidden">
-                  <div
-                    className="h-full bg-primary rounded-full transition-all duration-300"
-                    style={{ width: `${(selectedLicense.assignedSeats / selectedLicense.totalSeats) * 100}%` }}
-                  />
-                </div>
+                <SeatUtilization
+                  assigned={selectedLicense.assignedSeats}
+                  total={selectedLicense.totalSeats}
+                />
               </div>
 
               {/* Allocate new seat sub-form */}
@@ -861,12 +774,12 @@ export default function SoftwarePage() {
                 eligibleEmployees.length > 0 ? (
                   <form onSubmit={handleAllocateSeat} className="flex items-end gap-2 p-3 border border-dashed border-border/80 rounded-lg">
                     <div className="grid gap-1.5 flex-1">
-                      <Label htmlFor="seat-employee-select" className="text-xs font-semibold text-muted-foreground">Allocate Seat to Employee</Label>
+                      <Label htmlFor="seat-employee-select" className="text-xs font-medium text-muted-foreground">Allocate Seat to Employee</Label>
                       <NativeSelect
                         id="seat-employee-select"
                         value={newAssignee}
                         onChange={(e) => setNewAssignee(e.target.value)}
-                        className="w-full h-8.5"
+                        className="w-full"
                       >
                         {eligibleEmployees.map((emp) => (
                           <NativeSelectOption key={emp} value={emp}>
@@ -875,7 +788,7 @@ export default function SoftwarePage() {
                         ))}
                       </NativeSelect>
                     </div>
-                    <Button type="submit" size="sm" className="h-8.5 rounded-lg">
+                    <Button type="submit" size="sm">
                       <UserPlusIcon className="size-3.5 mr-1.5" />
                       Allocate
                     </Button>
@@ -896,18 +809,18 @@ export default function SoftwarePage() {
 
               {/* Current assignees timeline list */}
               <div>
-                <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-                  CURRENT SEAT HOLDERS ({selectedLicense.assignees.length})
+                <div className="mb-2 text-xs font-medium text-muted-foreground">
+                  Current seat holders ({selectedLicense.assignees.length})
                 </div>
                 {selectedLicense.assignees.length > 0 ? (
                   <div className="space-y-2 max-h-[180px] overflow-y-auto pr-1">
                     {selectedLicense.assignees.map((name) => (
                       <div key={name} className="flex items-center justify-between p-2 rounded-md bg-muted/20 border border-border/40">
                         <div className="flex items-center gap-2">
-                          <div className="size-7 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-[10px]">
+                          <div className="flex size-7 items-center justify-center rounded-full bg-primary/10 text-xs font-medium text-primary">
                             {name.split(" ").map((n) => n[0]).join("")}
                           </div>
-                          <span className="font-semibold text-xs text-foreground">{name}</span>
+                          <span className="text-xs font-medium text-foreground">{name}</span>
                         </div>
                         <Button
                           variant="ghost"
@@ -940,7 +853,7 @@ export default function SoftwarePage() {
 
       {/* 3. Subscription History Logs Dialog */}
       <Dialog open={activeModal === "history"} onOpenChange={handleCloseModal}>
-        <DialogContent className="sm:max-w-md rounded-xl p-5 bg-popover text-foreground">
+        <DialogContent className="rounded-xl p-5 sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Audit & Activity Tracking</DialogTitle>
             <DialogDescription>
@@ -953,17 +866,17 @@ export default function SoftwarePage() {
               <div className="relative pl-6 border-l-2 border-border/80 ml-2 space-y-6">
                 {selectedLicense.history.map((evt, idx) => (
                   <div key={idx} className="relative">
-                    <div className="absolute -left-[31px] top-1.5 size-2.5 rounded-full bg-primary ring-4 ring-popover" />
+                    <div className="absolute left-[-31px] top-1.5 size-2.5 rounded-full bg-primary ring-4 ring-popover" />
                     <div>
                       <div className="flex items-center justify-between gap-2">
-                        <span className="font-semibold text-xs text-foreground">{evt.action}</span>
-                        <span className="font-mono text-[10px] text-muted-foreground">{evt.date}</span>
+                        <span className="text-xs font-medium text-foreground">{evt.action}</span>
+                        <span className="font-mono text-xs text-muted-foreground">{evt.date}</span>
                       </div>
-                      <div className="text-[11.5px] text-muted-foreground mt-0.5">
+                      <div className="mt-0.5 text-xs text-muted-foreground">
                         Performed by <span className="font-medium text-foreground/80">{evt.user}</span>
                       </div>
                       {evt.notes && (
-                        <div className="mt-1 text-[11px] bg-muted/40 p-2 rounded-md border border-border/40 text-muted-foreground leading-relaxed italic">
+                        <div className="mt-1 rounded-md border border-border/40 bg-muted/40 p-2 text-xs leading-relaxed text-muted-foreground italic">
                           “{evt.notes}”
                         </div>
                       )}
@@ -984,7 +897,7 @@ export default function SoftwarePage() {
 
       {/* 4. Delete Subscription Dialog */}
       <Dialog open={activeModal === "delete"} onOpenChange={handleCloseModal}>
-        <DialogContent className="sm:max-w-md rounded-xl p-5 bg-popover text-foreground">
+        <DialogContent className="rounded-xl p-5 sm:max-w-md">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-destructive">
               <AlertTriangleIcon className="size-5" />
