@@ -1,0 +1,719 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@custom-variant dark (&:is(.dark *));
+
+/*
+  THEME TOKEN ARCHITECTURE
+  ------------------------
+  Components must NEVER reference raw colors. They consume semantic tokens only
+  (e.g. bg-surface, bg-sidebar-active, text-foreground, border-border).
+
+  Each workspace theme defines a small set of "source" tokens on a
+  [data-theme="..."] selector placed on <html> (managed by next-themes).
+  A single theme-agnostic ":root" block bridges those source tokens to the
+  legacy shadcn token contract so every existing ui/* component adapts
+  automatically when the theme changes at runtime.
+
+  Source tokens per theme:
+    --background, --surface, --surface-elevated, --border,
+    --text-primary, --text-secondary,
+    --primary, --primary-foreground,
+    --sidebar-bg, --sidebar-active, --sidebar-hover,
+    --gradient-brand
+*/
+
+:root {
+  /* ---- Bridges: map the shadcn/ui token contract to semantic source tokens ---- */
+  --foreground: var(--text-primary);
+  --card: var(--surface-elevated);
+  --card-foreground: var(--text-primary);
+  --popover: var(--surface-elevated);
+  --popover-foreground: var(--text-primary);
+  --secondary: var(--surface);
+  --secondary-foreground: var(--text-primary);
+  --muted: var(--surface);
+  --muted-foreground: var(--text-secondary);
+  --accent: color-mix(in oklch, var(--primary) 14%, var(--surface-elevated));
+  --accent-foreground: var(--text-primary);
+  --input: var(--border);
+  --ring: var(--primary);
+
+  /* ---- Status palette (theme-agnostic defaults tuned for light surfaces; dark
+         themes override these for contrast). `danger` aliases `destructive`. ---- */
+  --success: #16a34a;
+  --success-foreground: #ffffff;
+  --warning: #d97706;
+  --warning-foreground: #ffffff;
+  --info: #2563eb;
+  --info-foreground: #ffffff;
+  --destructive: #dc2626;
+  --destructive-foreground: #ffffff;
+  --danger: var(--destructive);
+  --danger-foreground: var(--destructive-foreground);
+
+  /* ---- Navbar (bridges to surface tokens so it blends per theme) ---- */
+  --navbar: var(--surface-elevated);
+  --navbar-border: var(--border);
+
+  /* ---- Chart ramp derived from the brand primary for a cohesive analytics
+         look that re-themes automatically with every palette. ---- */
+  --chart-1: var(--primary);
+  --chart-2: color-mix(in oklch, var(--primary) 72%, var(--info));
+  --chart-3: color-mix(in oklch, var(--primary) 55%, var(--text-secondary));
+  --chart-4: color-mix(in oklch, var(--primary) 60%, var(--success));
+  --chart-5: color-mix(in oklch, var(--primary) 45%, var(--warning));
+
+  --sidebar: var(--sidebar-bg);
+  --sidebar-foreground: var(--text-primary);
+  --sidebar-primary: var(--primary);
+  --sidebar-primary-foreground: var(--primary-foreground);
+  --sidebar-accent: var(--sidebar-hover);
+  --sidebar-accent-foreground: var(--text-primary);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--primary);
+
+  /* ---- Typography, radius, spacing, elevation (theme-agnostic) ---- */
+  --font-sans: Inter, sans-serif;
+  --font-serif: Merriweather, serif;
+  --font-mono: JetBrains Mono, monospace;
+  /* Distinctive display face for brand wordmark + page titles. next/font sets
+     the real value on <body>; this is the theme-agnostic fallback. */
+  --font-display: "Space Grotesk", Inter, sans-serif;
+  --radius: 0.625rem;
+  --tracking-normal: 0em;
+  --spacing: 0.25rem;
+
+  --shadow-color: 220 40% 4%;
+  --shadow-2xs: 0px 1px 2px -1px hsl(var(--shadow-color) / 0.04);
+  --shadow-xs: 0px 1px 2px -1px hsl(var(--shadow-color) / 0.06);
+  --shadow-sm:
+    0px 1px 2px -1px hsl(var(--shadow-color) / 0.08), 0px 1px 3px -1px hsl(var(--shadow-color) / 0.08);
+  --shadow:
+    0px 1px 2px -1px hsl(var(--shadow-color) / 0.08), 0px 2px 4px -2px hsl(var(--shadow-color) / 0.08);
+  --shadow-md:
+    0px 2px 4px -2px hsl(var(--shadow-color) / 0.08), 0px 6px 12px -3px hsl(var(--shadow-color) / 0.12);
+  --shadow-lg:
+    0px 4px 8px -3px hsl(var(--shadow-color) / 0.1), 0px 12px 24px -6px hsl(var(--shadow-color) / 0.16);
+  --shadow-xl:
+    0px 8px 16px -6px hsl(var(--shadow-color) / 0.12), 0px 20px 36px -10px hsl(var(--shadow-color) / 0.2);
+  --shadow-2xl: 0px 24px 48px -12px hsl(var(--shadow-color) / 0.28);
+}
+
+/* ================================ THEMES ================================ *
+ * 25 workspace palettes. Light themes include classic (1–7), enterprise
+ * (11–15), and SaaS production-inspired (16–23); midnight-dark, graphite-dark,
+ * neon-cyber, linear-obsidian, and vercel-midnight are DARK and override the
+ * status palette for contrast on dark surfaces. Each theme only sets palette
+ * source tokens; the :root bridge maps them to the full shadcn + status +
+ * navbar contract.
+ * ----------------------------------------------------------------------- */
+
+/* 1. Purple Workspace — modern, professional executive SaaS. (Light) */
+[data-theme="purple-workspace"] {
+  --background: #f7f6fb;
+  --surface: #f1eff8;
+  --surface-elevated: #ffffff;
+  --border: #e7e3f1;
+  --text-primary: #221a33;
+  --text-secondary: #6b6385;
+  --primary: #7c3aed;
+  --primary-foreground: #ffffff;
+  --sidebar-bg: #ffffff;
+  --sidebar-active: #f0ebfb;
+  --sidebar-hover: #f6f3fc;
+  --gradient-brand: linear-gradient(135deg, #7c3aed 0%, #6366f1 100%);
+}
+
+/* 2. Arctic Light — DEFAULT. Extremely clean white with subtle blue. (Light) */
+:root,
+[data-theme="arctic-light"] {
+  --background: #fbfcfd;
+  --surface: #f3f6f9;
+  --surface-elevated: #ffffff;
+  --border: #e6eaef;
+  --text-primary: #18222f;
+  --text-secondary: #677483;
+  --primary: #2563eb;
+  --primary-foreground: #ffffff;
+  --sidebar-bg: #fbfcfd;
+  --sidebar-active: #eef3f9;
+  --sidebar-hover: #f4f7fa;
+  --gradient-brand: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+}
+
+/* 3. Ocean Cyan — modern analytics / monitoring platform. (Light) */
+[data-theme="ocean-cyan"] {
+  --background: #f4fafc;
+  --surface: #e9f4f8;
+  --surface-elevated: #ffffff;
+  --border: #d3e7ee;
+  --text-primary: #0c2530;
+  --text-secondary: #4f6b75;
+  --primary: #0891b2;
+  --primary-foreground: #ffffff;
+  --sidebar-bg: #ffffff;
+  --sidebar-active: #e1f1f6;
+  --sidebar-hover: #eef7fa;
+  --gradient-brand: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+}
+
+/* 4. Emerald Workspace — asset, finance & operations. Stable, trustworthy. (Light) */
+[data-theme="emerald-workspace"] {
+  --background: #f5faf7;
+  --surface: #e9f4ee;
+  --surface-elevated: #ffffff;
+  --border: #d3e8db;
+  --text-primary: #0e2a1c;
+  --text-secondary: #4e6c5c;
+  --primary: #059669;
+  --primary-foreground: #ffffff;
+  --sidebar-bg: #ffffff;
+  --sidebar-active: #e2f2e9;
+  --sidebar-hover: #eef7f2;
+  --gradient-brand: linear-gradient(135deg, #10b981 0%, #059669 100%);
+}
+
+/* 5. Slate Enterprise — corporate B2B internal tools. Very neutral. (Light) */
+[data-theme="slate-enterprise"] {
+  --background: #f8fafc;
+  --surface: #eef2f6;
+  --surface-elevated: #ffffff;
+  --border: #e2e8f0;
+  --text-primary: #0f172a;
+  --text-secondary: #5a677a;
+  --primary: #475569;
+  --primary-foreground: #ffffff;
+  --sidebar-bg: #ffffff;
+  --sidebar-active: #eaeef3;
+  --sidebar-hover: #f1f4f8;
+  --gradient-brand: linear-gradient(135deg, #475569 0%, #64748b 100%);
+}
+
+/* 6. Rose Quartz — premium, soft, modern. (Light) */
+[data-theme="rose-quartz"] {
+  --background: #fdf5f8;
+  --surface: #fae9f0;
+  --surface-elevated: #ffffff;
+  --border: #f3dae5;
+  --text-primary: #3b1f30;
+  --text-secondary: #8a6b7c;
+  --primary: #db2777;
+  --primary-foreground: #ffffff;
+  --sidebar-bg: #ffffff;
+  --sidebar-active: #f8e3ec;
+  --sidebar-hover: #fbeef3;
+  --gradient-brand: linear-gradient(135deg, #ec4899 0%, #a855f7 100%);
+}
+
+/* 7. Amber Executive — financial dashboards & reporting. Warm, professional. (Light) */
+[data-theme="amber-executive"] {
+  --background: #fdf9f3;
+  --surface: #f8efe2;
+  --surface-elevated: #ffffff;
+  --border: #efe1cd;
+  --text-primary: #2e2415;
+  --text-secondary: #786a52;
+  --primary: #c2620a;
+  --primary-foreground: #ffffff;
+  --sidebar-bg: #ffffff;
+  --sidebar-active: #f6ead4;
+  --sidebar-hover: #faf3e7;
+  --gradient-brand: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+}
+
+/* 11. Carbon Enterprise — IBM Carbon Design System inspired. (Light) */
+[data-theme="carbon-enterprise"] {
+  --background: #f8fafc;
+  --surface: #eef2f6;
+  --surface-elevated: #ffffff;
+  --border: #d9e2ec;
+  --text-primary: #161616;
+  --text-secondary: #525252;
+  --primary: #0f62fe;
+  --primary-foreground: #ffffff;
+  --sidebar-bg: #ffffff;
+  --sidebar-active: #e8f0ff;
+  --sidebar-hover: #f2f6ff;
+  --gradient-brand: linear-gradient(135deg, #0f62fe 0%, #4589ff 100%);
+}
+
+/* 12. Azure Corporate — Microsoft Azure & Dynamics 365 inspired. (Light) */
+[data-theme="azure-corporate"] {
+  --background: #f6f9fc;
+  --surface: #edf4fb;
+  --surface-elevated: #ffffff;
+  --border: #d8e7f4;
+  --text-primary: #17253d;
+  --text-secondary: #60708b;
+  --primary: #0078d4;
+  --primary-foreground: #ffffff;
+  --sidebar-bg: #ffffff;
+  --sidebar-active: #e4f1fd;
+  --sidebar-hover: #f1f7fd;
+  --gradient-brand: linear-gradient(135deg, #0078d4 0%, #2899f5 100%);
+}
+
+/* 13. Atlassian Executive — Jira & Confluence inspired. (Light) */
+[data-theme="atlassian-executive"] {
+  --background: #f8fafc;
+  --surface: #f1f4f8;
+  --surface-elevated: #ffffff;
+  --border: #dfe5ec;
+  --text-primary: #172b4d;
+  --text-secondary: #5e6c84;
+  --primary: #0052cc;
+  --primary-foreground: #ffffff;
+  --sidebar-bg: #ffffff;
+  --sidebar-active: #e8f1ff;
+  --sidebar-hover: #f4f8ff;
+  --gradient-brand: linear-gradient(135deg, #0052cc 0%, #2684ff 100%);
+}
+
+/* 14. Enterprise Navy — SAP & Oracle inspired. (Light) */
+[data-theme="enterprise-navy"] {
+  --background: #f7f9fc;
+  --surface: #eef2f7;
+  --surface-elevated: #ffffff;
+  --border: #dbe3ee;
+  --text-primary: #10213c;
+  --text-secondary: #5e6b82;
+  --primary: #0b1f3a;
+  --primary-foreground: #ffffff;
+  --sidebar-bg: #ffffff;
+  --sidebar-active: #e9edf4;
+  --sidebar-hover: #f4f6fa;
+  --gradient-brand: linear-gradient(135deg, #0b1f3a 0%, #2b4c7e 100%);
+}
+
+/* 15. Graphite Premium — Stripe Dashboard inspired. (Light) */
+[data-theme="graphite-premium"] {
+  --background: #fafbfc;
+  --surface: #f3f5f7;
+  --surface-elevated: #ffffff;
+  --border: #e4e8ee;
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --primary: #635bff;
+  --primary-foreground: #ffffff;
+  --sidebar-bg: #ffffff;
+  --sidebar-active: #f0efff;
+  --sidebar-hover: #f7f6ff;
+  --gradient-brand: linear-gradient(135deg, #635bff 0%, #7c73ff 100%);
+}
+
+/* 16. Linear Lavender — Linear issue tracking inspired. (Light) */
+[data-theme="linear-lavender"] {
+  --background: #f8f8fc;
+  --surface: #f0f0f8;
+  --surface-elevated: #ffffff;
+  --border: #e4e4ef;
+  --text-primary: #1a1a2e;
+  --text-secondary: #6b6b80;
+  --primary: #5e6ad2;
+  --primary-foreground: #ffffff;
+  --sidebar-bg: #ffffff;
+  --sidebar-active: #eceef9;
+  --sidebar-hover: #f4f5fb;
+  --gradient-brand: linear-gradient(135deg, #5e6ad2 0%, #7c85e0 100%);
+}
+
+/* 17. Slack Aubergine — Slack collaboration inspired. (Light) */
+[data-theme="slack-aubergine"] {
+  --background: #f9f7fa;
+  --surface: #f4f0f5;
+  --surface-elevated: #ffffff;
+  --border: #e8e0eb;
+  --text-primary: #1d1c1d;
+  --text-secondary: #616061;
+  --primary: #4a154b;
+  --primary-foreground: #ffffff;
+  --sidebar-bg: #ffffff;
+  --sidebar-active: #f3eaf5;
+  --sidebar-hover: #f8f3fa;
+  --gradient-brand: linear-gradient(135deg, #4a154b 0%, #611f69 100%);
+}
+
+/* 18. HubSpot Coral — HubSpot CRM inspired. (Light) */
+[data-theme="hubspot-coral"] {
+  --background: #fdf8f6;
+  --surface: #faeee9;
+  --surface-elevated: #ffffff;
+  --border: #f5ddd4;
+  --text-primary: #2d2826;
+  --text-secondary: #7a6f6a;
+  --primary: #ff7a59;
+  --primary-foreground: #ffffff;
+  --sidebar-bg: #ffffff;
+  --sidebar-active: #ffede8;
+  --sidebar-hover: #fff5f2;
+  --gradient-brand: linear-gradient(135deg, #ff7a59 0%, #ff5c35 100%);
+}
+
+/* 19. Shopify Forest — Shopify commerce inspired. (Light) */
+[data-theme="shopify-forest"] {
+  --background: #f4faf8;
+  --surface: #e8f5f0;
+  --surface-elevated: #ffffff;
+  --border: #cce8de;
+  --text-primary: #0d261f;
+  --text-secondary: #4a6b62;
+  --primary: #008060;
+  --primary-foreground: #ffffff;
+  --sidebar-bg: #ffffff;
+  --sidebar-active: #dcf0e8;
+  --sidebar-hover: #eef8f4;
+  --gradient-brand: linear-gradient(135deg, #008060 0%, #00a67e 100%);
+}
+
+/* 20. Miro Canary — Miro visual workspace inspired. (Light) */
+[data-theme="miro-canary"] {
+  --background: #fdfcf5;
+  --surface: #f9f6e8;
+  --surface-elevated: #ffffff;
+  --border: #eee8c8;
+  --text-primary: #1c1c1e;
+  --text-secondary: #5c5c60;
+  --primary: #ca8a04;
+  --primary-foreground: #ffffff;
+  --sidebar-bg: #ffffff;
+  --sidebar-active: #f5efd4;
+  --sidebar-hover: #faf6e8;
+  --gradient-brand: linear-gradient(135deg, #ffd02f 0%, #ca8a04 100%);
+}
+
+/* 21. Twilio Signal — Twilio communications inspired. (Light) */
+[data-theme="twilio-signal"] {
+  --background: #fdf6f7;
+  --surface: #faecef;
+  --surface-elevated: #ffffff;
+  --border: #f0d4da;
+  --text-primary: #2a1418;
+  --text-secondary: #7a5a62;
+  --primary: #f22f46;
+  --primary-foreground: #ffffff;
+  --sidebar-bg: #ffffff;
+  --sidebar-active: #fce8eb;
+  --sidebar-hover: #fef2f4;
+  --gradient-brand: linear-gradient(135deg, #f22f46 0%, #e11d48 100%);
+}
+
+/* 22. Notion Studio — Notion docs & wiki inspired. (Light) */
+[data-theme="notion-studio"] {
+  --background: #fbfbfa;
+  --surface: #f5f4f2;
+  --surface-elevated: #ffffff;
+  --border: #e8e6e3;
+  --text-primary: #37352f;
+  --text-secondary: #787774;
+  --primary: #5645d4;
+  --primary-foreground: #ffffff;
+  --sidebar-bg: #ffffff;
+  --sidebar-active: #edeafc;
+  --sidebar-hover: #f5f3fb;
+  --gradient-brand: linear-gradient(135deg, #5645d4 0%, #6958e0 100%);
+}
+
+/* 23. Zendesk Garden — Zendesk support inspired. (Light) */
+[data-theme="zendesk-garden"] {
+  --background: #f4f9f9;
+  --surface: #e8f3f3;
+  --surface-elevated: #ffffff;
+  --border: #cce0e0;
+  --text-primary: #03363d;
+  --text-secondary: #496669;
+  --primary: #137461;
+  --primary-foreground: #ffffff;
+  --sidebar-bg: #ffffff;
+  --sidebar-active: #dcefed;
+  --sidebar-hover: #eef6f6;
+  --gradient-brand: linear-gradient(135deg, #137461 0%, #03363d 100%);
+}
+
+/* 8. Midnight Dark — premium dark mode, shadcn-grade contrast. (Dark) */
+[data-theme="midnight-dark"] {
+  --background: #0b0f1a;
+  --surface: #121826;
+  --surface-elevated: #182032;
+  --border: #283145;
+  --text-primary: #e7ecf5;
+  --text-secondary: #99a4b8;
+  --primary: #818cf8;
+  --primary-foreground: #0b0f1a;
+  --sidebar-bg: #0d121e;
+  --sidebar-active: #1b2336;
+  --sidebar-hover: #141a29;
+  --gradient-brand: linear-gradient(135deg, #818cf8 0%, #a855f7 100%);
+
+  --success: #34d399;
+  --success-foreground: #06231a;
+  --warning: #fbbf24;
+  --warning-foreground: #2a1c02;
+  --info: #60a5fa;
+  --info-foreground: #06182f;
+  --destructive: #f87171;
+  --destructive-foreground: #2a0a0a;
+}
+
+/* 9. Graphite Dark — neutral, minimal, engineering focused. (Dark) */
+[data-theme="graphite-dark"] {
+  --background: #0c0d0f;
+  --surface: #16181b;
+  --surface-elevated: #1c1f23;
+  --border: #2b2f34;
+  --text-primary: #e8eaec;
+  --text-secondary: #9a9ea6;
+  --primary: #d4d4d8;
+  --primary-foreground: #18181b;
+  --sidebar-bg: #0e0f12;
+  --sidebar-active: #1d2024;
+  --sidebar-hover: #15171a;
+  --gradient-brand: linear-gradient(135deg, #52525b 0%, #a1a1aa 100%);
+
+  --success: #34d399;
+  --success-foreground: #06231a;
+  --warning: #fbbf24;
+  --warning-foreground: #2a1c02;
+  --info: #60a5fa;
+  --info-foreground: #06182f;
+  --destructive: #f87171;
+  --destructive-foreground: #2a0a0a;
+}
+
+/* 10. Neon Cyber — futuristic AI / analytics. Bold but still professional. (Dark) */
+[data-theme="neon-cyber"] {
+  --background: #07090f;
+  --surface: #0d111c;
+  --surface-elevated: #121829;
+  --border: #1e2a45;
+  --text-primary: #e6f0ff;
+  --text-secondary: #8aa0c4;
+  --primary: #22d3ee;
+  --primary-foreground: #04141a;
+  --sidebar-bg: #080b13;
+  --sidebar-active: #16203a;
+  --sidebar-hover: #0f1626;
+  --gradient-brand: linear-gradient(135deg, #22d3ee 0%, #a855f7 100%);
+
+  --success: #2dd4bf;
+  --success-foreground: #04201c;
+  --warning: #fbbf24;
+  --warning-foreground: #2a1c02;
+  --info: #38bdf8;
+  --info-foreground: #051a2a;
+  --destructive: #fb7185;
+  --destructive-foreground: #2a0a12;
+}
+
+/* 24. Linear Obsidian — Linear dark mode inspired. (Dark) */
+[data-theme="linear-obsidian"] {
+  --background: #010102;
+  --surface: #0f1011;
+  --surface-elevated: #141516;
+  --border: #23252a;
+  --text-primary: #ededef;
+  --text-secondary: #8b8b8f;
+  --primary: #5e6ad2;
+  --primary-foreground: #ffffff;
+  --sidebar-bg: #0a0a0b;
+  --sidebar-active: #18191b;
+  --sidebar-hover: #121213;
+  --gradient-brand: linear-gradient(135deg, #5e6ad2 0%, #7c85e0 100%);
+
+  --success: #34d399;
+  --success-foreground: #06231a;
+  --warning: #fbbf24;
+  --warning-foreground: #2a1c02;
+  --info: #60a5fa;
+  --info-foreground: #06182f;
+  --destructive: #f87171;
+  --destructive-foreground: #2a0a0a;
+}
+
+/* 25. Vercel Midnight — Vercel engineering dashboard inspired. (Dark) */
+[data-theme="vercel-midnight"] {
+  --background: #000000;
+  --surface: #0a0a0a;
+  --surface-elevated: #111111;
+  --border: #333333;
+  --text-primary: #ededed;
+  --text-secondary: #888888;
+  --primary: #ededed;
+  --primary-foreground: #000000;
+  --sidebar-bg: #050505;
+  --sidebar-active: #1a1a1a;
+  --sidebar-hover: #0f0f0f;
+  --gradient-brand: linear-gradient(135deg, #ffffff 0%, #a1a1a1 100%);
+
+  --success: #34d399;
+  --success-foreground: #06231a;
+  --warning: #fbbf24;
+  --warning-foreground: #2a1c02;
+  --info: #60a5fa;
+  --info-foreground: #06182f;
+  --destructive: #f87171;
+  --destructive-foreground: #2a0a0a;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-surface-elevated: var(--surface-elevated);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-danger: var(--danger);
+  --color-danger-foreground: var(--danger-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-navbar: var(--navbar);
+  --color-navbar-border: var(--navbar-border);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-bg: var(--sidebar-bg);
+  --color-sidebar-active: var(--sidebar-active);
+  --color-sidebar-hover: var(--sidebar-hover);
+
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+  --font-serif: var(--font-serif);
+  --font-heading: var(--font-sans);
+  --font-display: var(--font-display);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --shadow-2xs: var(--shadow-2xs);
+  --shadow-xs: var(--shadow-xs);
+  --shadow-sm: var(--shadow-sm);
+  --shadow: var(--shadow);
+  --shadow-md: var(--shadow-md);
+  --shadow-lg: var(--shadow-lg);
+  --shadow-xl: var(--shadow-xl);
+  --shadow-2xl: var(--shadow-2xl);
+}
+
+@utility bg-gradient-brand {
+  background-image: var(--gradient-brand);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Disable browser swipe-back/forward gestures + overscroll bounce.
+   overscroll-behavior must live on the document scroller (<html>), which is
+   the scroll container now that the shell uses body scroll. The x-axis value
+   is what stops Edge/Chromium's horizontal swipe navigation. */
+html,
+body {
+  overscroll-behavior-x: none;
+  overscroll-behavior-y: none;
+}
+
+/* Keep page scroll visible when Radix overlays lock scroll (react-remove-scroll-bar).
+   The library injects `body[data-scroll-locked] { overflow: hidden !important }` at
+   runtime along with padding/margin compensation — override every property it sets. */
+html > body[data-scroll-locked] {
+  overflow: auto !important;
+  overscroll-behavior: auto !important;
+  position: static !important;
+  padding-left: 0 !important;
+  padding-top: 0 !important;
+  padding-right: 0 !important;
+  margin-left: 0 !important;
+  margin-top: 0 !important;
+  margin-right: 0 !important;
+  --removed-body-scroll-bar-size: 0px !important;
+}
+
+.with-scroll-bars-hidden {
+  overflow: auto !important;
+  padding-right: 0 !important;
+}
+
+.right-scroll-bar-position {
+  right: 0 !important;
+}
+
+.width-before-scroll-bar {
+  margin-right: 0 !important;
+}
+
+/* AG Grid — DataTable (token-driven, matches typeScale.caption.tableHeader) */
+.data-table-root .ag-root-wrapper {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+}
+
+.data-table-root .ag-header {
+  border-bottom: 1px solid var(--border);
+}
+
+.data-table-root .ag-header-cell.data-table-actions-header .ag-header-cell-label {
+  justify-content: flex-end;
+  width: 100%;
+}
+
+.data-table-root .ag-header-cell-label {
+  gap: 0.25rem;
+}
+
+.data-table-root .ag-sort-indicator-icon {
+  opacity: 0.4;
+}
+
+.data-table-root .ag-cell-wrapper {
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}
+
+.data-table-root .ag-cell-value {
+  width: 100%;
+}
+
+.data-table-root .ag-header-cell-text {
+  font: inherit;
+  letter-spacing: normal;
+  text-transform: none;
+}

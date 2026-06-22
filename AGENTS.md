@@ -1,201 +1,75 @@
-# AssetOps Development Rules
-
-Read DESIGN.md before making any UI changes.
-
-## Design Authority
-
-DESIGN.md is the single source of truth.
-
-Do not create styles that conflict with DESIGN.md.
-
-When DESIGN.md and user instructions conflict:
-
-1. User instruction
-2. DESIGN.md
-3. Existing code
-
-Follow this order.
-
----
-
-## Component Reuse Policy
-
-Before creating any component:
-
-Search:
-
-- components/ui
-- components/dashboard
-
-Reuse existing components whenever possible.
-
-Do not create duplicate implementations.
-
-Examples:
-
-❌ CustomButton.tsx
-
-✅ components/ui/button.tsx
-
-❌ CustomSelect.tsx
-
-✅ components/ui/select.tsx
-
-❌ CustomModal.tsx
-
-✅ components/ui/dialog.tsx
-
----
-
-## Shadcn Rules
-
-Always prefer shadcn/ui components.
-
-Required component priority:
-
-1. Existing project component
-2. Existing shadcn component
-3. Generate missing shadcn component
-4. Create custom component only if absolutely necessary
-
-Never create custom implementations for:
-
-- Button
-- Input
-- Textarea
-- Select
-- Checkbox
-- Radio
-- Dialog
-- Drawer
-- Sheet
-- Popover
-- Tooltip
-- Badge
-- Tabs
-- Table
-- Pagination
-- DropdownMenu
-
----
-
-## Dashboard Components
-
-Always prefer:
-
-- DashboardShell
-- DashboardCard
-- SectionHeader
-- KpiCard
-- MetricCard
-- ChartCard
-- DataTable
-- StatusBadge
-
-Do not recreate these components.
-
----
-
-## Styling Rules
-
-Use:
-
-- TailwindCSS
-- shadcn/ui
-- Design tokens
-
-Do not use:
-
-- Inline styles
-- Hardcoded hex colors
-- Arbitrary font sizes
-- Arbitrary spacing values
-
-Examples:
-
-❌ text-[13px]
-
-❌ text-[15px]
-
-❌ p-[18px]
-
-Use design system tokens instead.
-
----
-
-## New Page Rules
-
-Every dashboard page must:
-
-1. Use DashboardShell
-2. Use SectionHeader
-3. Use DashboardCard
-4. Use shared DataTable
-5. Use shared StatusBadge
-
-Never build a page from scratch using raw divs.
-
----
-
-## File Structure
-
-Reusable dashboard components:
-
-components/dashboard/
-
-Reusable primitives:
-
-components/ui/
-
-Hooks:
-
-hooks/
-
-Utilities:
-
-lib/
-
-Dashboard routes:
-
-app/dashboard/
-
-Do not create alternative folders.
-
----
-
-## Before Completing Any Task
-
-Verify:
-
-- No duplicate components created
-- Existing components reused
-- DESIGN.md followed
-- shadcn/ui used where applicable
-- No custom Selects or Dialogs created
-- No design-system violations introduced
-
-If a rule must be broken, explain why in the response.
-
-## Screenshot Usage Rule
-
-Screenshots (including Asset360) are reference material only.
-
-Use screenshots for:
-
-- Layout
-- Workflow
-- Content hierarchy
-- Business logic
-- Module organization
-
-Never copy:
-
-- Colors
-- Typography
-- Card styling
-- Shadows
-- Spacing values
-- Component appearance
-- Gradients or badge/pill styling
-
-All UI must follow DESIGN.md and the AssetOps design language (Linear / Ramp / Stripe / Vercel aesthetic).
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` before writing any code. Heed deprecation notices.
+
+<!-- END:nextjs-agent-rules -->
+
+# Engineering Rules
+
+Read [`DESIGN.md`](./DESIGN.md) before generating any UI. The following rules are
+mandatory and non-negotiable.
+
+1. **Use `components/ui` first.** Always reach for an existing primitive in
+   `src/components/ui/*` before building anything custom.
+2. **Never re-create existing primitives.** Do not create a custom
+   button / input / select / card / dialog (etc.) if an equivalent already
+   exists in `src/components/ui`. Compose, don't duplicate.
+3. **Never hardcode colors.** No hex values, no Tailwind palette colors
+   (`blue-500`, `slate-900`, …), no inline `rgb()/hsl()`. Colors come from
+   semantic tokens only.
+4. **Never hardcode spacing, radius, shadows, or typography.** Use the Tailwind
+   scale and design tokens (`--radius`, `--shadow-*`, `--spacing`, `font-*`).
+5. **Always use design tokens / theme variables.** Style via semantic utilities
+   (`bg-surface`, `bg-sidebar-active`, `text-foreground`, `text-muted-foreground`,
+   `border-border`, `bg-primary`, …) so components re-theme automatically.
+6. **Always use the reusable `PageHeader`** (`@/components/layout/PageHeader`) for
+   page titles, descriptions, icons, and header actions.
+7. **`Sidebar` and `Navbar` are global layout components.** Do not fork or
+   re-implement them per page; extend the shared components.
+8. **All pages live under `app/(dashboard)` and inherit `DashboardLayout`.** Do
+   not wrap individual pages in their own shell.
+9. **Theme-switcher compatibility is mandatory.** Every component must support all
+   workspace themes at runtime. Never reference a specific theme's colors; only
+   reference tokens. Test that a component looks correct after switching themes.
+10. **Follow `DESIGN.md` before generating UI.** Layout, sidebar, navbar, header,
+    token, scroll, and responsive specifications are defined there.
+
+## Branding & navigation standards
+
+These keep the shell visually consistent across every page. Full specs live in
+`DESIGN.md` (§3 Sidebar, §4 Navbar, §11 Profile menu).
+
+1. **One brand wordmark.** The product name renders once, in `SidebarBrand`, as a
+   prominent single wordmark (`font-display`, large + bold) beside a
+   `bg-gradient-brand` mark. Never re-introduce a split / two-tone text logo and
+   never duplicate the brand elsewhere.
+2. **`font-display` is reserved for identity + titles.** Use `font-display` only
+   for the brand wordmark and navbar/page titles so they read as premium against
+   the `font-sans` body. Do not apply it to body copy, labels, or controls.
+3. **Brand color comes from the gradient mark, not the text.** Brand and titles
+   use `text-foreground`; the brand hue is carried by `bg-gradient-brand`. Never
+   hardcode a brand color on type.
+4. **Navbar is sticky + blurred + token-driven.** Keep `h-16`, `sticky top-0`,
+   `bg-navbar/90` + `backdrop-blur-md`, and `border-navbar-border`. The page
+   title (from `getPageTitle`) is the dominant left element.
+5. **Account avatar opens `UserMenu`.** The avatar in the navbar is the single
+   entry point to the profile dropdown. Extend `UserMenu` (add a footer
+   shortcut); never fork it or hand-roll popover/outside-click/escape logic —
+   compose the shared `DropdownMenu` primitive.
+6. **Account data flows from `DashboardLayout`.** Pass `user`
+   (`{ name, email, avatarUrl?, organization? }`) and `onSignOut` through the
+   layout. Do not read user/org data ad hoc inside pages.
+
+## Theme tokens — quick reference
+
+Source tokens (defined per theme in `src/app/globals.css`):
+`--background`, `--surface`, `--surface-elevated`, `--border`,
+`--text-primary`, `--text-secondary`, `--primary`, `--primary-foreground`,
+`--sidebar-bg`, `--sidebar-active`, `--sidebar-hover`, `--gradient-brand`.
+
+These bridge to the shadcn token contract (`--card`, `--muted`, `--foreground`,
+`--accent`, `--sidebar`, …), so every `ui/*` component adapts with no extra work.
+Add a new workspace theme by adding a `[data-theme="..."]` block in `globals.css`
+and an entry in `src/lib/themes.ts`.
