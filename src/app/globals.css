@@ -708,6 +708,14 @@ html > body[data-scroll-locked] {
   height: 100%;
 }
 
+.data-table-root.data-table-auto-rows .ag-cell-wrapper {
+  align-items: flex-start;
+}
+
+.data-table-root.data-table-auto-rows .ag-cell.data-table-cell-actions .ag-cell-wrapper {
+  align-items: center;
+}
+
 .data-table-root .ag-cell-value {
   width: 100%;
 }
@@ -716,4 +724,20 @@ html > body[data-scroll-locked] {
   font: inherit;
   letter-spacing: normal;
   text-transform: none;
+}
+
+@media print {
+  [data-slot="sidebar"],
+  [data-slot="navbar"],
+  [data-report-export-hide] {
+    display: none !important;
+  }
+
+  [data-slot="page-header"] {
+    padding: 0 !important;
+  }
+
+  [data-report-printable] {
+    break-inside: avoid;
+  }
 }

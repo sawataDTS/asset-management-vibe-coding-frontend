@@ -24,6 +24,8 @@ ModuleRegistry.registerModules([AllCommunityModule])
 
 export const dataTableActionsHeaderClass = cn(typeScale.caption.tableHeader, "data-table-actions-header")
 
+export const dataTableActionsCellClass = "data-table-cell-actions"
+
 /**
  * A single, theme-aware grid theme derived from our design tokens. Because every
  * value is a CSS custom property, the table re-themes instantly with the rest of
@@ -73,6 +75,8 @@ interface DataTableProps<T> {
   emptyMessage?: string
   getRowClass?: (row: RowClassParams<T>) => string
   className?: string
+  /** Rows grow with cell content (padding-based) instead of a fixed height. */
+  autoRowHeight?: boolean
 }
 
 export function DataTable<T extends object>({
@@ -90,6 +94,7 @@ export function DataTable<T extends object>({
   emptyMessage = "No records to display.",
   getRowClass,
   className,
+  autoRowHeight = false,
 }: DataTableProps<T>) {
   const [currentPage, setCurrentPage] = useState(0)
   const [pageSizeCount, setPageSizeCount] = useState(pageSize)
@@ -160,7 +165,13 @@ export function DataTable<T extends object>({
   }
 
   return (
-    <div className={cn("data-table-root flex w-full flex-col gap-4", className)}>
+    <div
+      className={cn(
+        "data-table-root flex w-full flex-col gap-4",
+        autoRowHeight && "data-table-auto-rows",
+        className
+      )}
+    >
       <div className="relative w-full" style={hasFixedHeight ? { height } : undefined}>
         {loading && (
           <div className="absolute inset-0 z-10 flex items-center justify-center rounded-xl bg-card/60 backdrop-blur-[1px]">
@@ -175,7 +186,7 @@ export function DataTable<T extends object>({
           rowData={currentData}
           columnDefs={columnDefs}
           loading={loading}
-          rowHeight={56}
+          rowHeight={autoRowHeight ? undefined : 56}
           headerHeight={40}
           suppressPaginationPanel
           suppressMovableColumns
@@ -191,11 +202,19 @@ export function DataTable<T extends object>({
             unSortIcon: true,
             suppressHeaderMenuButton: true,
             headerClass: typeScale.caption.tableHeader,
-            cellStyle: {
-              display: "flex",
-              alignItems: "center",
-              lineHeight: "1.25rem",
-            },
+            cellStyle: autoRowHeight
+              ? {
+                  display: "flex",
+                  alignItems: "flex-start",
+                  lineHeight: "1.25rem",
+                  paddingTop: "0.75rem",
+                  paddingBottom: "0.75rem",
+                }
+              : {
+                  display: "flex",
+                  alignItems: "center",
+                  lineHeight: "1.25rem",
+                },
           }}
         />
       </div>

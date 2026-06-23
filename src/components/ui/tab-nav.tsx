@@ -22,6 +22,8 @@ export interface TabNavProps
   items: TabNavItem[]
   /** Allow triggers to grow and fill the available width. Defaults to false. */
   fill?: boolean
+  /** Extra classes applied to each tab trigger. */
+  triggerClassName?: string
 }
 
 /**
@@ -38,6 +40,7 @@ function TabNav({
   variant = "default",
   size = "lg",
   fill = false,
+  triggerClassName,
   className,
   ...props
 }: TabNavProps) {
@@ -45,7 +48,7 @@ function TabNav({
     <TabsList
       variant={variant}
       size={size}
-      className={cn(fill && "w-full", className)}
+      className={cn(fill ? "w-full" : "w-fit max-w-full", className)}
       {...props}
     >
       {items.map((item) => (
@@ -53,7 +56,11 @@ function TabNav({
           key={item.value}
           value={item.value}
           disabled={item.disabled}
-          className="gap-1.5 px-3"
+          className={cn(
+            "gap-1.5 px-3",
+            fill ? "flex-1" : "flex-none shrink-0",
+            triggerClassName
+          )}
         >
           {item.icon ? <item.icon /> : null}
           {item.label}
