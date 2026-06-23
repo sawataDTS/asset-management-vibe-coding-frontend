@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
+import { surfaceOutlineClassName } from "@/lib/surface"
 
 function Card({
   className,
@@ -12,7 +13,8 @@ function Card({
       data-slot="card"
       data-size={size}
       className={cn(
-        "group/card flex flex-col gap-(--card-spacing) overflow-hidden rounded-xl bg-card py-(--card-spacing) text-sm text-card-foreground ring-1 ring-foreground/10 [--card-spacing:--spacing(5)] has-data-[slot=card-actions]:pb-0 has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:[--card-spacing:--spacing(4)] data-[size=sm]:has-data-[slot=card-actions]:pb-0 data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl",
+        surfaceOutlineClassName,
+        "group/card flex flex-col gap-(--card-spacing) overflow-hidden rounded-xl bg-card text-sm text-card-foreground [--card-spacing:--spacing(5)] has-data-[slot=card-actions]:pb-0 has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:[--card-spacing:--spacing(4)] data-[size=sm]:has-data-[slot=card-actions]:pb-0 data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl",
         className
       )}
       {...props}
@@ -25,7 +27,7 @@ function CardHeader({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-header"
       className={cn(
-        "group/card-header @container/card-header grid auto-rows-min items-start gap-1 rounded-t-xl px-(--card-spacing) has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto] [.border-b]:pb-(--card-spacing)",
+        "group/card-header @container/card-header grid auto-rows-min items-start gap-1 rounded-t-xl px-(--card-spacing) pt-(--card-spacing) pb-0 has-data-[slot=card-action]:grid-cols-[1fr_auto] has-data-[slot=card-description]:grid-rows-[auto_auto] [.border-b]:pb-(--card-spacing)",
         className
       )}
       {...props}
@@ -63,7 +65,16 @@ function CardAction({ className, ...props }: React.ComponentProps<"div">) {
 }
 
 function CardContent({ className, ...props }: React.ComponentProps<"div">) {
-  return <div data-slot="card-content" className={cn("px-(--card-spacing)", className)} {...props} />
+  return (
+    <div
+      data-slot="card-content"
+      className={cn(
+        "px-(--card-spacing) pb-(--card-spacing) group-has-data-[slot=card-actions]/card:pb-0 group-has-data-[slot=card-header]/card:pt-0 group-has-not-data-[slot=card-header]/card:pt-(--card-spacing)",
+        className
+      )}
+      {...props}
+    />
+  )
 }
 
 function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
@@ -81,13 +92,13 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
   )
 }
 
-/** Primary/secondary actions pinned to the bottom of a card (same surface, border-t divider). */
+/** Primary/secondary actions pinned to the bottom of a card (same surface, no divider). */
 function CardActions({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card-actions"
       className={cn(
-        "flex shrink-0 flex-wrap items-center justify-end gap-2 rounded-b-xl border-t border-border bg-card",
+        "flex shrink-0 flex-wrap items-center justify-end gap-2 rounded-b-xl bg-card",
         "[--card-spacing:--spacing(5)] p-(--card-spacing)",
         "group-data-[size=sm]/card:[--card-spacing:--spacing(4)]",
         className

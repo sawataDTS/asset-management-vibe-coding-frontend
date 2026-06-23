@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useEffect, useMemo, useState } from "react"
-import { Plus, Search, Truck } from "lucide-react"
+import { Plus, Search } from "lucide-react"
 import { toast } from "sonner"
 
 import { SuppliersTable } from "./suppliers-table"
@@ -22,7 +22,6 @@ import {
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
-import { Toaster } from "@/components/ui/sonner"
 import { Textarea } from "@/components/ui/textarea"
 import {
   dialogFormClassName,
@@ -154,10 +153,9 @@ function SuppliersPage() {
 
   return (
     <>
-      <Toaster richColors closeButton />
       <PageHeader
         eyebrow="Vendor directory"
-        icon={Truck}
+        // icon={Truck}
         title="Suppliers"
         description="Vendors providing your hardware and software."
         actions={

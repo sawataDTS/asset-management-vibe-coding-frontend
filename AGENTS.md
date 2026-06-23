@@ -39,18 +39,18 @@ mandatory and non-negotiable.
 ## Branding & navigation standards
 
 These keep the shell visually consistent across every page. Full specs live in
-`DESIGN.md` (§3 Sidebar, §4 Navbar, §11 Profile menu).
+`DESIGN.md` (§3 Sidebar, §4 Navbar, §9 Borders & elevation, §12 Profile menu).
 
 1. **One brand wordmark.** The product name renders once, in `SidebarBrand`, as a
-   prominent single wordmark (`font-display`, large + bold) beside a
-   `bg-gradient-brand` mark. Never re-introduce a split / two-tone text logo and
-   never duplicate the brand elsewhere.
+   prominent text wordmark (`font-display`, large + bold): **Asset** +
+   **Ops** (`text-primary`). No gradient mark beside the wordmark; do not
+   duplicate the brand elsewhere.
 2. **`font-display` is reserved for identity + titles.** Use `font-display` only
    for the brand wordmark and navbar/page titles so they read as premium against
    the `font-sans` body. Do not apply it to body copy, labels, or controls.
-3. **Brand color comes from the gradient mark, not the text.** Brand and titles
-   use `text-foreground`; the brand hue is carried by `bg-gradient-brand`. Never
-   hardcode a brand color on type.
+3. **Brand hue on the wordmark suffix.** The **Ops** segment uses `text-primary`
+   so the active theme tint shows on the lockup. Navbar and page titles stay
+   `text-foreground`.
 4. **Navbar is sticky + blurred + token-driven.** Keep `h-16`, `sticky top-0`,
    `bg-navbar/90` + `backdrop-blur-md`, and `border-navbar-border`. The page
    title (from `getPageTitle`) is the dominant left element.

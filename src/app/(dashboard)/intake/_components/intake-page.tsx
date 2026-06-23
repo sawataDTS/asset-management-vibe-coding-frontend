@@ -9,7 +9,6 @@ import {
   DownloadIcon,
   FileSpreadsheet,
   HardDrive,
-  Inbox,
   InfoIcon,
   Sparkles,
   UploadIcon,
@@ -26,7 +25,6 @@ import { DatePicker } from "@/components/ui/date-picker"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { Toaster } from "@/components/ui/sonner"
 import { TabNav, type TabNavItem } from "@/components/ui/tab-nav"
 import { Tabs, TabsContent } from "@/components/ui/tabs"
 import { Textarea } from "@/components/ui/textarea"
@@ -49,7 +47,7 @@ const INTAKE_TABS: TabNavItem[] = [
   { value: "csv", label: "CSV Format", icon: FileSpreadsheet },
 ]
 
-/** Card shell used on intake panels — matches SettingsPanel / auth forms (DESIGN.md §9). */
+/** Card shell used on intake panels — matches SettingsPanel / auth forms (DESIGN.md §9–§10). */
 const intakeCardClassName = "gap-0 py-0"
 const intakeCardContentClassName = cn("p-(--card-spacing)", settingsControlClassName)
 
@@ -661,10 +659,8 @@ function CsvIntakeForm() {
 function IntakePage() {
   return (
     <>
-      <Toaster position="top-right" closeButton richColors />
-
       <PageHeader
-        icon={Inbox}
+        // icon={Inbox}
         title="Intake"
         description="Manage hardware inventory and software licenses in one place."
       >

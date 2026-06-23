@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useEffect, useMemo, useState } from "react"
-import { AlertTriangle, Plus, Search, Users } from "lucide-react"
+import { AlertTriangle, Plus, Search } from "lucide-react"
 import { toast } from "sonner"
 
 import { CustomSelect, toSelectOptions } from "@/components/custom/CustomSelect"
@@ -26,7 +26,6 @@ import {
 import { Field, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
-import { Toaster } from "@/components/ui/sonner"
 import { Textarea } from "@/components/ui/textarea"
 import {
   dialogFormClassName,
@@ -308,10 +307,8 @@ function EmployeesPage() {
 
   return (
     <>
-      <Toaster position="top-right" closeButton richColors />
-
       <PageHeader
-        icon={Users}
+        // icon={Users}
         eyebrow="Directory"
         title="Employees"
         description={`Manage employee records, shipping addresses, workspace access, and asset assignments. ${employeeCountLabel} · click an employee to manage their assignments.`}

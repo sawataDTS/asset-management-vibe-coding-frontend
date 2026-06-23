@@ -26,7 +26,6 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
 import { MetricCard } from "@/components/ui/metric-card"
-import { Toaster } from "@/components/ui/sonner"
 import {
   dialogFormClassName,
   dialogHeaderClassName,
@@ -339,8 +338,6 @@ function HardwarePage() {
 
   return (
     <>
-      <Toaster position="top-right" closeButton richColors />
-
       <PageHeader
         // icon={HardDrive}
         eyebrow="Inventory"
@@ -542,7 +539,7 @@ function HardwarePage() {
                     <p className={typeScale.caption.overline}>Current assignee</p>
                     <div className="mt-2 flex items-center gap-3">
                       <Avatar size="sm">
-                        <AvatarFallback className="bg-accent text-xs text-primary">
+                        <AvatarFallback className="bg-accent text-primary">
                           {getInitials(selectedAsset.assignee)}
                         </AvatarFallback>
                       </Avatar>

@@ -53,6 +53,11 @@ export const AVAILABLE_HARDWARE = [
   { id: "hw-2", name: "Dell UltraSharp U2723QE", tag: "MON-0042" },
   { id: "hw-3", name: "HP Laptops", tag: "LAP-0012" },
   { id: "hw-4", name: "iPhone 15 Pro", tag: "PHN-0088" },
+  {
+    id: "hw-long",
+    name: "Lenovo ThinkPad P16 Gen 2 Mobile Workstation — 64GB RAM / 2TB NVMe / RTX 5000 Ada",
+    tag: "LAP-ENTERPRISE-LONG-ASSIGN-TEST",
+  },
 ] as const
 
 export const AVAILABLE_SOFTWARE = [
@@ -60,6 +65,12 @@ export const AVAILABLE_SOFTWARE = [
   { id: "sw-2", name: "Adobe Premier", tag: "ADOBE-PR", supplier: "Adobe" },
   { id: "sw-3", name: "Figma Organization", tag: "FIG-ORG", supplier: "Figma" },
   { id: "sw-4", name: "Slack Pro Plan", tag: "SLK-PRO", supplier: "Slack" },
+  {
+    id: "sw-long",
+    name: "Microsoft Business 365 Enterprise E5 Security & Compliance Add-on (Global Tenant License Pool)",
+    tag: "M365-E5-LONG-ASSIGN-TEST",
+    supplier: "Microsoft Corporation · Enterprise Agreement",
+  },
 ] as const
 
 export const initialEmployees: Employee[] = [

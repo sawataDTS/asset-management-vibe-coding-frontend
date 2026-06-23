@@ -4,6 +4,7 @@ import * as React from "react"
 
 import { cn } from "@/lib/utils"
 import { typeScale } from "@/lib/typography"
+import { shellPaddingX } from "@/components/layout/layout-spacing"
 import { UserMenu } from "@/components/layout/UserMenu"
 import type { SidebarUser } from "@/components/layout/Sidebar"
 
@@ -32,17 +33,15 @@ function Navbar({
     <header
       data-slot="navbar"
       className={cn(
-        "sticky top-0 z-30 shrink-0 border-b border-navbar-border bg-navbar/90 backdrop-blur-md supports-backdrop-filter:bg-navbar/70",
+        "sticky top-0 z-30 shrink-0 border-b border-navbar-border bg-navbar/90 shadow-xs backdrop-blur-md supports-backdrop-filter:bg-navbar/70",
         className
       )}
       {...props}
     >
-      <div className="flex h-16 w-full items-center justify-between gap-4 px-4 sm:px-6">
+      <div className={cn("flex h-16 w-full items-center justify-between gap-4", shellPaddingX)}>
         <div className="flex min-w-0 flex-1 items-center gap-3">
           {leading ? <div className="flex shrink-0 items-center md:hidden">{leading}</div> : null}
-          <p className={cn("truncate", typeScale.display.nav)}>
-            {title}
-          </p>
+          <p className={cn("truncate py-0.5", typeScale.display.nav)}>{title}</p>
         </div>
 
         <div className="flex shrink-0 items-center gap-3">

@@ -24,14 +24,7 @@ import { Tabs, TabsContent } from "@/components/ui/tabs"
 import { TabNav, type TabNavItem } from "@/components/ui/tab-nav"
 import { Progress } from "@/components/ui/progress"
 import { MetricCard } from "@/components/ui/metric-card"
-import { Toaster } from "@/components/ui/sonner"
-import {
-  Empty,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-  EmptyDescription,
-} from "@/components/ui/empty"
+import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from "@/components/ui/empty"
 import { HardwareHealthTab } from "./hardware-health-tab"
 import { SoftwareHealthTab } from "./software-health-tab"
 import { typeScale } from "@/lib/typography"
@@ -56,7 +49,6 @@ export function OverviewPage() {
 
   return (
     <>
-      <Toaster />
       <PageHeader
         eyebrow="Welcome back, John Doe"
         title="Portfolio Analytics Overview"

@@ -11,7 +11,7 @@ import {
   CommandItem,
   CommandList,
 } from "@/components/ui/command"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Popover, PopoverContent, POPOVER_SIDE_OFFSET, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 
 export interface Option {
@@ -67,6 +67,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
   pluralLabel = "items",
 }) => {
   const [open, setOpen] = React.useState(false)
+  const [hasPointerMoved, setHasPointerMoved] = React.useState(false)
 
   const selectedValues = isMultiple
     ? Array.isArray(value)
@@ -103,7 +104,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
   }
 
   return (
-    <div className={cn("flex flex-col", label ? "gap-2" : "gap-0")}>
+    <div className={cn("flex min-w-0 flex-col", label ? "gap-2" : "gap-0", className)}>
       {label ? (
         <label
           htmlFor={id}
@@ -112,8 +113,14 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
           {label}
         </label>
       ) : null}
-      <div className={cn("relative w-full", className)}>
-        <Popover open={open} onOpenChange={setOpen}>
+      <div className="relative min-w-0 w-full">
+        <Popover
+          open={open}
+          onOpenChange={(nextOpen) => {
+            setOpen(nextOpen)
+            if (nextOpen) setHasPointerMoved(false)
+          }}
+        >
           <PopoverTrigger asChild>
             <button
               id={id}
@@ -123,11 +130,10 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
               data-state={open ? "open" : "closed"}
               className={cn(
                 "inline-flex w-full min-w-0 items-center gap-1 rounded-lg border border-input bg-transparent px-2.5 text-foreground transition-colors outline-none",
-                "hover:bg-muted",
                 "focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
                 "data-[state=open]:border-ring data-[state=open]:ring-3 data-[state=open]:ring-ring/50",
                 "disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50",
-                "dark:bg-input/30 dark:hover:bg-input/50",
+                "dark:bg-input/30 dark:disabled:bg-input/80",
                 triggerHeight,
                 textSize
               )}
@@ -178,42 +184,68 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
           <PopoverContent
             className={cn("w-max max-w-80 p-0", contentClassName)}
             align={alignContent}
+            sideOffset={POPOVER_SIDE_OFFSET}
             style={{
               minWidth: contentMinWidth || "var(--radix-popover-trigger-width)",
             }}
           >
-            <Command>
+            <Command className="p-1 pb-0">
               {searchable ? <CommandInput placeholder="Search" className="text-sm font-medium" /> : null}
               <CommandEmpty>No options found</CommandEmpty>
               <CommandList
-                className="max-h-72 w-full overflow-auto"
+                className={cn(
+                  "max-h-72 w-full overflow-auto",
+                  !hasPointerMoved &&
+                    "[&_[data-slot=command-item][data-selected=true]:not([data-is-selected=true])]:bg-transparent [&_[data-slot=command-item][data-selected=true]:not([data-is-selected=true])]:text-inherit"
+                )}
                 onWheel={(event) => event.stopPropagation()}
                 onPointerDown={(event) => event.stopPropagation()}
+                onPointerMove={() => setHasPointerMoved(true)}
               >
-                <CommandGroup>
+                <CommandGroup className="p-0">
                   {options.map((option, index) => {
                     const isSelected = selectedValues.includes(option.value)
+
+                    const showSelectedHighlight = isSelected && !hasPointerMoved
 
                     return (
                       <CommandItem
                         key={`${option.value}-${index}`}
                         value={option.label}
+                        data-is-selected={isSelected ? true : undefined}
                         showIndicator={false}
                         onSelect={() => handleSelect(option.value)}
                         className={cn(
                           "mb-1 pr-1.5",
-                          isSelected && "bg-accent text-accent-foreground"
+                          hasPointerMoved &&
+                            "data-selected:bg-accent data-selected:text-accent-foreground",
+                          showSelectedHighlight &&
+                            "bg-accent text-accent-foreground data-selected:bg-accent data-selected:text-accent-foreground data-selected:*:[svg]:text-accent-foreground"
                         )}
                       >
                         <div className="min-w-0 flex-1">
-                          <div className={cn("truncate font-medium text-foreground", textSize)}>
-                            {option.label}
-                          </div>
+                          <div className={cn("truncate font-medium", textSize)}>{option.label}</div>
                           {option.description ? (
-                            <div className="truncate text-xs text-muted-foreground">{option.description}</div>
+                            <div
+                              className={cn(
+                                "truncate text-xs",
+                                showSelectedHighlight
+                                  ? "text-accent-foreground/80"
+                                  : "text-muted-foreground group-data-selected/command-item:text-accent-foreground/80"
+                              )}
+                            >
+                              {option.description}
+                            </div>
                           ) : null}
                         </div>
-                        {isSelected ? <Check className="size-4 shrink-0 text-primary" /> : null}
+                        {isSelected ? (
+                          <Check
+                            className={cn(
+                              "size-4 shrink-0",
+                              showSelectedHighlight ? "text-accent-foreground" : "text-primary"
+                            )}
+                          />
+                        ) : null}
                       </CommandItem>
                     )
                   })}

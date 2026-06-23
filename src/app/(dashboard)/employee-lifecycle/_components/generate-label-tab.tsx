@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { useMemo, useState } from "react"
-import { type ColDef, type ICellRendererParams } from "ag-grid-community"
 import { Box, Inbox, Search } from "lucide-react"
 import { toast } from "sonner"
 
@@ -10,9 +9,11 @@ import {
   DataTable,
   dataTableActionsCellClass,
   dataTableActionsHeaderClass,
+  type DataTableColumn,
 } from "@/components/custom/DataTable"
 import { settingsControlClassName } from "@/app/(dashboard)/settings/_components/settings-panel"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
@@ -32,117 +33,94 @@ type LabelTableProps = {
 }
 
 function SelectCell({
-  data,
+  row,
   selectedIds,
   onToggle,
-}: ICellRendererParams<LabelEmployee> & Pick<LabelTableProps, "selectedIds" | "onToggle">) {
-  if (!data) return null
+}: {
+  row: LabelEmployee
+  selectedIds: Set<string>
+  onToggle: (id: string, checked: boolean) => void
+}) {
   return (
     <Checkbox
-      checked={selectedIds.has(data.id)}
-      onCheckedChange={(checked) => onToggle(data.id, checked === true)}
-      aria-label={`Select ${data.name}`}
+      checked={selectedIds.has(row.id)}
+      onCheckedChange={(checked) => onToggle(row.id, checked === true)}
+      aria-label={`Select ${row.name}`}
     />
   )
 }
 
-function EmployeeCell({ data }: ICellRendererParams<LabelEmployee>) {
-  if (!data) return null
+function EmployeeCell({ row }: { row: LabelEmployee }) {
   return (
     <div className="flex min-w-0 flex-col gap-0.5">
-      <span className={cn("truncate", typeScale.body.emphasis)}>{data.name}</span>
-      <span className={cn("truncate", typeScale.caption.meta)}>{data.email}</span>
+      <span className={cn("truncate", typeScale.body.emphasis)}>{row.name}</span>
+      <span className={cn("truncate", typeScale.caption.meta)}>{row.email}</span>
     </div>
   )
 }
 
-function AddressCell({ data }: ICellRendererParams<LabelEmployee>) {
-  if (!data) return null
+function AddressCell({ row }: { row: LabelEmployee }) {
   return (
-    <span className={cn(typeScale.body.emphasis, data.addressReady ? "text-success" : "text-muted-foreground")}>
-      {data.addressReady ? "Ready" : "Incomplete"}
-    </span>
+    <Badge variant={row.addressReady ? "success" : "warning"} className="w-fit">
+      {row.addressReady ? "Ready" : "Incomplete"}
+    </Badge>
   )
-}
-
-function ActionCell({
-  data,
-  onGenerate,
-}: ICellRendererParams<LabelEmployee> & Pick<LabelTableProps, "onGenerate">) {
-  if (!data) return null
-  return (
-    <Button
-      type="button"
-      variant="outline"
-      size="sm"
-      disabled={!data.addressReady || data.hardwareCount === 0}
-      onClick={() => onGenerate(data)}
-    >
-      Generate
-    </Button>
-  )
-}
-
-function createSelectRenderer(props: Pick<LabelTableProps, "selectedIds" | "onToggle">) {
-  return (params: ICellRendererParams<LabelEmployee>) => <SelectCell {...params} {...props} />
-}
-
-function createActionRenderer(props: Pick<LabelTableProps, "onGenerate">) {
-  return (params: ICellRendererParams<LabelEmployee>) => <ActionCell {...params} {...props} />
 }
 
 function LabelTable({ rows, selectedIds, onToggle, onGenerate }: LabelTableProps) {
-  const columnDefs = useMemo<ColDef<LabelEmployee>[]>(
+  const columns = useMemo<DataTableColumn<LabelEmployee>[]>(
     () => [
       {
-        headerName: "",
-        colId: "select",
-        width: 48,
-        maxWidth: 48,
+        id: "select",
+        header: "",
         sortable: false,
-        resizable: false,
-        cellRenderer: createSelectRenderer({ selectedIds, onToggle }),
+        cellClassName: "w-12",
+        cell: (row) => <SelectCell row={row} selectedIds={selectedIds} onToggle={onToggle} />,
       },
       {
-        headerName: "Employee",
-        colId: "employee",
-        flex: 1.8,
-        minWidth: 180,
+        id: "employee",
+        header: "Employee",
         sortable: false,
-        cellRenderer: EmployeeCell,
+        cell: (row) => <EmployeeCell row={row} />,
       },
       {
-        headerName: "Department",
-        field: "department",
-        flex: 1,
-        minWidth: 100,
-        cellClass: typeScale.body.muted,
-      },
-      {
-        headerName: "Hardware",
-        colId: "hardware",
-        flex: 1,
-        minWidth: 100,
-        valueGetter: ({ data }) => (data ? `${data.hardwareCount} item(s)` : ""),
-        cellClass: typeScale.body.muted,
-      },
-      {
-        headerName: "Address",
-        colId: "address",
-        flex: 0.9,
-        minWidth: 90,
+        id: "department",
+        header: "Department",
         sortable: false,
-        cellRenderer: AddressCell,
+        cellClassName: typeScale.body.muted,
+        cell: (row) => row.department,
       },
       {
-        headerName: "Action",
-        colId: "action",
-        flex: 1,
-        minWidth: 110,
+        id: "hardware",
+        header: "Hardware",
         sortable: false,
-        headerClass: dataTableActionsHeaderClass,
-        cellClass: dataTableActionsCellClass,
-        cellRenderer: createActionRenderer({ onGenerate }),
+        cellClassName: typeScale.body.muted,
+        cell: (row) => `${row.hardwareCount} item(s)`,
+      },
+      {
+        id: "address",
+        header: "Address",
+        sortable: false,
+        cell: (row) => <AddressCell row={row} />,
+      },
+      {
+        id: "action",
+        header: "Action",
+        sortable: false,
+        align: "right",
+        headerClassName: dataTableActionsHeaderClass,
+        cellClassName: dataTableActionsCellClass,
+        cell: (row) => (
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            disabled={!row.addressReady || row.hardwareCount === 0}
+            onClick={() => onGenerate(row)}
+          >
+            Generate
+          </Button>
+        ),
       },
     ],
     [selectedIds, onToggle, onGenerate]
@@ -151,9 +129,7 @@ function LabelTable({ rows, selectedIds, onToggle, onGenerate }: LabelTableProps
   return (
     <DataTable<LabelEmployee>
       rowData={rows}
-      columnDefs={columnDefs}
-      showPerPage={false}
-      showJumpToPage={false}
+      columns={columns}
       emptyState={
         <Empty className="border-0 bg-transparent py-12">
           <EmptyHeader>

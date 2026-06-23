@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Inter, Merriweather, JetBrains_Mono, Space_Grotesk } from "next/font/google"
+import { Inter, JetBrains_Mono, Merriweather, Plus_Jakarta_Sans } from "next/font/google"
 import "./globals.css"
 import { ThemeProvider } from "@/components/providers/ThemeProvider"
 import { TooltipProvider } from "@/components/ui/tooltip"
@@ -19,10 +19,10 @@ const fontMono = JetBrains_Mono({
   variable: "--font-mono",
 })
 
-// Distinctive geometric display face for brand wordmark + page titles. Kept
-// separate from the body (`--font-sans`) so brand/typography hierarchy reads as
-// premium and enterprise-grade while remaining fully theme-agnostic.
-const fontDisplay = Space_Grotesk({
+// Distinctive display face for brand wordmark + page/nav titles. Plus Jakarta
+// Sans pairs cleanly with Inter, reads well at dashboard sizes, and keeps
+// descenders intact in the compact navbar.
+const fontDisplay = Plus_Jakarta_Sans({
   subsets: ["latin"],
   weight: ["500", "600", "700"],
   variable: "--font-display",

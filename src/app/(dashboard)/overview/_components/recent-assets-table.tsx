@@ -1,10 +1,9 @@
 "use client"
 
 import * as React from "react"
-import { type ColDef, type ICellRendererParams } from "ag-grid-community"
 
 import { Badge } from "@/components/ui/badge"
-import { DataTable } from "@/components/custom/DataTable"
+import { DataTable, type DataTableColumn } from "@/components/custom/DataTable"
 import { typeScale } from "@/lib/typography"
 import { cn } from "@/lib/utils"
 
@@ -49,51 +48,40 @@ const recentAssets: RecentAsset[] = [
   { name: "Surface Laptop 5", tag: "LAP-0028", assignee: null, status: "In Stock", warranty: "Aug 2026" },
 ]
 
-function AssetCell({ data }: ICellRendererParams<RecentAsset>) {
-  if (!data) return null
-  return (
-    <div className="flex w-full flex-col justify-center gap-0.5">
-      <span className={typeScale.body.emphasis}>{data.name}</span>
-      <span className={cn(typeScale.caption.meta, "font-mono tabular-nums")}>{data.tag}</span>
-    </div>
-  )
-}
-
-function AssigneeCell({ value }: ICellRendererParams<RecentAsset>) {
-  return (
-    <div className="flex w-full items-center">
-      {value ? (
-        <span className="text-foreground">{value}</span>
+const columns: DataTableColumn<RecentAsset>[] = [
+  {
+    id: "name",
+    header: "Asset",
+    sortValue: (row) => row.name,
+    cell: (row) => (
+      <div className="flex w-full flex-col gap-0.5">
+        <span className={typeScale.body.emphasis}>{row.name}</span>
+        <span className={cn(typeScale.caption.meta, "font-mono tabular-nums")}>{row.tag}</span>
+      </div>
+    ),
+  },
+  {
+    id: "assignee",
+    header: "Assignee",
+    sortValue: (row) => row.assignee ?? "",
+    cell: (row) =>
+      row.assignee ? (
+        <span className="text-foreground">{row.assignee}</span>
       ) : (
         <span className="text-muted-foreground">—</span>
-      )}
-    </div>
-  )
-}
-
-function StatusCell({ value }: ICellRendererParams<RecentAsset, RecentAsset["status"]>) {
-  if (!value) return null
-  return (
-    <div className="flex w-full items-center">
-      <Badge variant={STATUS_VARIANT[value]}>{value}</Badge>
-    </div>
-  )
-}
-
-function WarrantyCell({ value }: ICellRendererParams<RecentAsset, string>) {
-  return <div className="flex w-full items-center text-foreground">{value}</div>
-}
-
-const columnDefs: ColDef<RecentAsset>[] = [
-  { headerName: "Asset", field: "name", flex: 2, minWidth: 180, cellRenderer: AssetCell },
-  { headerName: "Assignee", field: "assignee", flex: 2, minWidth: 120, cellRenderer: AssigneeCell },
-  { headerName: "Status", field: "status", flex: 1, minWidth: 120, cellRenderer: StatusCell },
+      ),
+  },
   {
-    headerName: "Warranty",
-    field: "warranty",
-    flex: 1,
-    minWidth: 110,
-    cellRenderer: WarrantyCell,
+    id: "status",
+    header: "Status",
+    sortValue: (row) => row.status,
+    cell: (row) => <Badge variant={STATUS_VARIANT[row.status]}>{row.status}</Badge>,
+  },
+  {
+    id: "warranty",
+    header: "Warranty",
+    sortValue: (row) => row.warranty,
+    cell: (row) => <span className="text-foreground">{row.warranty}</span>,
   },
 ]
 
@@ -103,10 +91,8 @@ export function RecentAssetsTable() {
   return (
     <DataTable<RecentAsset>
       rowData={previewRows}
-      columnDefs={columnDefs}
+      columns={columns}
       showPagination={false}
-      showPerPage={false}
-      showJumpToPage={false}
       emptyMessage="No assets have been onboarded yet."
     />
   )

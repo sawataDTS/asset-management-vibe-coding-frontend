@@ -3,7 +3,7 @@
 import * as React from "react"
 import { useState } from "react"
 import { format, isValid, parseISO } from "date-fns"
-import { Cpu, Key, UserPlus, X } from "lucide-react"
+import { AppWindow, HardDrive, UserPlus, X } from "lucide-react"
 
 import { CustomSelect } from "@/components/custom/CustomSelect"
 import { settingsControlClassName } from "@/app/(dashboard)/settings/_components/settings-panel"
@@ -123,21 +123,22 @@ function EmployeeDetailSheet({
 
               <section className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <Cpu className="size-4 text-muted-foreground" />
+                  <HardDrive className="size-4 shrink-0 text-muted-foreground" />
                   <h3 className={typeScale.body.emphasis}>
                     Hardware ({employee.hardwareAssignments.length})
                   </h3>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex min-w-0 items-center gap-2">
                   <CustomSelect
-                    className="flex-1"
+                    className="min-w-0 flex-1"
                     value={pickHardware}
                     onChange={(value) => setPickHardware(typeof value === "string" ? value : "")}
-                    options={[{ label: "Pick available asset...", value: "" }, ...availableHardwareOptions]}
+                    options={availableHardwareOptions}
                     showClear={false}
                     placeholder="Pick available asset..."
                   />
                   <Button
+                    className="size-9 shrink-0"
                     size="icon"
                     aria-label="Assign hardware"
                     onClick={() => {
@@ -155,15 +156,16 @@ function EmployeeDetailSheet({
                   {employee.hardwareAssignments.map((item) => (
                     <div
                       key={item.tag}
-                      className="flex items-center justify-between rounded-lg border border-border bg-muted/20 px-3 py-2"
+                      className="flex min-w-0 items-center justify-between gap-2 rounded-lg border border-border bg-muted/20 px-3 py-2"
                     >
-                      <span className={typeScale.body.default}>
+                      <span className={cn("min-w-0 truncate", typeScale.body.default)}>
                         {item.name} ·{" "}
                         <span className={cn(typeScale.caption.meta, "font-mono")}>{item.tag}</span>
                       </span>
                       <Button
                         variant="ghost"
                         size="icon-sm"
+                        className="shrink-0"
                         aria-label={`Remove ${item.tag}`}
                         onClick={() => onUnassignHardware(item.tag)}
                       >
@@ -179,21 +181,22 @@ function EmployeeDetailSheet({
 
               <section className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <Key className="size-4 text-muted-foreground" />
+                  <AppWindow className="size-4 shrink-0 text-muted-foreground" />
                   <h3 className={typeScale.body.emphasis}>
                     Software ({employee.softwareAssignments.length})
                   </h3>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex min-w-0 items-center gap-2">
                   <CustomSelect
-                    className="flex-1"
+                    className="min-w-0 flex-1"
                     value={pickSoftware}
                     onChange={(value) => setPickSoftware(typeof value === "string" ? value : "")}
-                    options={[{ label: "Pick license...", value: "" }, ...availableSoftwareOptions]}
+                    options={availableSoftwareOptions}
                     showClear={false}
                     placeholder="Pick license..."
                   />
                   <Button
+                    className="size-9 shrink-0"
                     size="icon"
                     aria-label="Assign software"
                     onClick={() => {
@@ -211,15 +214,16 @@ function EmployeeDetailSheet({
                   {employee.softwareAssignments.map((item) => (
                     <div
                       key={item.tag}
-                      className="flex items-center justify-between rounded-lg border border-border bg-muted/20 px-3 py-2"
+                      className="flex min-w-0 items-center justify-between gap-2 rounded-lg border border-border bg-muted/20 px-3 py-2"
                     >
-                      <span className={typeScale.body.default}>
+                      <span className={cn("min-w-0 truncate", typeScale.body.default)}>
                         {item.name}
                         {item.supplier ? ` · ${item.supplier}` : ""}
                       </span>
                       <Button
                         variant="ghost"
                         size="icon-sm"
+                        className="shrink-0"
                         aria-label={`Remove ${item.tag}`}
                         onClick={() => onUnassignSoftware(item.tag)}
                       >

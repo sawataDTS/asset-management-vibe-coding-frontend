@@ -2,7 +2,6 @@
 
 import * as React from "react"
 import { useMemo, useState } from "react"
-import { type ColDef, type ICellRendererParams } from "ag-grid-community"
 import { Inbox } from "lucide-react"
 import { toast } from "sonner"
 
@@ -10,10 +9,12 @@ import {
   DataTable,
   dataTableActionsCellClass,
   dataTableActionsHeaderClass,
+  type DataTableColumn,
 } from "@/components/custom/DataTable"
 import { SectionHeading } from "@/components/layout/SectionHeading"
 import { settingsControlClassName } from "@/app/(dashboard)/settings/_components/settings-panel"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { Card, CardActions, CardContent } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
@@ -26,7 +27,7 @@ import {
 } from "@/components/ui/dialog"
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
 import { dialogHeaderClassName, dialogShellClassNameCompact } from "@/lib/dialog-layout"
-import { type PendingOnboardingEmployee } from "@/lib/employee-lifecycle/data"
+import { type PendingOnboardingEmployee, type StockItemStatus } from "@/lib/employee-lifecycle/data"
 import { typeScale } from "@/lib/typography"
 import { cn } from "@/lib/utils"
 
@@ -40,48 +41,52 @@ type OnboardingTableProps = {
 }
 
 function SelectCell({
-  data,
+  row,
   selectedIds,
   onToggle,
-}: ICellRendererParams<PendingOnboardingEmployee> & OnboardingTableProps) {
-  if (!data) return null
+}: {
+  row: PendingOnboardingEmployee
+  selectedIds: Set<string>
+  onToggle: (id: string, checked: boolean) => void
+}) {
   return (
     <Checkbox
-      checked={selectedIds.has(data.id)}
-      onCheckedChange={(checked) => onToggle(data.id, checked === true)}
-      aria-label={`Select ${data.name}`}
+      checked={selectedIds.has(row.id)}
+      onCheckedChange={(checked) => onToggle(row.id, checked === true)}
+      aria-label={`Select ${row.name}`}
     />
   )
 }
 
-function EmployeeCell({ data }: ICellRendererParams<PendingOnboardingEmployee>) {
-  if (!data) return null
+function EmployeeCell({ row }: { row: PendingOnboardingEmployee }) {
   return (
-    <div className="flex min-w-0 flex-col gap-0.5 py-0.5">
-      <span className={cn("truncate", typeScale.body.emphasis)}>{data.name}</span>
-      <span className={cn("truncate", typeScale.caption.meta)}>{data.email}</span>
-      <span className={cn("truncate", typeScale.caption.meta)}>{data.status}</span>
+    <div className="flex min-w-0 flex-col gap-0.5">
+      <span className={cn("truncate", typeScale.body.emphasis)}>{row.name}</span>
+      <span className={cn("truncate", typeScale.caption.meta)}>{row.email}</span>
+      <span className={cn("truncate", typeScale.caption.meta)}>{row.status}</span>
     </div>
   )
 }
 
-function StockCell({ data }: ICellRendererParams<PendingOnboardingEmployee>) {
-  if (!data) return null
-  if (data.stock.length === 0) return <span className={typeScale.body.muted}>—</span>
+const STOCK_STATUS_VARIANT: Record<
+  StockItemStatus,
+  React.ComponentProps<typeof Badge>["variant"]
+> = {
+  in_stock: "success",
+  out_of_stock: "destructive",
+}
+
+function StockCell({ row }: { row: PendingOnboardingEmployee }) {
+  if (row.stock.length === 0) return <span className={typeScale.body.muted}>—</span>
 
   return (
-    <div className="flex min-w-0 flex-col gap-2 py-0.5">
-      {data.stock.map((item) => (
-        <div key={item.label} className="space-y-0.5">
-          <p className={typeScale.body.default}>{item.label}</p>
-          <p
-            className={cn(
-              typeScale.caption.meta,
-              item.status === "in_stock" ? "text-success" : "text-destructive"
-            )}
-          >
+    <div className="flex min-w-0 flex-col gap-2">
+      {row.stock.map((item) => (
+        <div key={item.label} className="flex min-w-0 flex-col gap-1">
+          <p className={typeScale.body.emphasis}>{item.label}</p>
+          <Badge variant={STOCK_STATUS_VARIANT[item.status]} className="w-fit">
             {item.status === "in_stock" ? "In Stock" : "Out of stock"}
-          </p>
+          </Badge>
           <p className={typeScale.caption.meta}>
             ({item.assigned}/{item.total} assigned)
           </p>
@@ -91,77 +96,50 @@ function StockCell({ data }: ICellRendererParams<PendingOnboardingEmployee>) {
   )
 }
 
-function AssignableCell({ data }: ICellRendererParams<PendingOnboardingEmployee>) {
-  if (!data) return null
-  return (
-    <span className={cn(typeScale.body.tabularEmphasis, "tabular-nums")}>{data.assignableNow}</span>
-  )
-}
-
-function createSelectRenderer(props: OnboardingTableProps) {
-  return (params: ICellRendererParams<PendingOnboardingEmployee>) => (
-    <SelectCell {...params} {...props} />
-  )
-}
-
 function OnboardingTable({ rows, selectedIds, onToggle }: OnboardingTableProps) {
-  const tableProps = { rows, selectedIds, onToggle }
-
-  const columnDefs = useMemo<ColDef<PendingOnboardingEmployee>[]>(
+  const columns = useMemo<DataTableColumn<PendingOnboardingEmployee>[]>(
     () => [
       {
-        headerName: "",
-        colId: "select",
-        width: 48,
-        maxWidth: 48,
+        id: "select",
+        header: "",
         sortable: false,
-        resizable: false,
-        cellRenderer: createSelectRenderer(tableProps),
+        cellClassName: "w-12",
+        cell: (row) => <SelectCell row={row} selectedIds={selectedIds} onToggle={onToggle} />,
       },
       {
-        headerName: "Employee",
-        colId: "employee",
-        flex: 1.6,
-        minWidth: 180,
+        id: "employee",
+        header: "Employee",
         sortable: false,
-        autoHeight: true,
-        wrapText: true,
-        cellRenderer: EmployeeCell,
+        cell: (row) => <EmployeeCell row={row} />,
       },
       {
-        headerName: "Department",
-        field: "department",
-        flex: 1,
-        minWidth: 100,
-        cellClass: typeScale.body.muted,
-      },
-      {
-        headerName: "Template",
-        field: "templateName",
-        flex: 1,
-        minWidth: 100,
-        cellClass: typeScale.body.muted,
-      },
-      {
-        headerName: "Stock",
-        colId: "stock",
-        flex: 1.8,
-        minWidth: 180,
+        id: "department",
+        header: "Department",
         sortable: false,
-        autoHeight: true,
-        wrapText: true,
-        cellRenderer: StockCell,
+        cellClassName: typeScale.body.muted,
+        cell: (row) => row.department,
       },
       {
-        headerName: "Assignable now",
-        colId: "assignable",
-        flex: 1,
-        minWidth: 110,
+        id: "templateName",
+        header: "Template",
         sortable: false,
-        headerClass: dataTableActionsHeaderClass,
-        cellClass: cn(dataTableActionsCellClass, "justify-end text-right"),
-        autoHeight: true,
-        cellRenderer: AssignableCell,
+        cellClassName: typeScale.body.muted,
+        cell: (row) => row.templateName,
+      },
+      {
+        id: "stock",
+        header: "Stock",
+        sortable: false,
+        cell: (row) => <StockCell row={row} />,
+      },
+      {
+        id: "assignable",
+        header: "Assignable now",
+        sortable: false,
+        align: "right",
+        headerClassName: dataTableActionsHeaderClass,
+        cellClassName: cn(dataTableActionsCellClass, typeScale.body.tabularEmphasis, "tabular-nums"),
+        cell: (row) => row.assignableNow,
       },
     ],
     [selectedIds, onToggle]
@@ -170,10 +148,7 @@ function OnboardingTable({ rows, selectedIds, onToggle }: OnboardingTableProps) 
   return (
     <DataTable<PendingOnboardingEmployee>
       rowData={rows}
-      columnDefs={columnDefs}
-      autoRowHeight
-      showPerPage={false}
-      showJumpToPage={false}
+      columns={columns}
       emptyState={
         <Empty className="border-0 bg-transparent py-12">
           <EmptyHeader>

@@ -51,7 +51,7 @@ function MetricCard({
 
   return (
     <Card size={size} className={cn("gap-2", className)} {...props}>
-      <div className="flex items-center justify-between gap-2 px-(--card-spacing)">
+      <div className="flex items-center justify-between gap-2 px-(--card-spacing) pt-(--card-spacing)">
         <p className={cn("flex min-w-0 items-center gap-1.5", typeScale.caption.overline)}>
           {Icon && iconVariant === "inline" ? (
             <Icon className="size-3.5 shrink-0 text-muted-foreground" strokeWidth={1.75} />
@@ -61,20 +61,23 @@ function MetricCard({
         {rightSlot}
       </div>
 
-      <div className="flex flex-col gap-1 px-(--card-spacing)">
+      <div
+        className={cn("flex flex-col gap-1 px-(--card-spacing)", footer ? undefined : "pb-(--card-spacing)")}
+      >
         {value !== undefined ? (
-          <span
-            className={cn(typeScale.titleMetric, valueClassName)}
-          >
-            {value}
-          </span>
+          <span className={cn(typeScale.titleMetric, valueClassName)}>{value}</span>
         ) : null}
         {description ? <div className={cn("leading-snug", typeScale.caption.meta)}>{description}</div> : null}
         {children}
       </div>
 
       {footer ? (
-        <div className={cn("mt-auto border-t border-border/60 px-(--card-spacing) pt-2.5 leading-relaxed", typeScale.caption.meta)}>
+        <div
+          className={cn(
+            "mt-auto border-t border-border/60 px-(--card-spacing) pt-2.5 pb-(--card-spacing) leading-relaxed",
+            typeScale.caption.meta
+          )}
+        >
           {footer}
         </div>
       ) : null}
