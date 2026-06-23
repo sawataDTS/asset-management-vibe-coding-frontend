@@ -6,9 +6,9 @@ import { Pencil, Plus, Trash2 } from "lucide-react"
 import { toast } from "sonner"
 
 import { TemplateFormDialog } from "./template-form-dialog"
-import { settingsControlClassName } from "@/app/(dashboard)/settings/_components/settings-panel"
+import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardActions, CardContent } from "@/components/ui/card"
+import { Card, CardAction, CardActions, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Dialog,
   DialogClose,
@@ -20,36 +20,28 @@ import {
 import { dialogHeaderClassName, dialogShellClassNameCompact } from "@/lib/dialog-layout"
 import { type DepartmentTemplate, type TemplateLine } from "@/lib/employee-lifecycle/data"
 import { typeScale } from "@/lib/typography"
-import { cn } from "@/lib/utils"
 
-const lifecycleCardClassName = "gap-0 py-0"
-const lifecycleCardContentClassName = cn("p-(--card-spacing)", settingsControlClassName)
-
-function TemplateLinesSection({
-  title,
-  lines,
-}: {
-  title: "Hardware" | "Software"
-  lines: TemplateLine[]
-}) {
+function TemplateLinesSection({ title, lines }: { title: "Hardware" | "Software"; lines: TemplateLine[] }) {
   const filtered = lines.filter((line) =>
     title === "Hardware" ? line.type === "hardware" : line.type === "software"
   )
 
   return (
-    <div className="space-y-2">
+    <div className="flex flex-col gap-1.5">
       <p className={typeScale.caption.overline}>{title}</p>
       {filtered.length === 0 ? (
-        <p className={typeScale.body.muted}>—</p>
+        <p className={typeScale.caption.meta}>—</p>
       ) : (
-        <ul className="space-y-1.5">
+        <ul className="flex flex-col gap-1.5">
           {filtered.map((line) => (
-            <li key={line.id} className="flex items-start justify-between gap-3">
-              <span className={typeScale.body.default}>
+            <li key={line.id} className="flex items-center justify-between gap-3">
+              <span className={typeScale.body.emphasis}>
                 {line.item} × {line.quantity}
               </span>
               {line.required ? (
-                <span className={cn(typeScale.caption.meta, "shrink-0 text-warning")}>required</span>
+                <Badge variant="warning" className="shrink-0">
+                  Required
+                </Badge>
               ) : null}
             </li>
           ))}
@@ -69,11 +61,11 @@ function DepartmentTemplateCard({
   onDelete: () => void
 }) {
   return (
-    <Card className={lifecycleCardClassName}>
-      <CardContent className={cn("flex flex-col gap-4", lifecycleCardContentClassName)}>
-        <div className="flex items-start justify-between gap-3">
-          <h3 className={typeScale.title}>{template.department}</h3>
-          <div className="flex shrink-0 items-center gap-1">
+    <Card size="sm">
+      <CardHeader>
+        <CardTitle>{template.department}</CardTitle>
+        <CardAction>
+          <div className="flex items-center gap-1">
             <Button variant="ghost" size="icon-sm" aria-label="Edit template" onClick={onEdit}>
               <Pencil />
             </Button>
@@ -87,11 +79,13 @@ function DepartmentTemplateCard({
               <Trash2 />
             </Button>
           </div>
-        </div>
+        </CardAction>
+      </CardHeader>
 
-        <div className="space-y-1">
+      <CardContent className="flex flex-col gap-4">
+        <div className="flex flex-col gap-1.5">
           <p className={typeScale.caption.overline}>Notes</p>
-          <p className={typeScale.body.muted}>{template.notes || "No notes"}</p>
+          <p className={typeScale.caption.meta}>{template.notes || "No notes"}</p>
         </div>
 
         <TemplateLinesSection title="Hardware" lines={template.lines} />
@@ -163,13 +157,13 @@ function DepartmentsTab({ templates, onTemplatesChange }: DepartmentsTabProps) {
         </Button>
 
         {templates.length === 0 ? (
-          <Card className={lifecycleCardClassName}>
-            <CardContent className={cn("py-12 text-center", lifecycleCardContentClassName)}>
+          <Card size="sm">
+            <CardContent className="py-12 text-center">
               <p className={typeScale.body.muted}>No department templates yet. Create one to get started.</p>
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-2 xl:grid-cols-3">
             {templates.map((template) => (
               <DepartmentTemplateCard
                 key={template.id}
@@ -196,9 +190,8 @@ function DepartmentsTab({ templates, onTemplatesChange }: DepartmentsTabProps) {
           <DialogHeader className={dialogHeaderClassName}>
             <DialogTitle>Delete template?</DialogTitle>
             <DialogDescription>
-              This removes the{" "}
-              <span className={typeScale.body.emphasis}>{selectedTemplate?.department}</span> template and all
-              its lines. Existing assignments are not changed.
+              This removes the <span className={typeScale.body.emphasis}>{selectedTemplate?.department}</span>{" "}
+              template and all its lines. Existing assignments are not changed.
             </DialogDescription>
           </DialogHeader>
 

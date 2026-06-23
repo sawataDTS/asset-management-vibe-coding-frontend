@@ -1,10 +1,9 @@
 "use client"
 
 import * as React from "react"
-import { type ColDef, type ICellRendererParams } from "ag-grid-community"
 
 import { LicenseStatusBadge } from "@/app/(dashboard)/software/_components/license-status-badge"
-import { DataTable } from "@/components/custom/DataTable"
+import { DataTable, type DataTableColumn } from "@/components/custom/DataTable"
 import { typeScale } from "@/lib/typography"
 import type { LicenseStatus } from "@/lib/software/data"
 
@@ -26,52 +25,46 @@ const recentLicenses: RecentLicense[] = [
   { name: "Zoom Pro", vendor: "Zoom", seatsUsed: 2, seatsTotal: 5, status: "Active", expires: "Jan 2027" },
 ]
 
-function LicenseCell({ data }: ICellRendererParams<RecentLicense>) {
-  if (!data) return null
-  return (
-    <div className="flex w-full flex-col justify-center gap-0.5">
-      <span className={typeScale.body.emphasis}>{data.name}</span>
-      <span className={typeScale.caption.meta}>{data.vendor}</span>
-    </div>
-  )
-}
-
-function SeatsCell({ data }: ICellRendererParams<RecentLicense>) {
-  if (!data) return null
-  return (
-    <div className="flex w-full items-center tabular-nums">
-      <span className="text-foreground">{data.seatsUsed}</span>
-      <span className="text-muted-foreground">/{data.seatsTotal}</span>
-    </div>
-  )
-}
-
-function StatusCell({ data }: ICellRendererParams<RecentLicense>) {
-  if (!data) return null
-  return (
-    <div className="flex w-full items-center">
-      <LicenseStatusBadge status={data.status} />
-    </div>
-  )
-}
-
-function ExpiresCell({ value }: ICellRendererParams<RecentLicense, string | null>) {
-  return (
-    <div className="flex w-full items-center">
-      {value ? (
-        <span className="text-foreground tabular-nums">{value}</span>
+const columns: DataTableColumn<RecentLicense>[] = [
+  {
+    id: "name",
+    header: "License",
+    sortValue: (row) => row.name,
+    cell: (row) => (
+      <div className="flex w-full flex-col gap-0.5">
+        <span className={typeScale.body.emphasis}>{row.name}</span>
+        <span className={typeScale.caption.meta}>{row.vendor}</span>
+      </div>
+    ),
+  },
+  {
+    id: "seatsUsed",
+    header: "Seats",
+    sortValue: (row) => row.seatsUsed,
+    cell: (row) => (
+      <div className="tabular-nums">
+        <span className="text-foreground">{row.seatsUsed}</span>
+        <span className="text-muted-foreground">/{row.seatsTotal}</span>
+      </div>
+    ),
+  },
+  {
+    id: "status",
+    header: "Status",
+    sortValue: (row) => row.status,
+    cell: (row) => <LicenseStatusBadge status={row.status} />,
+  },
+  {
+    id: "expires",
+    header: "Expires",
+    sortValue: (row) => row.expires ?? "",
+    cell: (row) =>
+      row.expires ? (
+        <span className="text-foreground tabular-nums">{row.expires}</span>
       ) : (
         <span className="text-muted-foreground">—</span>
-      )}
-    </div>
-  )
-}
-
-const columnDefs: ColDef<RecentLicense>[] = [
-  { headerName: "License", field: "name", flex: 2, minWidth: 180, cellRenderer: LicenseCell },
-  { headerName: "Seats", field: "seatsUsed", flex: 1, minWidth: 80, cellRenderer: SeatsCell },
-  { headerName: "Status", field: "status", flex: 1, minWidth: 120, cellRenderer: StatusCell },
-  { headerName: "Expires", field: "expires", flex: 1, minWidth: 100, cellRenderer: ExpiresCell },
+      ),
+  },
 ]
 
 export function RecentLicensesTable() {
@@ -80,10 +73,8 @@ export function RecentLicensesTable() {
   return (
     <DataTable<RecentLicense>
       rowData={previewRows}
-      columnDefs={columnDefs}
+      columns={columns}
       showPagination={false}
-      showPerPage={false}
-      showJumpToPage={false}
       emptyMessage="No licenses have been onboarded yet."
     />
   )

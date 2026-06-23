@@ -50,8 +50,12 @@ the entire app with no re-mount.
 `bg-background`, `bg-surface`, `bg-surface-elevated`, `bg-card`, `bg-popover`,
 `bg-muted`, `bg-accent`, `bg-primary`, `bg-sidebar`, `bg-sidebar-active`,
 `bg-sidebar-hover`, `bg-gradient-brand`, `text-foreground`,
-`text-muted-foreground`, `text-primary`, `border-border`, `ring-ring`,
-`shadow-xs|sm|md|lg|xl`, `rounded-md|lg|xl`, `font-sans|display|heading|mono`.
+`text-muted-foreground`, `text-primary`, `border-border`, `border-sidebar-border`,
+`border-navbar-border`, `ring-ring`, `shadow-xs|sm|md|lg|xl`, `rounded-md|lg|xl`,
+`font-sans|display|heading|mono`.
+
+For **raised outer edges** (cards, table shells, tab pills), prefer the shared
+helpers in [`src/lib/surface.ts`](src/lib/surface.ts) — see §9.
 
 ### Typography faces
 
@@ -61,12 +65,12 @@ the entire app with no re-mount.
 | `font-display` | `--font-display` | Brand wordmark + page/navbar titles (premium).  |
 | `font-mono`    | `--font-mono`    | Code, IDs, tabular/technical values.            |
 
-`font-display` is a distinctive geometric face (Space Grotesk) wired through
+`font-display` is a modern SaaS display face (Plus Jakarta Sans) wired through
 `next/font` to `--font-display`. It is reserved for high-level identity and
 title hierarchy (the sidebar brand wordmark, the navbar page title, and the
 `PageHeader` page title) so those read as more premium than the surrounding
-`font-sans` UI. It is theme-agnostic — only the face changes, never the color
-(titles use `text-foreground`).
+`font-sans` UI. Navbar titles use `leading-snug` (not `leading-none`) so
+descenders on letters like g and y are never clipped in the fixed `h-16` bar.
 
 ### Typography hierarchy (5-level scale)
 
@@ -80,12 +84,12 @@ the component that already encodes it (`PageHeader`, `SectionHeading`, `CardTitl
 `font-medium` on body emphasis (active nav, names, labels); `font-normal` on
 default body copy.
 
-| Level | Name    | Classes (via `typeScale`) | Used by |
-| ----- | ------- | ------------------------- | ------- |
-| L1    | Display | `display.page` / `.brand` / `.nav` | `PageHeader` h1, `SidebarBrand`, `Navbar` title |
-| L2    | Heading | `heading`                 | `SectionHeading` h2, `SettingsPanel` title |
-| L3    | Title   | `title` / `titleMetric`   | `CardTitle`, `ChartCard` title; `MetricCard` KPI value |
-| L4    | Body    | `body.default` / `.muted` / `.emphasis` | Descriptions, nav items, table cells, form labels |
+| Level | Name    | Classes (via `typeScale`)                     | Used by                                                     |
+| ----- | ------- | --------------------------------------------- | ----------------------------------------------------------- |
+| L1    | Display | `display.page` / `.brand` / `.nav`            | `PageHeader` h1, `SidebarBrand`, `Navbar` title             |
+| L2    | Heading | `heading`                                     | `SectionHeading` h2, `SettingsPanel` title                  |
+| L3    | Title   | `title` / `titleMetric`                       | `CardTitle`, `ChartCard` title; `MetricCard` KPI value      |
+| L4    | Body    | `body.default` / `.muted` / `.emphasis`       | Descriptions, nav items, table cells, form labels           |
 | L5    | Caption | `caption.overline` / `.meta` / `.tableHeader` | Section labels, KPI labels, eyebrows, emails, table headers |
 
 Face rules: `font-display` is title-only (page, navbar, brand); structural titles
@@ -164,25 +168,24 @@ Navigation is data-driven from `src/components/layout/nav-config.ts`.
 ## 3. Sidebar specifications
 
 - **Width:** `w-60` (15rem). Fixed; full viewport height.
-- **Surface:** `bg-sidebar`, right border `border-sidebar-border`.
+- **Surface:** `bg-sidebar`, right border `border-sidebar-border`, plus `shadow-xs` for soft depth alongside the divider.
 - **Structure:** brand (`h-16`) → scrollable nav → footer (settings + profile).
-- **Brand (`SidebarBrand`):** a single, prominent SaaS-style lockup — a
-  `bg-gradient-brand` mark (`size-9`, `rounded-xl`) plus the product wordmark in
-  `font-display text-2xl font-bold tracking-tight text-foreground`. The wordmark
-  is the primary visual element; the brand color comes from the gradient mark
-  (never hardcoded on the text). Brand height (`h-16`) matches the navbar so the
-  divider lines align across the two columns. Do not re-introduce a split /
-  two-tone text treatment.
+- **Brand (`SidebarBrand`):** a single, prominent text wordmark — no icon mark.
+  `font-display text-2xl font-bold tracking-tight`: **Asset** in
+  `text-foreground`, **Ops** in `text-primary` (theme brand hue). Brand height
+  (`h-16`) matches the navbar so the divider lines align across the two columns.
+  Render the wordmark once in the sidebar only; do not duplicate the brand
+  elsewhere.
 - **Sections:** `typeScale.caption.overline` label (`text-xs font-semibold
-  tracking-wide uppercase text-muted-foreground`).
+tracking-wide uppercase text-muted-foreground`).
 - **Item — default:** `font-normal text-muted-foreground`, icon muted, `h-9`,
   `rounded-lg`, `gap-3`. No background pill.
 - **Item — hover:** `bg-sidebar-hover`, `text-foreground` (same `font-normal` —
   no weight or size change), icon promoted to `text-foreground`.
   `transition-colors`.
-- **Item — active:** `bg-sidebar-active`, `font-medium text-foreground`, icon
-  `text-foreground`. Slight weight emphasis on active only — not on hover. No
-  border, shadow, or `text-primary`. Active is resolved from `usePathname()`.
+- **Item — active:** `bg-sidebar-active`, `font-medium text-primary`, icon
+  `text-primary`, `border-sidebar-border`, optional `shadow-xs`. Active is
+  resolved from `usePathname()`.
 - **Badges:** use the `Badge` primitive (`variant="secondary"`) for tags like
   `Beta`.
 - **Mobile:** below `md`, the sidebar is hidden and opens in a `Sheet`
@@ -195,14 +198,14 @@ Navigation is data-driven from `src/components/layout/nav-config.ts`.
 - **Height:** `h-16`. Sticky (`sticky top-0 z-30`).
 - **Background:** `bg-navbar/90` with `backdrop-blur-md` (degrades to
   `supports-backdrop-filter:bg-navbar/70`). Adapts per theme, dark mode included.
-- **Border:** `border-b border-navbar-border`.
+- **Border:** `border-b border-navbar-border`, plus `shadow-xs` for soft depth below the bar.
 - **Title:** the dominant element — `typeScale.display.nav` (`font-display text-lg
-  sm:text-xl font-semibold tracking-tight text-foreground`), derived from the nav
+sm:text-xl font-semibold tracking-tight text-foreground`), derived from the nav
   config via `getPageTitle`. Uses the same display face as the brand for a
   consistent, premium hierarchy.
 - **Content:** title (left), actions + account avatar (right). On mobile it also
   renders the sidebar menu trigger.
-- **Account avatar:** opens the `UserMenu` profile dropdown (see §11).
+- **Account avatar:** opens the `UserMenu` profile dropdown (see §12).
 - Stays fixed while the content area scrolls.
 
 ---
@@ -301,6 +304,12 @@ segmented control or re-style `TabsList`/`TabsTrigger` per page.
 - `size="lg"` (default) gives the comfortable page-level height; pass
   `size="default"` for compact inline tabs.
 
+**Elevation (must match §9):** the default variant uses a recessed `bg-muted`
+track; the **active pill** lifts with `bg-card`, `border-sidebar-border`, and
+`shadow-xs` — same outer edge as cards. `SubTabNav` (report sub-views) uses
+standalone pills with the same border token on inactive items. Never swap in
+`border-border`, `ring-1`, or heavier shadows on tab shells.
+
 ```tsx
 <Tabs defaultValue="hardware">
   <TabNav
@@ -316,26 +325,177 @@ segmented control or re-style `TabsList`/`TabsTrigger` per page.
 
 ---
 
-## 9. Card padding
+## 9. Borders, shadows & surface elevation
 
-`Card` owns its internal padding via the `--card-spacing` token (default
-`--spacing(5)` ≈ 20px; `size="sm"` ≈ 16px). Header / content / footer all read
-this token, so spacing stays uniform. Do not add ad-hoc `p-*` overrides to align
-cards — adjust `size` or compose with the token instead.
+This section is the **source of truth for outer edges** — thin outline + soft
+lift. Read it before adding borders, rings, or shadows to any new surface.
 
-### Card actions (primary pattern)
+### Three layers (do not mix them up)
 
-Use `CardActions` for every form / panel / dialog footer that lives on a
-card surface. Actions belong **on the card**, not on `DialogFooter` (muted
-strip) or floating outside the card.
+| Layer | Role | Border | Shadow | Examples |
+| ----- | ---- | ------ | ------ | -------- |
+| **Shell chrome** | Frame the app; sticky sidebar/navbar | Structural edge only: `border-r border-sidebar-border`, `border-b border-navbar-border` | `shadow-xs` | `Sidebar`, `Navbar` |
+| **Raised content** | Cards, tables, tab pills sitting on the page | Full box: `border border-sidebar-border` | `shadow-xs` | `Card`, `DataTable` shell, active `TabNav` pill, inactive `SubTabNav` pill |
+| **Floating overlays** | Menus, popovers, modal shells above content | Full box: `border border-sidebar-border` | `shadow-sm` | `Dialog`, `AlertDialog`, `Popover`, `DropdownMenu` |
 
-- `CardActions` is a sibling of `CardContent` inside `Card` (`gap-0 py-0` on
-  the card shell).
-- Divider: `border-t border-border` only — **no** `bg-muted/50` footer band
-  (that is reserved for read-only `CardFooter` chrome).
-- Layout: `flex justify-end gap-2` with `p-(--card-spacing)`.
-- Long card bodies scroll in `CardContent`; actions stay pinned below the
-  scroll region via `CardActions`.
+```mermaid
+flowchart TB
+  subgraph shell [Shell chrome]
+    Sidebar["Sidebar: border-r + shadow-xs"]
+    Navbar["Navbar: border-b + shadow-xs"]
+  end
+  subgraph content [Raised content]
+    Card["Card / table: border-sidebar-border + shadow-xs"]
+    TabPill["Active tab pill: same as Card"]
+    ActiveNav["Active sidebar item: border-sidebar-border + shadow-xs"]
+  end
+  subgraph overlay [Floating overlays]
+    Dialog["Dialog / menu: border-sidebar-border + shadow-sm"]
+  end
+  shell --> content
+  content --> overlay
+```
+
+**Stacking at the inner corner:** sidebar is `relative z-20`; navbar is
+`sticky z-30` so shadows meet cleanly where the brand row meets the page header.
+
+### Border tokens — which one to use
+
+All three shell-aligned tokens resolve to `--border` per theme in
+`src/app/globals.css` (`--sidebar-border`, `--navbar-border`, and `--border`
+bridge to the same value). Use the **semantic utility** that matches the surface:
+
+| Utility | When to use |
+| ------- | ----------- |
+| `border-sidebar-border` | **Outer box** on cards, tables, tab pills, active nav items, popovers, dialogs — anything that should match sidebar/navbar divider weight |
+| `border-navbar-border` | **Shell only** — bottom edge of `Navbar` |
+| `border-border` | **Internal dividers only** — `border-t` on `CardFooter`, table rows, dialog header strips, section splits inside a surface |
+
+**Do not** use `border-border` on the **outer shell** of a card or panel — it
+reads lighter/wrong next to sidebar chrome. **Do not** use `ring-1 ring-foreground/10`
+(or any ring) as a card/table outer edge; rings are for focus states and legacy
+popover chrome we have migrated away from.
+
+### Shadow tokens — which one to use
+
+Shadows are defined in `:root` via `--shadow-color` and exposed as
+`shadow-2xs` … `shadow-2xl`. Stick to the smallest tiers:
+
+| Utility | When to use |
+| ------- | ----------- |
+| `shadow-xs` | Cards, table shells, empty states, tab pills, sidebar/navbar shell, active sidebar item |
+| `shadow-sm` | Dialogs, alert dialogs, popovers, dropdown menus |
+| `shadow-md` and up | **Avoid** on dashboard surfaces unless there is a strong reason (e.g. chart tooltip) |
+
+Never pair `shadow-md`/`shadow-lg` with card shells — it fights the minimal
+reference look.
+
+### Shared helpers — always prefer these
+
+Import from [`src/lib/surface.ts`](src/lib/surface.ts):
+
+```ts
+/** Border color token shared with sidebar/navbar dividers */
+shellBorderClassName          // "border-sidebar-border"
+
+/** Raised dashboard surfaces (cards, tables, tab pills) */
+surfaceOutlineClassName       // "border border-sidebar-border shadow-xs"
+
+/** Modals and floating panels */
+surfaceOverlayClassName       // "border border-sidebar-border shadow-sm"
+```
+
+| Helper | Composed classes | Used by |
+| ------ | ---------------- | ------- |
+| `surfaceOutlineClassName` | `border border-sidebar-border shadow-xs` | `Card` (root shell), `DataTable` shell, requests empty/filter pills |
+| `surfaceOverlayClassName` | `border border-sidebar-border shadow-sm` | `DialogContent`, `AlertDialogContent` |
+| `shellBorderClassName` | `border-sidebar-border` | Compose manually when you need border color without the full outline |
+
+**Primitives that encode this already** — compose them; do not re-style per page:
+
+- `Card` / `MetricCard` / `ChartCard` / `SettingsPanel`
+- `DataTable` outer shell
+- `TabNav` + `TabsTrigger` (default variant active state)
+- `SubTabNav` inactive pills
+- `Popover`, `DropdownMenu` content
+- `SidebarItem` active state (`border-sidebar-border`, `shadow-xs`)
+
+### Surface recipes (copy these)
+
+**Card / KPI / chart panel** — use `Card`; the primitive applies
+`surfaceOutlineClassName` automatically:
+
+```tsx
+<Card>
+  <CardHeader>…</CardHeader>
+  <CardContent>…</CardContent>
+</Card>
+```
+
+**Custom raised box** (only when `Card` is not the right shape):
+
+```tsx
+<div className={cn("rounded-xl bg-card", surfaceOutlineClassName)}>…</div>
+```
+
+**Table shell** — `DataTable` already wraps rows in `surfaceOutlineClassName`.
+
+**Active sidebar nav item** — built into `SidebarItem`:
+
+```
+border border-transparent          → default
+data-[active=true]:border-sidebar-border
+data-[active=true]:bg-sidebar-active
+data-[active=true]:shadow-xs
+```
+
+**Shell sidebar / navbar** — keep structural border **and** `shadow-xs`:
+
+```
+Sidebar:  border-r border-sidebar-border shadow-xs  (z-20)
+Navbar:   border-b border-navbar-border shadow-xs   (z-30)
+```
+
+Mobile sheet sidebar: pass `shadow-none` on the nested `Sidebar` (the sheet
+edge already separates; see `DashboardLayout`).
+
+### Do / Don't (common mistakes)
+
+| Do | Don't |
+| -- | ----- |
+| Import `surfaceOutlineClassName` for new raised panels | Hand-roll `border border-border` on card shells |
+| Use `border-sidebar-border` for outer boxes | Use `border-border` on card/table/tab outer edges |
+| Use `shadow-xs` on content surfaces | Default to `shadow-sm` or `shadow-md` on cards |
+| Use `shadow-sm` on dialogs/menus only | Put `shadow-lg` on dashboard cards |
+| Keep internal splits as `border-t border-border` | Add `border-t` on `CardActions` (use padding rhythm instead) |
+| Extend `Card`, `TabNav`, `DataTable` | Fork per-page bordered wrappers around the same content |
+| Match active tab pills to card elevation | Add extra `ring-*` or `border-primary` on standard tabs |
+
+Decorated hero wrappers (e.g. Overview Executive Signals) may add gradient /
+primary tint **via `className` on `Card`** — their extra classes override the
+base border when needed; do not change the primitive for one-off marketing chrome.
+
+---
+
+## 10. Card padding
+
+`Card` owns horizontal rhythm via `--card-spacing` (default `--spacing(5)` ≈ 20px;
+`size="sm"` ≈ 16px). **Vertical inset lives on the slots**, not on the card shell —
+do not rely on ad-hoc `py-*` on the root `Card` for everyday display cards.
+
+| Slot                         | Padding                                                                                           |
+| ---------------------------- | ------------------------------------------------------------------------------------------------- |
+| `CardHeader`                 | `px-(--card-spacing) pt-(--card-spacing)`                                                         |
+| `CardContent`                | `px-(--card-spacing) pb-(--card-spacing)`; adds `pt-(--card-spacing)` when there is **no** header; **`pb-0`** when `CardActions` follows (use `settingsCardContentWithActionsClassName` if overriding padding) |
+| `CardActions` / `CardFooter` | `p-(--card-spacing)` (full inset on the action/footer row)                                        |
+
+The root `Card` keeps `gap-(--card-spacing)` between slots. Use that default gap for
+`CardHeader` + `CardContent` display cards (department templates, chart panels, …).
+
+### When to use `gap-0 py-0` on the shell
+
+Reserve `className="gap-0 py-0"` for **scroll + actions** or **single-region** cards
+only:
 
 ```tsx
 <Card className="gap-0 py-0">
@@ -348,6 +508,32 @@ strip) or floating outside the card.
   </CardActions>
 </Card>
 ```
+
+**Do not** pair `gap-0 py-0` with bare `CardHeader` + `CardContent` — those slots
+only apply horizontal padding unless you also supply full `p-(--card-spacing)` on
+each region. That mismatch is what causes content flush to the card edges.
+
+For multi-column card grids, add `items-start` so cards stay content-height instead
+of stretching with empty space at the bottom.
+
+Do not add ad-hoc `p-*` overrides to align cards — adjust `size` or compose with
+`--card-spacing` instead.
+
+### Card actions (primary pattern)
+
+Use `CardActions` for every form / panel / dialog footer that lives on a card
+surface. Actions belong **on the card**, not on `DialogFooter` (muted strip) or
+floating outside the card.
+
+- `CardActions` is a sibling of `CardContent` inside `Card` (`gap-0 py-0` on the
+  card shell).
+- **No** `border-t` on `CardActions` — spacing comes from `CardContent` bottom
+  inset (`pb-0` when actions follow) plus `p-(--card-spacing)` on the action row.
+- Layout: `flex justify-end gap-2` with `p-(--card-spacing)`.
+- **Buttons:** use the default `Button` size (no `size="lg"`, `size="sm"`, or ad-hoc
+  `h-*` / `px-*` on save rows). Same rule as page header and intake form footers.
+- Long card bodies scroll in `CardContent`; actions stay pinned below the scroll
+  region via `CardActions`.
 
 **Dialogs:** use a single **`bg-card` dialog shell** — do not nest an inset
 `Card` with margins inside `DialogContent` (`bg-popover`). Structure:
@@ -367,14 +553,16 @@ follows content until the shell cap; then the body scrolls. Do **not** set a fix
 only `max-h-[calc(100vh-2.5rem)]`.
 `max-h` alone is not reliable inside flex dialogs. `CardActions` must include
 `bg-card` (built into the primitive) so the action row matches the card surface.
-Overlay: `bg-background/90` + `backdrop-blur-lg`.
+Overlay: `bg-black/45` (`bg-black/35` when backdrop-filter is supported) +
+`backdrop-blur-sm` (shared `modalOverlayClassName` on dialogs, sheets, and alert
+dialogs).
 
 **Do not** use `DialogFooter` for form submit rows when the content is already
 card-based. `CardFooter` is for muted summary chrome only, not primary actions.
 
 ---
 
-## 10. Reusable component rules
+## 11. Reusable component rules
 
 - Prefer primitives in `src/components/ui/*`; never duplicate them.
 - Global layout (`Sidebar`, `Navbar`, `DashboardLayout`) is shared — extend, do
@@ -387,7 +575,7 @@ card-based. `CardFooter` is for muted summary chrome only, not primary actions.
 
 ---
 
-## 11. Profile menu specifications
+## 12. Profile menu specifications
 
 The navbar avatar opens `UserMenu` — the canonical account experience. It is
 built on the shared `DropdownMenu` primitive, so it inherits open/close

@@ -19,6 +19,7 @@ import {
 } from "@/lib/requests/data"
 import { typeScale } from "@/lib/typography"
 import { cn } from "@/lib/utils"
+import { surfaceOutlineClassName } from "@/lib/surface"
 
 const REQUEST_TABS: TabNavItem[] = [
   { value: "employee-requests", label: "Requests", icon: Inbox },
@@ -56,7 +57,7 @@ function FilterPills({
           className={cn(
             "inline-flex h-8 shrink-0 items-center justify-center whitespace-nowrap rounded-md px-3 text-sm font-medium transition-all",
             value === item.id
-              ? "bg-background text-foreground shadow-sm"
+              ? cn(surfaceOutlineClassName, "bg-card text-foreground")
               : "text-muted-foreground hover:text-foreground"
           )}
         >
@@ -69,7 +70,7 @@ function FilterPills({
 
 function RequestsEmptyState({ title, description }: { title: string; description?: string }) {
   return (
-    <Empty className="rounded-xl border border-border border-solid bg-card py-16">
+    <Empty className={cn(surfaceOutlineClassName, "rounded-xl border-solid bg-card py-16")}>
       <EmptyHeader>
         <EmptyMedia variant="icon">
           <Inbox />

@@ -174,7 +174,7 @@ function PromptReportTab() {
                   key={example}
                   type="button"
                   onClick={() => handleExampleClick(example)}
-                  className="rounded-lg border border-border bg-card px-3 py-2.5 text-left transition-colors hover:bg-muted/50"
+                  className="rounded-lg border border-sidebar-border bg-card shadow-xs px-3 py-2.5 text-left transition-colors hover:bg-muted/50"
                 >
                   <span className={typeScale.body.default}>{example}</span>
                 </button>
@@ -195,7 +195,7 @@ function PromptReportTab() {
                     key={prompt}
                     type="button"
                     onClick={() => handleSavedPromptClick(prompt)}
-                    className="rounded-lg border border-border bg-card px-3 py-2.5 text-left transition-colors hover:bg-muted/50"
+                    className="rounded-lg border border-sidebar-border bg-card shadow-xs px-3 py-2.5 text-left transition-colors hover:bg-muted/50"
                   >
                     <span className={typeScale.body.default}>{prompt}</span>
                   </button>

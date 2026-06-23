@@ -65,7 +65,7 @@ function TabNav({
           {item.icon ? <item.icon /> : null}
           {item.label}
           {item.badge != null ? (
-            <span className="ml-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-muted px-1.5 text-xs font-medium tabular-nums text-muted-foreground group-data-[variant=default]/tabs-list:bg-background in-data-active:bg-accent in-data-active:text-primary">
+            <span className="ml-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-muted px-1.5 text-xs font-medium tabular-nums text-muted-foreground group-data-[variant=default]/tabs-list:bg-card in-data-active:bg-accent in-data-active:text-primary">
               {item.badge}
             </span>
           ) : null}

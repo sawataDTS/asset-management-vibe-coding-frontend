@@ -4,9 +4,8 @@ import * as React from "react"
 import { format, isValid, parseISO } from "date-fns"
 import { CalendarIcon, XIcon } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
 import { Calendar } from "@/components/ui/calendar"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
+import { Popover, PopoverContent, POPOVER_SIDE_OFFSET, PopoverTrigger } from "@/components/ui/popover"
 import { cn } from "@/lib/utils"
 
 export interface DatePickerProps {
@@ -58,25 +57,29 @@ function DatePicker({
     <div className={cn("relative w-full", className)}>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button
+          <button
             id={id}
             type="button"
-            variant="outline"
-            size="lg"
             disabled={disabled}
+            data-slot="date-picker-trigger"
+            data-state={open ? "open" : "closed"}
             className={cn(
-              "w-full justify-start gap-2 px-2.5 font-normal",
+              "inline-flex h-9 w-full min-w-0 items-center gap-2 rounded-lg border border-input bg-transparent px-2.5 text-sm transition-colors outline-none",
+              "focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50",
+              "data-[state=open]:border-ring data-[state=open]:ring-3 data-[state=open]:ring-ring/50",
+              "disabled:pointer-events-none disabled:cursor-not-allowed disabled:bg-input/50 disabled:opacity-50",
+              "dark:bg-input/30 dark:disabled:bg-input/80",
               !selected && "text-muted-foreground",
               allowClear && selected && !disabled && "pr-10"
             )}
           >
-            <CalendarIcon className="size-4 shrink-0 opacity-70" />
-            <span className="truncate">
+            <CalendarIcon className="size-4 shrink-0 text-muted-foreground" />
+            <span className="min-w-0 flex-1 truncate text-left font-medium">
               {selected ? format(selected, "dd MMM yyyy") : placeholder}
             </span>
-          </Button>
+          </button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start">
+        <PopoverContent className="w-auto p-0" align="start" sideOffset={POPOVER_SIDE_OFFSET}>
           <Calendar
             mode="single"
             selected={selected}

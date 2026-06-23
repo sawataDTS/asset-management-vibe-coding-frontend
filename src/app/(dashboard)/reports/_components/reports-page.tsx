@@ -13,7 +13,6 @@ import { ReportExportMenu } from "./shared/report-export-menu"
 import { ReportsExportProvider } from "./shared/reports-export-context"
 import { PageHeader } from "@/components/layout/PageHeader"
 import { Button } from "@/components/ui/button"
-import { Toaster } from "@/components/ui/sonner"
 import { TabNav, type TabNavItem } from "@/components/ui/tab-nav"
 import { Tabs, TabsContent } from "@/components/ui/tabs"
 
@@ -36,8 +35,6 @@ function ReportsPage() {
 
   return (
     <>
-      <Toaster position="top-right" closeButton richColors />
-
       <ReportsExportProvider>
         <PageHeader
           eyebrow="Filter findings · share with leadership"

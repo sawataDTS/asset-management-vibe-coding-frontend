@@ -23,7 +23,7 @@ export interface SubTabNavProps extends React.ComponentProps<"div"> {
 
 /**
  * Compact secondary tab strip for nested views beneath a page-level `TabNav`.
- * Uses smaller outline pills (not the muted segmented track) so child tabs read
+ * Uses smaller elevated pills (not the muted segmented track) so child tabs read
  * clearly below primary navigation.
  */
 function SubTabNav({
@@ -57,12 +57,12 @@ function SubTabNav({
               disabled={item.disabled}
               onClick={() => onValueChange(item.value)}
               className={cn(
-                "inline-flex h-8 shrink-0 items-center gap-1 rounded-full border px-2.5 font-medium whitespace-nowrap transition-colors",
+                "inline-flex h-8 shrink-0 items-center gap-1 rounded-full px-2.5 font-medium whitespace-nowrap transition-colors",
                 typeScale.caption.meta,
                 "text-xs leading-none",
                 isActive
-                  ? "border-primary bg-primary text-primary-foreground shadow-sm"
-                  : "border-border bg-background text-muted-foreground hover:bg-muted/60 hover:text-foreground",
+                  ? "bg-primary text-primary-foreground shadow-xs"
+                  : "border border-sidebar-border bg-card text-muted-foreground shadow-xs hover:bg-muted/40 hover:text-foreground",
                 item.disabled && "pointer-events-none opacity-50"
               )}
             >

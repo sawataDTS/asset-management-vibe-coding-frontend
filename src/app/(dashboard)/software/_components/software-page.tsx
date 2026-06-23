@@ -4,7 +4,6 @@ import * as React from "react"
 import { useEffect, useMemo, useState } from "react"
 import {
   AlertTriangle,
-  AppWindow,
   BadgeCheck,
   Clock,
   CreditCard,
@@ -40,7 +39,6 @@ import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
 import { MetricCard } from "@/components/ui/metric-card"
-import { Toaster } from "@/components/ui/sonner"
 import { Textarea } from "@/components/ui/textarea"
 import {
   dialogFormClassName,
@@ -330,10 +328,8 @@ function SoftwarePage() {
 
   return (
     <>
-      <Toaster position="top-right" closeButton richColors />
-
       <PageHeader
-        icon={AppWindow}
+        // icon={AppWindow}
         eyebrow="Apps, subscriptions & licensing"
         title="Software"
         description={`Track seat allocation, renewal dates, and subscription spend across vendors. ${filteredLicenses.length} of ${kpis.totalLicenses} subscriptions shown.`}
@@ -614,7 +610,7 @@ function SoftwarePage() {
                           >
                             <div className="flex min-w-0 items-center gap-2">
                               <Avatar size="sm">
-                                <AvatarFallback className="bg-accent text-xs text-primary">
+                                <AvatarFallback className="bg-accent text-primary">
                                   {getInitials(name)}
                                 </AvatarFallback>
                               </Avatar>

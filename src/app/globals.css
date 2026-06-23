@@ -79,7 +79,7 @@
   --font-mono: JetBrains Mono, monospace;
   /* Distinctive display face for brand wordmark + page titles. next/font sets
      the real value on <body>; this is the theme-agnostic fallback. */
-  --font-display: "Space Grotesk", Inter, sans-serif;
+  --font-display: "Plus Jakarta Sans", Inter, sans-serif;
   --radius: 0.625rem;
   --tracking-normal: 0em;
   --spacing: 0.25rem;
@@ -676,54 +676,6 @@ html > body[data-scroll-locked] {
 
 .width-before-scroll-bar {
   margin-right: 0 !important;
-}
-
-/* AG Grid — DataTable (token-driven, matches typeScale.caption.tableHeader) */
-.data-table-root .ag-root-wrapper {
-  overflow: hidden;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-}
-
-.data-table-root .ag-header {
-  border-bottom: 1px solid var(--border);
-}
-
-.data-table-root .ag-header-cell.data-table-actions-header .ag-header-cell-label {
-  justify-content: flex-end;
-  width: 100%;
-}
-
-.data-table-root .ag-header-cell-label {
-  gap: 0.25rem;
-}
-
-.data-table-root .ag-sort-indicator-icon {
-  opacity: 0.4;
-}
-
-.data-table-root .ag-cell-wrapper {
-  align-items: center;
-  width: 100%;
-  height: 100%;
-}
-
-.data-table-root.data-table-auto-rows .ag-cell-wrapper {
-  align-items: flex-start;
-}
-
-.data-table-root.data-table-auto-rows .ag-cell.data-table-cell-actions .ag-cell-wrapper {
-  align-items: center;
-}
-
-.data-table-root .ag-cell-value {
-  width: 100%;
-}
-
-.data-table-root .ag-header-cell-text {
-  font: inherit;
-  letter-spacing: normal;
-  text-transform: none;
 }
 
 @media print {

@@ -3,7 +3,7 @@
 import * as React from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Boxes, LogOut, type LucideIcon } from "lucide-react"
+import { LogOut, type LucideIcon } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { typeScale } from "@/lib/typography"
@@ -20,7 +20,7 @@ function Sidebar({ className, children, ...props }: React.ComponentProps<"aside"
     <aside
       data-slot="sidebar"
       className={cn(
-        "flex h-full w-60 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground",
+        "relative z-20 flex h-full w-60 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground shadow-xs",
         className
       )}
       {...props}
@@ -40,16 +40,10 @@ function SidebarBrand({ className, ...props }: React.ComponentProps<"div">) {
       <Link
         href="/overview"
         aria-label="AssetOps — go to overview"
-        className="group/brand flex min-w-0 items-center gap-2.5 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
+        className="group/brand flex min-w-0 items-center rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
       >
-        <span
-          className="grid size-9 shrink-0 place-items-center rounded-xl bg-gradient-brand text-primary-foreground shadow-sm ring-1 ring-foreground/5 transition-transform group-hover/brand:scale-105"
-          aria-hidden
-        >
-          <Boxes className="size-5" strokeWidth={2} />
-        </span>
         <span className={cn("min-w-0 truncate py-0.5", typeScale.display.brand)}>
-          AssetOps
+          Asset<span className="text-primary">Ops</span>
         </span>
       </Link>
     </div>
@@ -68,11 +62,7 @@ function SidebarSection({
 }: React.ComponentProps<"div"> & { label?: string }) {
   return (
     <div data-slot="sidebar-section" className={cn("flex flex-col", className)} {...props}>
-      {label ? (
-        <p className={cn("mb-1 px-3 py-1.5", typeScale.caption.overline)}>
-          {label}
-        </p>
-      ) : null}
+      {label ? <p className={cn("mb-1 px-3 py-1.5", typeScale.caption.overline)}>{label}</p> : null}
       <div className="flex flex-col gap-1">{children}</div>
     </div>
   )
@@ -107,15 +97,12 @@ function SidebarItem({
         "group/sidebar-item flex h-9 items-center gap-3 rounded-lg border border-transparent px-3 text-sm leading-5 font-normal text-muted-foreground transition-colors outline-none",
         "hover:bg-sidebar-hover hover:text-foreground",
         "focus-visible:ring-2 focus-visible:ring-ring/50",
-        "data-[active=true]:bg-sidebar-active data-[active=true]:border-sidebar-border data-[active=true]:text-primary data-[active=true]:shadow-xs data-[active=true]:font-medium",
+        "data-[active=true]:border-sidebar-border data-[active=true]:bg-sidebar-active data-[active=true]:font-medium data-[active=true]:text-primary data-[active=true]:shadow-xs",
         className
       )}
       {...props}
     >
-      <Icon
-        strokeWidth={1.75}
-        className="size-4 shrink-0 transition-colors [color:inherit]"
-      />
+      <Icon strokeWidth={1.75} className="size-4 shrink-0 [color:inherit] transition-colors" />
       <span className="min-w-0 truncate">{label}</span>
       {badge ? (
         <Badge variant="secondary" className="ml-auto h-4.5 px-1.5 text-[0.625rem]">
@@ -163,7 +150,7 @@ function SidebarProfile({
 }) {
   return (
     <div data-slot="sidebar-profile" className={cn("flex flex-col gap-0", className)} {...props}>
-      <div className="rounded-xl border border-border px-4 py-3.5">
+      <div className="rounded-xl border border-sidebar-border px-4 py-3.5 shadow-xs">
         <p className={cn("truncate leading-snug", typeScale.body.emphasis)}>{user.name}</p>
         <p className={cn("mt-1 truncate leading-snug", typeScale.caption.meta)}>{user.email}</p>
       </div>

@@ -6,7 +6,6 @@ import { toast } from "sonner"
 import {
   BarChart3,
   Plus,
-  Target,
   Layers,
   CircleCheck,
   Users,
@@ -19,12 +18,12 @@ import {
 import { PageHeader } from "@/components/layout/PageHeader"
 import { SectionHeading } from "@/components/layout/SectionHeading"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { Tabs, TabsContent } from "@/components/ui/tabs"
 import { TabNav, type TabNavItem } from "@/components/ui/tab-nav"
 import { Progress } from "@/components/ui/progress"
 import { MetricCard } from "@/components/ui/metric-card"
-import { Toaster } from "@/components/ui/sonner"
 import {
   Empty,
   EmptyHeader,
@@ -35,17 +34,18 @@ import {
 import { HardwareHealthTab } from "./hardware-health-tab"
 import { SoftwareHealthTab } from "./software-health-tab"
 import { typeScale } from "@/lib/typography"
-import { cn } from "@/lib/utils"
-
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return <h3 className={cn(typeScale.caption.overline, "tracking-widest")}>{children}</h3>
-}
 
 const HEALTH_TABS: (TabNavItem & { value: string })[] = [
   { value: "hardware", label: "Hardware", icon: HardDrive, badge: "51" },
   { value: "software", label: "Software", icon: AppWindow, badge: "71" },
   { value: "mailbox", label: "Mailbox", icon: Mail, badge: "78" },
 ]
+
+const ATTENTION_RADAR_ROWS = [
+  { label: "Hardware warranty cliffs (30d)", value: "0" },
+  { label: "Fleet in remediation", value: "0" },
+  { label: "SaaS renewals (60d + expired)", value: "20" },
+] as const
 
 export function OverviewPage() {
   const [healthTab, setHealthTab] = React.useState("hardware")
@@ -56,125 +56,103 @@ export function OverviewPage() {
 
   return (
     <>
-      <Toaster />
       <PageHeader
         eyebrow="Welcome back, John Doe"
         title="Portfolio Analytics Overview"
-        description="Live KPIs synthesized from utilization, ingestion cadence, renewal pressure, and vendor-led seat concentration—designed for quick IT Ops and Finance reviews inside your tenant footprint."
+        actions={
+          <>
+            <Button variant="outline" asChild>
+              <Link href="/reports">
+                <BarChart3 />
+                Detailed Reports
+              </Link>
+            </Button>
+            <Button asChild>
+              <Link href="/intake">
+                <Plus />
+                Intake Workspace
+              </Link>
+            </Button>
+          </>
+        }
       >
-        {/* SECTION 1 — Executive Signals */}
-        <section className="flex flex-col gap-4">
-          <Card className="gap-6 border border-primary/25 bg-linear-to-b from-primary/8 via-accent/30 to-card ring-1 ring-primary/15">
-            <CardContent className="flex flex-col gap-10">
-              <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-                <div className="flex min-w-0 flex-col gap-2.5">
-                  <SectionLabel>Executive Signals</SectionLabel>
-                  <div className="flex items-start gap-3">
-                    <span className="mt-0.5 mb-1 flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent/80 text-primary ring-1 ring-primary/20">
-                      <Target className="size-5" strokeWidth={1.75} />
-                    </span>
-                    <div className="flex min-w-0 flex-col gap-1.5">
-                      <h2 className={cn(typeScale.heading, "text-xl")}>
-                        Cross-domain readiness &amp; risk posture
-                      </h2>
-                      <p className={cn("max-w-3xl", typeScale.body.muted)}>
-                        Blends hardware posture (deployment depth, ingestion cadence) with entitlement
-                        economics (seat burn-down, SaaS cliff risk, vendor concentration)—no manual
-                        spreadsheet stitching required.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex shrink-0 items-center gap-2">
-                  <Button variant="outline" asChild>
-                    <Link href="/reports">
-                      <BarChart3 />
-                      Detailed Reports
-                    </Link>
-                  </Button>
-                  <Button asChild>
-                    <Link href="/intake">
-                      <Plus />
-                      Intake Workspace
-                    </Link>
-                  </Button>
-                </div>
+        <section className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <MetricCard
+            label="Record Density"
+            icon={Layers}
+            size="default"
+            value="122"
+            valueClassName="font-bold"
+            description="Tracked roster · 51 hardware assets · 71 active license contracts"
+            footer={
+              <div className={cn("flex flex-col gap-1.5", typeScale.body.muted)}>
+                <span className={cn(typeScale.caption.overline, "text-foreground")}>
+                  Rolling 60-day intake
+                </span>
+                <p>
+                  Hardware <span className={typeScale.body.emphasis}>+51</span> · Software{" "}
+                  <span className={typeScale.body.emphasis}>+71</span> net-new records in the trailing
+                  two telemetry windows.
+                </p>
+                <p>1 distinct catalog category represented across the hardware layer.</p>
               </div>
+            }
+          />
 
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                <MetricCard
-                  label="Record Density"
-                  icon={Layers}
-                  value="122"
-                  description="Tracked roster · 51 hardware assets · 71 active license contracts"
-                  footer={
-                    <div className="flex flex-col gap-2">
-                      <span className="text-xs font-semibold tracking-wide text-foreground uppercase">
-                        Rolling 60-day intake
-                      </span>
-                      <span>
-                        Hardware <span className="text-foreground">+51</span> · Software{" "}
-                        <span className="text-foreground">+71</span> net-new records surfaced in the trailing
-                        two telemetry windows.
-                      </span>
-                      <span>
-                        1 distinct catalog categories materially represented across the hardware layer.
-                      </span>
-                    </div>
-                  }
-                />
-
-                <MetricCard label="Deployment Depth" icon={CircleCheck}>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Assigned Coverage</span>
-                    <span className="font-medium text-foreground tabular-nums">3.9%</span>
-                  </div>
-                  <Progress value={3.9} className="mt-2 h-2" />
-                  <p className="mt-3 text-sm text-muted-foreground">
-                    2 fielded units versus 51 total tags. Warehouse / staging buffer:{" "}
-                    <span className="text-foreground">49</span>.
-                  </p>
-                </MetricCard>
-
-                <MetricCard label="Seat Economics" icon={Users}>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Seat Consumption</span>
-                    <span className="font-medium text-foreground tabular-nums">2.6%</span>
-                  </div>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    Entitled 78 pooled seats · 2 allocated to employees or shared mailboxes today.
-                  </p>
-                  <div className="mt-3 rounded-lg bg-muted px-3 py-2 text-sm text-muted-foreground">
-                    Largest vendor footprint: <span className="font-medium text-foreground">META</span>{" "}
-                    commanding ~64.1% of your entitled seat universe.
-                  </div>
-                </MetricCard>
-
-                <MetricCard
-                  label="Attention Radar"
-                  icon={TriangleAlert}
-                  value="~20"
-                  description="countable exposure units (warranty / repair / license cliffs)"
-                >
-                  <ul className="mt-3 flex flex-col gap-2 text-sm">
-                    {[
-                      { label: "Hardware warranty cliffs (30d)", value: "0" },
-                      { label: "Fleet in remediation", value: "0" },
-                      { label: "SaaS renewals (60d + expired)", value: "20" },
-                    ].map((row) => (
-                      <li key={row.label} className="flex items-center justify-between">
-                        <span className="text-muted-foreground">{row.label}</span>
-                        <span className="font-medium text-foreground tabular-nums">{row.value}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </MetricCard>
+          <MetricCard label="Deployment Depth" icon={CircleCheck} size="default" value="3.9%" valueClassName="font-bold">
+            <div className="mt-1 flex flex-col gap-2">
+              <div className="flex items-center justify-between gap-2">
+                <span className={typeScale.body.muted}>Assigned Coverage</span>
+                <span className={typeScale.body.tabularEmphasis}>3.9%</span>
               </div>
-            </CardContent>
-          </Card>
+              <Progress value={3.9} className="h-2 w-full" />
+              <p className={typeScale.body.muted}>
+                2 fielded units versus 51 total tags. Warehouse / staging buffer:{" "}
+                <span className={typeScale.body.emphasis}>49</span>.
+              </p>
+            </div>
+          </MetricCard>
+
+          <MetricCard label="Seat Economics" icon={Users} size="default" value="2.6%" valueClassName="font-bold">
+            <div className="mt-1 flex flex-col gap-3">
+              <div className="flex items-center justify-between gap-2">
+                <span className={typeScale.body.muted}>Seat Consumption</span>
+                <span className={typeScale.body.tabularEmphasis}>2.6%</span>
+              </div>
+              <p className={typeScale.body.muted}>
+                Entitled 78 pooled seats · 2 allocated to employees or shared mailboxes today.
+              </p>
+              <div className="rounded-lg border border-sidebar-border bg-muted/40 px-3 py-2.5">
+                <p className={typeScale.body.muted}>
+                  Largest vendor footprint{" "}
+                  <Badge variant="secondary" className="align-middle">
+                    META ~64.1%
+                  </Badge>{" "}
+                  of your entitled seat universe.
+                </p>
+              </div>
+            </div>
+          </MetricCard>
+
+          <MetricCard
+            label="Attention Radar"
+            icon={TriangleAlert}
+            size="default"
+            value="~20"
+            valueClassName="font-bold"
+            description="Countable exposure units (warranty / repair / license cliffs)"
+          >
+            <ul className="mt-1 flex flex-col gap-2.5">
+              {ATTENTION_RADAR_ROWS.map((row) => (
+                <li key={row.label} className="flex items-center justify-between gap-3">
+                  <span className={typeScale.body.muted}>{row.label}</span>
+                  <span className={typeScale.body.tabularEmphasis}>{row.value}</span>
+                </li>
+              ))}
+            </ul>
+          </MetricCard>
         </section>
 
-        {/* SECTION 2 — Asset Health */}
         <section className="flex flex-col gap-4">
           <SectionHeading
             title="Asset Health"

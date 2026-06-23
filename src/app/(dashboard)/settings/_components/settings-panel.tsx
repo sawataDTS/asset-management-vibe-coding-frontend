@@ -10,6 +10,12 @@ import { typeScale } from "@/lib/typography"
 /** Shared control sizing for settings forms — input and select use global h-9. */
 export const settingsControlClassName = "[&_[data-slot=select-trigger]]:w-full"
 
+/** CardContent padding when a sibling `CardActions` row follows (no bottom inset on content). */
+export const settingsCardContentWithActionsClassName = cn(
+  "px-(--card-spacing) pt-(--card-spacing) pb-0",
+  settingsControlClassName
+)
+
 export interface SettingsPanelProps {
   title: string
   description?: string
@@ -45,7 +51,12 @@ function SettingsPanel({
         className
       )}
     >
-      <CardContent className={cn("flex flex-col gap-5 p-(--card-spacing)", settingsControlClassName)}>
+      <CardContent
+        className={cn(
+          "flex flex-col gap-5",
+          onSave ? settingsCardContentWithActionsClassName : cn("p-(--card-spacing)", settingsControlClassName)
+        )}
+      >
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0 flex-1">
             <h2 className={typeScale.heading}>{title}</h2>
@@ -61,7 +72,7 @@ function SettingsPanel({
 
       {onSave ? (
         <CardActions>
-          <Button size="lg" className="h-10 px-5" onClick={onSave} disabled={saving}>
+          <Button onClick={onSave} disabled={saving}>
             {saveLabel}
           </Button>
         </CardActions>

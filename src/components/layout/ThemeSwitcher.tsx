@@ -17,8 +17,8 @@ import {
  * Professional theme picker. Each card previews a theme using that theme's own
  * tokens (scoped via `data-theme`), so the swatches always reflect the real
  * palette. Selecting a card swaps the active workspace theme at runtime — the
- * whole app re-themes instantly and the choice is persisted by the ThemeProvider
- * (localStorage), with no re-mount required.
+ * whole app re-themes instantly with no re-mount required. Persistence is
+ * disabled for now (see ThemeProvider).
  */
 function ThemePreview() {
   return (

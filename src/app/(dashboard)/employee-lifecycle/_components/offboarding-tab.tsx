@@ -13,6 +13,7 @@ import {
   Key,
   Play,
   RefreshCw,
+  Search,
   UserMinus,
 } from "lucide-react"
 import { toast } from "sonner"
@@ -34,7 +35,7 @@ import {
 } from "@/components/ui/dialog"
 import { Field, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
-import { InputGroup, InputGroupInput } from "@/components/ui/input-group"
+import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
 import { Textarea } from "@/components/ui/textarea"
 import { dialogHeaderClassName, dialogShellClassNameCompact } from "@/lib/dialog-layout"
 import {
@@ -58,6 +59,13 @@ const lifecycleCardClassName = "gap-0 py-0"
 const lifecycleCardContentClassName = cn("p-(--card-spacing)", settingsControlClassName)
 
 const CHECKLIST_ICONS = [HardDrive, Key, FileText, ArrowRightLeft, CheckCircle2, EyeOff, ClipboardList]
+
+const CHECKLIST_ICON_WRAPPER_CLASS: Record<ChecklistItemStatus, string> = {
+  pending: "bg-warning/12 text-warning",
+  in_progress: "bg-info/12 text-info",
+  done: "bg-success/12 text-success",
+  skipped: "bg-muted text-muted-foreground",
+}
 
 function formatInitiatedAt(iso: string) {
   return formatHistoryWhen(iso)
@@ -137,7 +145,14 @@ function ActiveOffboardingCard({
                 return (
                   <li key={item.id} className="flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex min-w-0 items-start gap-3">
-                      <Icon className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+                      <span
+                        className={cn(
+                          "mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg",
+                          CHECKLIST_ICON_WRAPPER_CLASS[item.status]
+                        )}
+                      >
+                        <Icon className="size-4" strokeWidth={1.75} />
+                      </span>
                       <div className="min-w-0">
                         <p
                           className={cn(
@@ -173,18 +188,19 @@ function ActiveOffboardingCard({
             </ul>
           </div>
 
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <p className={typeScale.caption.overline}>
-                Assigned hardware ({offboarding.hardware.length})
-              </p>
+          <div className="grid grid-cols-1 gap-4 border-t border-border pt-4 md:grid-cols-2">
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-center justify-between gap-2">
+                <p className={typeScale.caption.overline}>Assigned hardware</p>
+                <p className={cn(typeScale.caption.meta, "tabular-nums")}>{offboarding.hardware.length}</p>
+              </div>
               {offboarding.hardware.length === 0 ? (
-                <p className={typeScale.body.muted}>None.</p>
+                <p className={typeScale.caption.meta}>—</p>
               ) : (
-                <ul className="space-y-1.5">
+                <ul className="flex flex-col gap-1.5">
                   {offboarding.hardware.map((item) => (
-                    <li key={item.id} className="flex items-center justify-between gap-2">
-                      <span className={typeScale.body.default}>{item.name}</span>
+                    <li key={item.id} className="flex items-center justify-between gap-3">
+                      <span className={typeScale.body.emphasis}>{item.name}</span>
                       <span className={cn(typeScale.caption.meta, "font-mono tabular-nums")}>{item.tag}</span>
                     </li>
                   ))}
@@ -192,17 +208,18 @@ function ActiveOffboardingCard({
               )}
             </div>
 
-            <div className="space-y-2">
-              <p className={typeScale.caption.overline}>
-                Active licenses ({offboarding.licenses.length})
-              </p>
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-center justify-between gap-2">
+                <p className={typeScale.caption.overline}>Active licenses</p>
+                <p className={cn(typeScale.caption.meta, "tabular-nums")}>{offboarding.licenses.length}</p>
+              </div>
               {offboarding.licenses.length === 0 ? (
-                <p className={typeScale.body.muted}>None.</p>
+                <p className={typeScale.caption.meta}>—</p>
               ) : (
-                <ul className="space-y-1.5">
+                <ul className="flex flex-col gap-1.5">
                   {offboarding.licenses.map((item) => (
-                    <li key={item.id} className="flex items-center justify-between gap-2">
-                      <span className={typeScale.body.default}>{item.name}</span>
+                    <li key={item.id} className="flex items-center justify-between gap-3">
+                      <span className={typeScale.body.emphasis}>{item.name}</span>
                       <span className={cn(typeScale.caption.meta, "font-mono tabular-nums")}>{item.tag}</span>
                     </li>
                   ))}
@@ -392,6 +409,9 @@ function OffboardingTab({
               <Field>
                 <FieldLabel htmlFor="offboard-search">Search employees</FieldLabel>
                 <InputGroup>
+                  <InputGroupAddon>
+                    <Search className="size-4" />
+                  </InputGroupAddon>
                   <InputGroupInput
                     id="offboard-search"
                     placeholder="Name, email, department, status..."

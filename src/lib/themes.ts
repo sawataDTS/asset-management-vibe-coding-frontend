@@ -34,14 +34,20 @@ export interface WorkspaceTheme {
   description: string
 }
 
-export const DEFAULT_THEME: WorkspaceThemeId = "arctic-light"
+export const DEFAULT_THEME: WorkspaceThemeId = "carbon-enterprise"
 
 export const WORKSPACE_THEMES: WorkspaceTheme[] = [
+  {
+    id: "carbon-enterprise",
+    name: "Carbon Enterprise",
+    mode: "light",
+    description: "Default — enterprise analytics, operations, governance, and internal tools.",
+  },
   {
     id: "arctic-light",
     name: "Arctic Light",
     mode: "light",
-    description: "Default — extremely clean white with subtle blue accents.",
+    description: "Extremely clean white with subtle blue accents.",
   },
   {
     id: "purple-workspace",
@@ -78,12 +84,6 @@ export const WORKSPACE_THEMES: WorkspaceTheme[] = [
     name: "Amber Executive",
     mode: "light",
     description: "Financial dashboards & reporting. Warm, professional.",
-  },
-  {
-    id: "carbon-enterprise",
-    name: "Carbon Enterprise",
-    mode: "light",
-    description: "Enterprise analytics, operations, governance, and internal tools.",
   },
   {
     id: "azure-corporate",
