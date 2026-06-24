@@ -24,6 +24,7 @@ import { Input } from "@/components/ui/input"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
 import { Textarea } from "@/components/ui/textarea"
 import {
+  dialogBodyBeforeActionsClassName,
   dialogFormClassName,
   dialogHeaderClassName,
   dialogScrollBodyClassName,
@@ -296,14 +297,17 @@ function SuppliersPage() {
         <DialogContent className={dialogShellClassNameCompact}>
           <DialogHeader className={dialogHeaderClassName}>
             <DialogTitle>Remove supplier?</DialogTitle>
-            <DialogDescription>
-              <span className={typeScale.body.emphasis}>&ldquo;{selectedSupplier?.name}&rdquo;</span>{" "}
-              will be unlinked from any hardware or software it supplies.
-            </DialogDescription>
           </DialogHeader>
 
           {selectedSupplier ? (
-            <CardActions>
+            <>
+              <DialogBody className={dialogBodyBeforeActionsClassName}>
+                <DialogDescription>
+                  <span className={typeScale.body.emphasis}>&ldquo;{selectedSupplier.name}&rdquo;</span>{" "}
+                  will be unlinked from any hardware or software it supplies.
+                </DialogDescription>
+              </DialogBody>
+              <CardActions>
               <DialogClose asChild>
                 <Button type="button" variant="outline">
                   Cancel
@@ -312,7 +316,8 @@ function SuppliersPage() {
               <Button type="button" variant="destructive" onClick={handleDeleteConfirm}>
                 Remove
               </Button>
-            </CardActions>
+              </CardActions>
+            </>
           ) : null}
         </DialogContent>
       </Dialog>

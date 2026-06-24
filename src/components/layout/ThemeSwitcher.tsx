@@ -18,7 +18,7 @@ import {
  * tokens (scoped via `data-theme`), so the swatches always reflect the real
  * palette. Selecting a card swaps the active workspace theme at runtime — the
  * whole app re-themes instantly with no re-mount required. Persistence is
- * disabled for now (see ThemeProvider).
+ * handled by ThemeProvider via localStorage.
  */
 function ThemePreview() {
   return (

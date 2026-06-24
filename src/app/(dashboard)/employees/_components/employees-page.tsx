@@ -29,6 +29,7 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/in
 import { Textarea } from "@/components/ui/textarea"
 import {
   dialogFormClassName,
+  dialogBodyBeforeActionsClassName,
   dialogHeaderClassName,
   dialogScrollBodyClassName,
   dialogShellClassNameCompact,
@@ -595,17 +596,17 @@ function EmployeesPage() {
               <AlertTriangle className="size-5" />
               Remove Employee
             </DialogTitle>
-            <DialogDescription>
-              This will permanently remove{" "}
-              <span className={typeScale.body.emphasis}>{selectedEmployee?.name}</span> from the directory.
-              Assigned assets will need to be reassigned separately.
-            </DialogDescription>
           </DialogHeader>
 
           {selectedEmployee ? (
             <>
-              <DialogBody>
-                <div className="space-y-1.5 rounded-lg border border-destructive/20 bg-destructive/5 p-4">
+              <DialogBody className={dialogBodyBeforeActionsClassName}>
+                <DialogDescription>
+                  This will permanently remove{" "}
+                  <span className={typeScale.body.emphasis}>{selectedEmployee.name}</span> from the directory.
+                  Assigned assets will need to be reassigned separately.
+                </DialogDescription>
+                <div className="mt-4 space-y-1.5 rounded-lg border border-destructive/20 bg-destructive/5 p-4">
                   <p className={typeScale.body.muted}>
                     <span className={typeScale.body.emphasis}>Name:</span> {selectedEmployee.name}
                   </p>

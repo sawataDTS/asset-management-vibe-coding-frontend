@@ -11,13 +11,14 @@ import { Button } from "@/components/ui/button"
 import { Card, CardAction, CardActions, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Dialog,
+  DialogBody,
   DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { dialogHeaderClassName, dialogShellClassNameCompact } from "@/lib/dialog-layout"
+import { dialogBodyBeforeActionsClassName, dialogHeaderClassName, dialogShellClassNameCompact } from "@/lib/dialog-layout"
 import { type DepartmentTemplate, type TemplateLine } from "@/lib/employee-lifecycle/data"
 import { typeScale } from "@/lib/typography"
 
@@ -61,7 +62,7 @@ function DepartmentTemplateCard({
   onDelete: () => void
 }) {
   return (
-    <Card size="sm">
+    <Card size="sm" className="h-full">
       <CardHeader>
         <CardTitle>{template.department}</CardTitle>
         <CardAction>
@@ -163,7 +164,7 @@ function DepartmentsTab({ templates, onTemplatesChange }: DepartmentsTabProps) {
             </CardContent>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 items-start gap-4 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {templates.map((template) => (
               <DepartmentTemplateCard
                 key={template.id}
@@ -189,14 +190,17 @@ function DepartmentsTab({ templates, onTemplatesChange }: DepartmentsTabProps) {
         <DialogContent className={dialogShellClassNameCompact}>
           <DialogHeader className={dialogHeaderClassName}>
             <DialogTitle>Delete template?</DialogTitle>
-            <DialogDescription>
-              This removes the <span className={typeScale.body.emphasis}>{selectedTemplate?.department}</span>{" "}
-              template and all its lines. Existing assignments are not changed.
-            </DialogDescription>
           </DialogHeader>
 
           {selectedTemplate ? (
-            <CardActions>
+            <>
+              <DialogBody className={dialogBodyBeforeActionsClassName}>
+                <DialogDescription>
+                  This removes the <span className={typeScale.body.emphasis}>{selectedTemplate.department}</span>{" "}
+                  template and all its lines. Existing assignments are not changed.
+                </DialogDescription>
+              </DialogBody>
+              <CardActions>
               <DialogClose asChild>
                 <Button type="button" variant="outline">
                   Cancel
@@ -205,7 +209,8 @@ function DepartmentsTab({ templates, onTemplatesChange }: DepartmentsTabProps) {
               <Button type="button" variant="destructive" onClick={handleDeleteConfirm}>
                 Delete
               </Button>
-            </CardActions>
+              </CardActions>
+            </>
           ) : null}
         </DialogContent>
       </Dialog>

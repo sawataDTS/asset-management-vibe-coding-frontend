@@ -11,6 +11,7 @@ import { RolesSettings } from "./roles-settings"
 import { TeamSettings } from "./team-settings"
 import { TabNav, type TabNavItem } from "@/components/ui/tab-nav"
 import { Tabs, TabsContent } from "@/components/ui/tabs"
+import { cn } from "@/lib/utils"
 
 const SETTINGS_TABS: TabNavItem[] = [
   { value: "profile", label: "Profile", icon: User },
@@ -65,7 +66,10 @@ function SettingsPage() {
 
   return (
     <PageHeader
-      className="w-full max-w-4xl"
+      className={cn(
+        "w-full",
+        activeTab === "roles" || activeTab === "appearance" ? "max-w-6xl" : "max-w-4xl"
+      )}
       eyebrow="Workspace configuration"
       title="Settings"
       description="Manage your profile, organization, team access, and workspace appearance."

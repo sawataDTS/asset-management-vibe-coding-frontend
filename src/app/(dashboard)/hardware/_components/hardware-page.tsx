@@ -28,6 +28,7 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/in
 import { MetricCard } from "@/components/ui/metric-card"
 import {
   dialogFormClassName,
+  dialogBodyBeforeActionsClassName,
   dialogHeaderClassName,
   dialogScrollBodyClassName,
   dialogShellClassName,
@@ -728,16 +729,16 @@ function HardwarePage() {
               <AlertTriangle className="size-5" />
               Retire & Delete Asset
             </DialogTitle>
-            <DialogDescription>
-              Are you sure you want to delete this hardware asset? This action will permanently remove it from
-              tracking logs.
-            </DialogDescription>
           </DialogHeader>
 
           {selectedAsset ? (
             <>
-              <DialogBody>
-                <div className="space-y-1.5 rounded-lg border border-destructive/20 bg-destructive/5 p-4">
+              <DialogBody className={dialogBodyBeforeActionsClassName}>
+                <DialogDescription>
+                  Are you sure you want to delete this hardware asset? This action will permanently remove it from
+                  tracking logs.
+                </DialogDescription>
+                <div className="mt-4 space-y-1.5 rounded-lg border border-destructive/20 bg-destructive/5 p-4">
                   <p className={typeScale.body.muted}>
                     <span className={typeScale.body.emphasis}>Asset name:</span> {selectedAsset.name}
                   </p>

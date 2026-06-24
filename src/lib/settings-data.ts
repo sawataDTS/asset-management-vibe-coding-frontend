@@ -48,6 +48,36 @@ export const DEFAULT_TEAM: TeamMember[] = [
     email: "john.doe@example.com",
     role: "Employee",
   },
+  {
+    id: "2",
+    name: "Sarah Chen",
+    email: "sarah.chen@example.com",
+    role: "Admin",
+  },
+  {
+    id: "3",
+    name: "Michael Rivera",
+    email: "michael.rivera@example.com",
+    role: "Manager",
+  },
+  {
+    id: "4",
+    name: "Emily Watson",
+    email: "emily.watson@example.com",
+    role: "HR",
+  },
+  {
+    id: "5",
+    name: "David Kim",
+    email: "david.kim@example.com",
+    role: "Employee",
+  },
+  {
+    id: "6",
+    name: "Priya Sharma",
+    email: "priya.sharma@example.com",
+    role: "Employee",
+  },
 ]
 
 export const ORG_SIZE_OPTIONS = ["1-10", "11-50", "51-200", "201-500", "501-1000", "1000+"] as const

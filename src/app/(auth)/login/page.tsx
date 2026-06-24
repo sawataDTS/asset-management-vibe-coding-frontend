@@ -3,8 +3,8 @@ import type { Metadata } from "next"
 import { LoginForm } from "../_components/login-form"
 
 export const metadata: Metadata = {
-  title: "Sign in — AssetOps",
-  description: "Sign in to your AssetOps workspace.",
+  title: "Sign in",
+  description: "Sign in to your Asset360Hub workspace.",
 }
 
 export default function LoginPage() {

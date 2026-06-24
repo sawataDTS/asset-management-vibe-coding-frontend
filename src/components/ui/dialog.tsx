@@ -4,7 +4,7 @@ import * as React from "react"
 import { Dialog as DialogPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
-import { surfaceOverlayClassName } from "@/lib/surface"
+import { surfaceDividerTopClassName, surfaceOverlayClassName } from "@/lib/surface"
 import { modalOverlayClassName } from "@/lib/modal-overlay"
 import { Button } from "@/components/ui/button"
 import { XIcon } from "lucide-react"
@@ -91,7 +91,8 @@ function DialogFooter({
     <div
       data-slot="dialog-footer"
       className={cn(
-        "-mx-4 -mb-4 flex flex-col-reverse gap-2 rounded-b-xl border-t bg-muted/50 p-4 sm:flex-row sm:justify-end",
+        "-mx-4 -mb-4 flex flex-col-reverse gap-2 rounded-b-xl bg-muted/50 p-4 sm:flex-row sm:justify-end",
+        surfaceDividerTopClassName,
         className
       )}
       {...props}

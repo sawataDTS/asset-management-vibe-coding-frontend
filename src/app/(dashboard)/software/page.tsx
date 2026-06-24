@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 import { SoftwarePage } from "./_components/software-page"
 
 export const metadata: Metadata = {
-  title: "Software — AssetOps",
+  title: "Software",
   description: "Track seat allocation, renewal dates, and subscription spend across vendors.",
 }
 

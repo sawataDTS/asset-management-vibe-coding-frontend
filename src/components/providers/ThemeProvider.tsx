@@ -12,8 +12,7 @@ import { DEFAULT_THEME, WORKSPACE_THEME_IDS } from "@/lib/themes"
  * swaps CSS variables, so every component that consumes design tokens adapts at
  * runtime with no re-mount required.
  *
- * localStorage persistence is disabled for now — uncomment `storageKey` below
- * when ready to remember the user's theme across reloads.
+ * Theme choice persists in localStorage under `asset360-workspace-theme`.
  */
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   return (
@@ -22,7 +21,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       defaultTheme={DEFAULT_THEME}
       enableSystem={false}
       themes={WORKSPACE_THEME_IDS}
-      // storageKey="asset360-workspace-theme"
+      storageKey="asset360-workspace-theme"
       disableTransitionOnChange
     >
       {children}

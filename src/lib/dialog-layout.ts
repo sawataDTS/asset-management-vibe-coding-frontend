@@ -1,3 +1,5 @@
+import { surfaceDividerBottomClassName } from "@/lib/surface"
+
 /** Viewport inset — small gap top and bottom at max height. */
 export const dialogMaxHeightClassName = "max-h-[calc(100vh-2.5rem)]"
 
@@ -12,7 +14,11 @@ export const dialogShellClassNameWide = cnDialogShell("sm:max-w-2xl")
 /** Auto-height shell for short confirmations (delete, etc.). */
 export const dialogShellClassNameCompact = cnDialogShell("sm:max-w-md")
 
-export const dialogHeaderClassName = "shrink-0 border-b border-border px-4 py-4 pr-12"
+/** Title strip — border separates header from scrollable body; keep title-only here. */
+export const dialogHeaderClassName = `shrink-0 ${surfaceDividerBottomClassName} px-4 py-4 pr-12`
+
+/** Drop bottom inset when `CardActions` follows (padding rhythm per DESIGN.md §10). */
+export const dialogBodyBeforeActionsClassName = "pb-0"
 
 /** Form wrapper inside a dialog shell. */
 export const dialogFormClassName = "flex min-h-0 flex-col"

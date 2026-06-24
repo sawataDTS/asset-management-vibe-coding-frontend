@@ -122,7 +122,7 @@ function PromptReportTab() {
               <h3 className={typeScale.title}>Prompt-based report</h3>
               <p className={cn("mt-1.5 max-w-3xl leading-relaxed", typeScale.body.muted)}>
                 Describe what you need in plain language — assets, licenses, employees, or Google
-                Workspace mailbox storage and quotas (synced from directory). AssetOps converts your
+                Workspace mailbox storage and quotas (synced from directory). Asset360Hub converts your
                 prompt to read-only SQL and builds a presentation-ready report with KPIs and detail
                 rows.
               </p>

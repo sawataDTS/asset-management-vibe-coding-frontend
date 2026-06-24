@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 import { IntakePage } from "./_components/intake-page"
 
 export const metadata: Metadata = {
-  title: "Intake — AssetOps",
+  title: "Intake",
   description: "Manage hardware inventory and software licenses in one place.",
 }
 

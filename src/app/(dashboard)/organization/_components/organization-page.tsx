@@ -28,6 +28,7 @@ import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/in
 import { Textarea } from "@/components/ui/textarea"
 import {
   dialogFormClassName,
+  dialogBodyBeforeActionsClassName,
   dialogHeaderClassName,
   dialogScrollBodyClassName,
   dialogShellClassNameCompact,
@@ -487,14 +488,17 @@ function OrganizationPage() {
         <DialogContent className={dialogShellClassNameCompact}>
           <DialogHeader className={dialogHeaderClassName}>
             <DialogTitle>Delete organization?</DialogTitle>
-            <DialogDescription>
-              <span className={typeScale.body.emphasis}>&ldquo;{selectedOrganization?.name}&rdquo;</span>{" "}
-              and all associated workspace data will be permanently removed.
-            </DialogDescription>
           </DialogHeader>
 
           {selectedOrganization ? (
-            <CardActions>
+            <>
+              <DialogBody className={dialogBodyBeforeActionsClassName}>
+                <DialogDescription>
+                  <span className={typeScale.body.emphasis}>&ldquo;{selectedOrganization.name}&rdquo;</span>{" "}
+                  and all associated workspace data will be permanently removed.
+                </DialogDescription>
+              </DialogBody>
+              <CardActions>
               <DialogClose asChild>
                 <Button type="button" variant="outline">
                   Cancel
@@ -503,7 +507,8 @@ function OrganizationPage() {
               <Button type="button" variant="destructive" onClick={handleDeleteConfirm}>
                 Delete
               </Button>
-            </CardActions>
+              </CardActions>
+            </>
           ) : null}
         </DialogContent>
       </Dialog>

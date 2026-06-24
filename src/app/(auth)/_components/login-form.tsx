@@ -42,7 +42,7 @@ function LoginForm({ className }: { className?: string }) {
             title="Sign in"
             description={
               <>
-                Sign in to your workspace. New companies are onboarded by the AssetOps team
+                Sign in to your workspace. New companies are onboarded by the Asset360Hub team
                 {/* —{" "} <Link href="/" className="font-medium text-primary underline-offset-4 hover:underline">
                   request early access
                 </Link>{" "}

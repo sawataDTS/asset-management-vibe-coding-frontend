@@ -1,7 +1,7 @@
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
-import { surfaceOutlineClassName } from "@/lib/surface"
+import { surfaceDividerTopClassName, surfaceOutlineClassName } from "@/lib/surface"
 
 function Card({
   className,
@@ -82,7 +82,8 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-footer"
       className={cn(
-        "flex items-center rounded-b-xl border-t bg-muted/50",
+        "flex items-center rounded-b-xl bg-muted/50",
+        surfaceDividerTopClassName,
         "[--card-spacing:--spacing(5)] p-(--card-spacing)",
         "group-data-[size=sm]/card:[--card-spacing:--spacing(4)]",
         className

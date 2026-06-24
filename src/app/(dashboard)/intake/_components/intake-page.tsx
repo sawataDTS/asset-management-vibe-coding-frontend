@@ -589,9 +589,9 @@ function CsvIntakeForm() {
             <FieldLabel htmlFor="csv-format">Import format</FieldLabel>
             <CustomSelect
               id="csv-format"
-              value="assetops"
+              value="asset360hub"
               onChange={() => undefined}
-              options={[{ label: "AssetOps CSV template", value: "assetops" }]}
+              options={[{ label: "Asset360Hub CSV template", value: "asset360hub" }]}
               showClear={false}
             />
             <FieldDescription>

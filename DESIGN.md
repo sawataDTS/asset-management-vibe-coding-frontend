@@ -171,8 +171,8 @@ Navigation is data-driven from `src/components/layout/nav-config.ts`.
 - **Surface:** `bg-sidebar`, right border `border-sidebar-border`, plus `shadow-xs` for soft depth alongside the divider.
 - **Structure:** brand (`h-16`) → scrollable nav → footer (settings + profile).
 - **Brand (`SidebarBrand`):** a single, prominent text wordmark — no icon mark.
-  `font-display text-2xl font-bold tracking-tight`: **Asset** in
-  `text-foreground`, **Ops** in `text-primary` (theme brand hue). Brand height
+  `font-display text-xl font-bold tracking-tight`: **Asset** in
+  `text-foreground`, **360Hub** in `text-primary` (theme brand hue). Brand height
   (`h-16`) matches the navbar so the divider lines align across the two columns.
   Render the wordmark once in the sidebar only; do not duplicate the brand
   elsewhere.

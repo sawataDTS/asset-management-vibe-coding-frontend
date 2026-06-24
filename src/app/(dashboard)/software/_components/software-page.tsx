@@ -42,6 +42,7 @@ import { MetricCard } from "@/components/ui/metric-card"
 import { Textarea } from "@/components/ui/textarea"
 import {
   dialogFormClassName,
+  dialogBodyBeforeActionsClassName,
   dialogHeaderClassName,
   dialogScrollBodyClassName,
   dialogShellClassName,
@@ -701,16 +702,16 @@ function SoftwarePage() {
               <AlertTriangle className="size-5" />
               Retire & Delete Subscription
             </DialogTitle>
-            <DialogDescription>
-              Are you sure you want to permanently delete this software license registry? All seat allocations
-              will be terminated.
-            </DialogDescription>
           </DialogHeader>
 
           {selectedLicense ? (
             <>
-              <DialogBody>
-                <div className="space-y-1.5 rounded-lg border border-destructive/20 bg-destructive/5 p-4">
+              <DialogBody className={dialogBodyBeforeActionsClassName}>
+                <DialogDescription>
+                  Are you sure you want to permanently delete this software license registry? All seat allocations
+                  will be terminated.
+                </DialogDescription>
+                <div className="mt-4 space-y-1.5 rounded-lg border border-destructive/20 bg-destructive/5 p-4">
                   <p className={typeScale.body.muted}>
                     <span className={typeScale.body.emphasis}>Software:</span> {selectedLicense.name}
                   </p>

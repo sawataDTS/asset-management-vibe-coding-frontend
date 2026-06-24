@@ -29,7 +29,10 @@ const fontDisplay = Plus_Jakarta_Sans({
 })
 
 export const metadata: Metadata = {
-  title: "AssetOps",
+  title: {
+    default: "Asset360Hub",
+    template: "%s | Asset360Hub",
+  },
   description: "Unified hardware, software, and license asset management workspace.",
 }
 

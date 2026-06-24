@@ -27,6 +27,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { DatePicker } from "@/components/ui/date-picker"
 import {
   Dialog,
+  DialogBody,
   DialogClose,
   DialogContent,
   DialogDescription,
@@ -37,7 +38,7 @@ import { Field, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
 import { Textarea } from "@/components/ui/textarea"
-import { dialogHeaderClassName, dialogShellClassNameCompact } from "@/lib/dialog-layout"
+import { dialogBodyBeforeActionsClassName, dialogHeaderClassName, dialogShellClassNameCompact } from "@/lib/dialog-layout"
 import {
   canFinalizeOffboarding,
   CHECKLIST_ITEM_STATUSES,
@@ -547,11 +548,13 @@ function OffboardingTab({
         <DialogContent className={dialogShellClassNameCompact}>
           <DialogHeader className={dialogHeaderClassName}>
             <DialogTitle>Start bulk offboarding?</DialogTitle>
+          </DialogHeader>
+          <DialogBody className={dialogBodyBeforeActionsClassName}>
             <DialogDescription>
               This will initiate offboarding for {selectedCount} selected employee(s), create their
               checklists, and set status to pending offboarding. Finalization still happens per employee.
             </DialogDescription>
-          </DialogHeader>
+          </DialogBody>
           <CardActions>
             <DialogClose asChild>
               <Button type="button" variant="outline">
@@ -569,33 +572,36 @@ function OffboardingTab({
         <DialogContent className={dialogShellClassNameCompact}>
           <DialogHeader className={dialogHeaderClassName}>
             <DialogTitle>Finalize offboarding?</DialogTitle>
+          </DialogHeader>
+
+          <DialogBody className={cn(dialogBodyBeforeActionsClassName, settingsControlClassName)}>
             <DialogDescription>
               Locks the portal account, revokes license seats (history kept), moves hardware to
               awaiting_return for IT to confirm, and marks the employee as offboarded.
             </DialogDescription>
-          </DialogHeader>
 
-          <div className={cn("space-y-4 px-4 pb-2", settingsControlClassName)}>
-            <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-border bg-muted/30 p-4">
-              <Checkbox
-                checked={skipAwaitingReturn}
-                onCheckedChange={(checked) => setSkipAwaitingReturn(checked === true)}
-                className="mt-0.5"
-              />
-              <span className={typeScale.body.muted}>
-                Skip &apos;awaiting return&apos; — assets are already in hand, return them straight to stock.
-              </span>
-            </label>
+            <div className="mt-4 space-y-4">
+              <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-border bg-muted/30 p-4">
+                <Checkbox
+                  checked={skipAwaitingReturn}
+                  onCheckedChange={(checked) => setSkipAwaitingReturn(checked === true)}
+                  className="mt-0.5"
+                />
+                <span className={typeScale.body.muted}>
+                  Skip &apos;awaiting return&apos; — assets are already in hand, return them straight to stock.
+                </span>
+              </label>
 
-            <Field>
-              <FieldLabel htmlFor="revoke-reason">Revoke Reason (saved on each license row)</FieldLabel>
-              <Input
-                id="revoke-reason"
-                value={revokeReason}
-                onChange={(e) => setRevokeReason(e.target.value)}
-              />
-            </Field>
-          </div>
+              <Field>
+                <FieldLabel htmlFor="revoke-reason">Revoke Reason (saved on each license row)</FieldLabel>
+                <Input
+                  id="revoke-reason"
+                  value={revokeReason}
+                  onChange={(e) => setRevokeReason(e.target.value)}
+                />
+              </Field>
+            </div>
+          </DialogBody>
 
           <CardActions>
             <DialogClose asChild>
@@ -614,13 +620,15 @@ function OffboardingTab({
         <DialogContent className={dialogShellClassNameCompact}>
           <DialogHeader className={dialogHeaderClassName}>
             <DialogTitle>Cancel offboarding?</DialogTitle>
+          </DialogHeader>
+          <DialogBody className={dialogBodyBeforeActionsClassName}>
             <DialogDescription>
               {cancelTarget?.employeeName} will stay with the company. Their status returns to Active or On
               leave (whichever they had before offboarding started), the checklist is removed, and hardware
               and licenses are left unchanged. Use this if the exit was started by mistake or they are
               staying.
             </DialogDescription>
-          </DialogHeader>
+          </DialogBody>
           <CardActions>
             <DialogClose asChild>
               <Button type="button" variant="outline">

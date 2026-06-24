@@ -1,4 +1,4 @@
-export type WorkspaceRole = "Employee" | "Manager" | "Admin"
+export type WorkspaceRole = "Employee" | "Manager" | "HR" | "Admin"
 
 export type EmploymentStatus = "Active" | "On Leave" | "Terminated"
 
@@ -44,7 +44,7 @@ export const EMPLOYEE_DEPARTMENTS = [
 
 export const EMPLOYEE_MANAGERS = ["— None —", "John Doe", "Asha Nair", "Rahul Menon"] as const
 
-export const WORKSPACE_ROLES: WorkspaceRole[] = ["Employee", "Manager", "Admin"]
+export const WORKSPACE_ROLES: WorkspaceRole[] = ["Admin", "Manager", "HR", "Employee"]
 
 export const EMPLOYMENT_STATUSES: EmploymentStatus[] = ["Active", "On Leave", "Terminated"]
 

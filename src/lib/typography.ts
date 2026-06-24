@@ -11,13 +11,12 @@
 export const typeScale = {
   display: {
     page: "font-display text-3xl font-bold leading-tight tracking-tight text-foreground",
-    brand: "font-display text-2xl font-bold leading-tight tracking-tight text-foreground",
+    brand: "font-display text-2xl font-extrabold leading-snug tracking-tight text-foreground",
     nav: "font-display text-lg font-semibold leading-snug tracking-tight text-foreground sm:text-xl",
   },
   heading: "font-heading text-lg font-semibold tracking-tight text-foreground",
   title: "font-heading text-base font-semibold tracking-tight text-foreground",
-  titleMetric:
-    "font-heading text-3xl font-semibold leading-none tracking-tight tabular-nums text-foreground",
+  titleMetric: "font-heading text-3xl font-semibold leading-none tracking-tight tabular-nums text-foreground",
   body: {
     default: "text-sm font-normal text-foreground",
     muted: "text-sm leading-relaxed text-muted-foreground",

@@ -20,6 +20,9 @@ import { cn } from "@/lib/utils"
 
 const filtersCardClassName = "gap-0 py-0"
 const filtersCardContentClassName = cn("p-(--card-spacing)", settingsControlClassName)
+/** Search keeps ~25% width on xl; five selects share the rest in one row. */
+const filtersGridClassName =
+  "grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-[minmax(0,5fr)_repeat(5,minmax(0,3fr))]"
 
 type HardwareReportFiltersPanelProps = {
   filters: ReportFilters
@@ -36,7 +39,7 @@ function HardwareReportFiltersPanel({ filters, onChange }: HardwareReportFilters
       <CardContent className={cn("flex flex-col gap-4", filtersCardContentClassName)}>
         <p className={typeScale.caption.overline}>Filters</p>
 
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-2 xl:grid-cols-4">
+        <div className={filtersGridClassName}>
           <InputGroup className="md:col-span-2 xl:col-span-1">
             <InputGroupAddon>
               <Search className="size-4" />
@@ -72,9 +75,7 @@ function HardwareReportFiltersPanel({ filters, onChange }: HardwareReportFilters
             options={toSelectOptions(REPORT_CONDITION_OPTIONS)}
             showClear={false}
           />
-        </div>
 
-        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:max-w-xl">
           <CustomSelect
             value={filters.cost}
             onChange={(value) => update("cost", typeof value === "string" ? value : DEFAULT_REPORT_FILTERS.cost)}

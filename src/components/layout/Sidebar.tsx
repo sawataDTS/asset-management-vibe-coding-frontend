@@ -39,11 +39,11 @@ function SidebarBrand({ className, ...props }: React.ComponentProps<"div">) {
     >
       <Link
         href="/overview"
-        aria-label="AssetOps — go to overview"
+        aria-label="Asset360Hub — go to overview"
         className="group/brand flex min-w-0 items-center rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring/50"
       >
-        <span className={cn("min-w-0 truncate py-0.5", typeScale.display.brand)}>
-          Asset<span className="text-primary">Ops</span>
+        <span className={cn(typeScale.display.brand, "py-0.5 whitespace-nowrap")}>
+          Asset<span className="text-primary">360Hub</span>
         </span>
       </Link>
     </div>

@@ -3,7 +3,7 @@ import type { Metadata } from "next"
 import { EmployeesPage } from "./_components/employees-page"
 
 export const metadata: Metadata = {
-  title: "Employees — AssetOps",
+  title: "Employees",
   description: "Manage employee records, shipping addresses, workspace access, and asset assignments.",
 }
 

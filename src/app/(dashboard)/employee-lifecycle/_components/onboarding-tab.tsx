@@ -19,6 +19,7 @@ import { Card, CardActions, CardContent } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   Dialog,
+  DialogBody,
   DialogClose,
   DialogContent,
   DialogDescription,
@@ -26,7 +27,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
-import { dialogHeaderClassName, dialogShellClassNameCompact } from "@/lib/dialog-layout"
+import { dialogBodyBeforeActionsClassName, dialogHeaderClassName, dialogShellClassNameCompact } from "@/lib/dialog-layout"
 import { type PendingOnboardingEmployee, type StockItemStatus } from "@/lib/employee-lifecycle/data"
 import { typeScale } from "@/lib/typography"
 import { cn } from "@/lib/utils"
@@ -232,12 +233,15 @@ function OnboardingTab({ employees }: OnboardingTabProps) {
         <DialogContent className={dialogShellClassNameCompact}>
           <DialogHeader className={dialogHeaderClassName}>
             <DialogTitle>Assign available to {selectedCount} employee(s)?</DialogTitle>
+          </DialogHeader>
+
+          <DialogBody className={dialogBodyBeforeActionsClassName}>
             <DialogDescription>
               Runs onboarding for each selected employee in order (stock updates between runs), using each
               person&apos;s department template. In-stock hardware and free license seats are applied until the
               pool runs out; remaining gaps stay as shortfalls or skipped optional lines.
             </DialogDescription>
-          </DialogHeader>
+          </DialogBody>
 
           <CardActions>
             <DialogClose asChild>
