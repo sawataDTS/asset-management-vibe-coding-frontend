@@ -5,6 +5,7 @@ import { Clock, ShieldCheck, Truck } from "lucide-react"
 
 import { CertificationsReportFiltersPanel } from "./certifications-report-filters"
 import { ReportListCard } from "../shared/report-list-card"
+import { REPORT_TAB_ICONS } from "../shared/report-tab-icons"
 import { useRegisterReportExport } from "../shared/reports-export-context"
 import { MetricCard } from "@/components/ui/metric-card"
 import { SubTabNav, type SubTabNavItem } from "@/components/ui/sub-tab-nav"
@@ -54,18 +55,19 @@ function CertificationsReportTab() {
 
       <div className="flex flex-col gap-6" data-report-printable>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {reportData.kpis.map((kpi) => (
-          <MetricCard key={kpi.label} label={kpi.label} value={kpi.value} />
-        ))}
-      </div>
+          {reportData.kpis.map((kpi) => (
+            <MetricCard key={kpi.label} label={kpi.label} value={kpi.value} />
+          ))}
+        </div>
 
-      <ReportListCard
-        title={reportData.config.title}
-        description={reportData.config.description}
-        generatedOn={reportData.generatedOn}
-        rows={reportData.rows}
-        emptyMessage={reportData.config.emptyMessage}
-      />
+        <ReportListCard
+          title={reportData.config.title}
+          description={reportData.config.description}
+          generatedOn={reportData.generatedOn}
+          rows={reportData.rows}
+          icon={REPORT_TAB_ICONS.certifications}
+          emptyMessage={reportData.config.emptyMessage}
+        />
       </div>
     </div>
   )

@@ -48,13 +48,7 @@ export const DEFAULT_REPORT_FILTERS: ReportFilters = {
   timeRange: "All Time",
 }
 
-export const REPORT_STATUS_OPTIONS = [
-  "All Statuses",
-  "In Stock",
-  "Assigned",
-  "In Repair",
-  "Retired",
-] as const
+export const REPORT_STATUS_OPTIONS = ["All Statuses", "In Stock", "Assigned", "In Repair", "Retired"] as const
 
 export const REPORT_CONDITION_OPTIONS = [
   "All Conditions",
@@ -65,12 +59,7 @@ export const REPORT_CONDITION_OPTIONS = [
   "Broken",
 ] as const
 
-export const REPORT_COST_OPTIONS = [
-  "Any Cost",
-  "Under $500",
-  "$500 – $2,000",
-  "Over $2,000",
-] as const
+export const REPORT_COST_OPTIONS = ["Any Cost", "Under $500", "$500 – $2,000", "Over $2,000"] as const
 
 export const REPORT_TIME_OPTIONS = ["All Time", "Last 30 Days", "Last 90 Days", "Last 12 Months"] as const
 
@@ -238,11 +227,9 @@ export function applyReportFilters(assets: ReportAsset[], filters: ReportFilters
     const matchesStatus =
       filters.status === "All Statuses" || normalizeStatus(asset.status) === filters.status
 
-    const matchesCategory =
-      filters.category === "All Categories" || asset.category === filters.category
+    const matchesCategory = filters.category === "All Categories" || asset.category === filters.category
 
-    const matchesCondition =
-      filters.condition === "All Conditions" || asset.condition === filters.condition
+    const matchesCondition = filters.condition === "All Conditions" || asset.condition === filters.condition
 
     const matchesCostFilter = matchesCost(asset.cost, filters.cost)
     const matchesTime = isWithinTimeRange(asset.purchaseDate, filters.timeRange)
@@ -260,6 +247,21 @@ export function applyReportFilters(assets: ReportAsset[], filters: ReportFilters
 
 function statusBadge(status: AssetStatus) {
   return normalizeStatus(status)
+}
+
+function assetStatusBadgeVariant(status: AssetStatus): ReportRow["badgeVariant"] {
+  switch (status) {
+    case "In Stock":
+      return "success"
+    case "Assigned":
+      return "info"
+    case "Repair":
+      return "warning"
+    case "Retired":
+      return "secondary"
+    default:
+      return "outline"
+  }
 }
 
 export const HARDWARE_REPORT_CONFIG: Record<HardwareReportKind, HardwareReportConfig> = {
@@ -288,7 +290,7 @@ export const HARDWARE_REPORT_CONFIG: Record<HardwareReportKind, HardwareReportCo
         title: `${asset.name} · ${asset.tag}`,
         subtitle: `${asset.supplier} · ${asset.model} · ${asset.category.toLowerCase()} · ${formatReportDate(asset.purchaseDate)}`,
         badge: statusBadge(asset.status),
-        badgeVariant: "secondary",
+        badgeVariant: assetStatusBadgeVariant(asset.status),
       })),
   },
   "retired-assets": {
@@ -326,8 +328,7 @@ export const HARDWARE_REPORT_CONFIG: Record<HardwareReportKind, HardwareReportCo
     kpis: (assets) => {
       const overdue = assets.filter(
         (asset) =>
-          asset.status === "Assigned" &&
-          (getDaysHeld(asset) > 365 || isWarrantyExpired(asset.warranty))
+          asset.status === "Assigned" && (getDaysHeld(asset) > 365 || isWarrantyExpired(asset.warranty))
       )
       const assignedTotal = assets.filter((asset) => asset.status === "Assigned").length
       const avgDaysHeld = assignedTotal
@@ -349,8 +350,7 @@ export const HARDWARE_REPORT_CONFIG: Record<HardwareReportKind, HardwareReportCo
     selectItems: (assets) =>
       assets.filter(
         (asset) =>
-          asset.status === "Assigned" &&
-          (getDaysHeld(asset) > 365 || isWarrantyExpired(asset.warranty))
+          asset.status === "Assigned" && (getDaysHeld(asset) > 365 || isWarrantyExpired(asset.warranty))
       ),
     toRows: (assets) =>
       assets.map((asset) => ({
@@ -384,7 +384,7 @@ export const HARDWARE_REPORT_CONFIG: Record<HardwareReportKind, HardwareReportCo
         title: `${asset.name} · ${asset.tag}`,
         subtitle: `${asset.supplier} · ${asset.model} · ${asset.category.toLowerCase()} · to ${asset.assignee || "Unassigned"} · ${formatReportDate(getAssignmentDate(asset))}`,
         badge: "Checked Out",
-        badgeVariant: "secondary",
+        badgeVariant: "info",
       })),
   },
   "eol-warranty": {
@@ -465,8 +465,7 @@ export const HARDWARE_REPORT_CONFIG: Record<HardwareReportKind, HardwareReportCo
     },
     selectItems: (assets) =>
       assets.filter(
-        (asset) =>
-          asset.status === "Repair" || asset.condition === "Poor" || asset.condition === "Broken"
+        (asset) => asset.status === "Repair" || asset.condition === "Poor" || asset.condition === "Broken"
       ),
     toRows: (assets) =>
       assets.map((asset) => ({
@@ -497,9 +496,6 @@ export function getHardwareReportData(
   }
 }
 
-export const HARDWARE_CATEGORY_FILTER_OPTIONS = [
-  "All Categories",
-  ...HARDWARE_CATEGORIES,
-] as const
+export const HARDWARE_CATEGORY_FILTER_OPTIONS = ["All Categories", ...HARDWARE_CATEGORIES] as const
 
 export { ASSET_STATUSES, HARDWARE_CATEGORIES }

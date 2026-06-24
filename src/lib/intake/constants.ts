@@ -33,11 +33,7 @@ export const intakeModes = [
 
 export const billingPeriods = ["Monthly", "Annually", "One-time"] as const
 
-export const csvSpreadsheetTypes = [
-  "Hardware Inventory",
-  "Software License",
-  "Employees",
-] as const
+export const csvSpreadsheetTypes = ["Hardware Inventory", "Software License", "Employees"] as const
 
 export const csvColumnOrders: Record<(typeof csvSpreadsheetTypes)[number], string> = {
   "Hardware Inventory":

@@ -5,7 +5,12 @@ import { useMemo } from "react"
 import { format, isValid, parseISO } from "date-fns"
 import { Activity, History, Inbox, Pencil, Trash2, User } from "lucide-react"
 
-import { DataTable, dataTableActionsCellClass, dataTableActionsHeaderClass, type DataTableColumn } from "@/components/custom/DataTable"
+import {
+  DataTable,
+  dataTableActionsCellClass,
+  dataTableActionsHeaderClass,
+  type DataTableColumn,
+} from "@/components/custom/DataTable"
 import { AssetStatusBadge } from "./asset-status-badge"
 import { Button } from "@/components/ui/button"
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"

@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import { toast } from "sonner"
-import { BadgeCheck, FileText, HardDrive, Mail, Send, Sparkles } from "lucide-react"
+import { Send } from "lucide-react"
 
 import { CertificationsReportTab } from "./certifications/certifications-report-tab"
 import { HardwareReportTab } from "./hardware/hardware-report-tab"
@@ -10,6 +10,7 @@ import { MailboxReportTab } from "./mailbox/mailbox-report-tab"
 import { PromptReportTab } from "./prompt/prompt-report-tab"
 import { SoftwareReportTab } from "./software/software-report-tab"
 import { ReportExportMenu } from "./shared/report-export-menu"
+import { REPORT_TAB_ICONS } from "./shared/report-tab-icons"
 import { ReportsExportProvider } from "./shared/reports-export-context"
 import { PageHeader } from "@/components/layout/PageHeader"
 import { Button } from "@/components/ui/button"
@@ -17,11 +18,11 @@ import { TabNav, type TabNavItem } from "@/components/ui/tab-nav"
 import { Tabs, TabsContent } from "@/components/ui/tabs"
 
 const REPORT_TABS: TabNavItem[] = [
-  { value: "hardware", label: "Hardware", icon: HardDrive },
-  { value: "software", label: "Software", icon: FileText },
-  { value: "certifications", label: "Certifications", icon: BadgeCheck },
-  { value: "mailbox", label: "Mail Box", icon: Mail, disabled: true },
-  { value: "prompt", label: "Prompt", icon: Sparkles },
+  { value: "hardware", label: "Hardware", icon: REPORT_TAB_ICONS.hardware },
+  { value: "software", label: "Software", icon: REPORT_TAB_ICONS.software },
+  { value: "certifications", label: "Certifications", icon: REPORT_TAB_ICONS.certifications },
+  { value: "mailbox", label: "Mail Box", icon: REPORT_TAB_ICONS.mailbox, disabled: true },
+  { value: "prompt", label: "Prompt", icon: REPORT_TAB_ICONS.prompt },
 ]
 
 const reportPanelClassName = "mt-0 flex-none outline-none data-[state=inactive]:hidden"

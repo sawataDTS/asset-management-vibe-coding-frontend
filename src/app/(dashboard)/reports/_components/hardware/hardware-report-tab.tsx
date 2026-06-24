@@ -1,18 +1,11 @@
 "use client"
 
 import { useMemo, useState } from "react"
-import {
-  Archive,
-  Calendar,
-  ClipboardList,
-  Clock,
-  ClipboardCheck,
-  TrendingDown,
-  Wrench,
-} from "lucide-react"
+import { Archive, Calendar, ClipboardList, Clock, ClipboardCheck, TrendingDown, Wrench } from "lucide-react"
 
 import { HardwareReportFiltersPanel } from "./hardware-report-filters"
 import { ReportListCard } from "../shared/report-list-card"
+import { REPORT_TAB_ICONS } from "../shared/report-tab-icons"
 import { useRegisterReportExport } from "../shared/reports-export-context"
 import { MetricCard } from "@/components/ui/metric-card"
 import { SubTabNav, type SubTabNavItem } from "@/components/ui/sub-tab-nav"
@@ -72,17 +65,18 @@ function HardwareReportTab() {
 
       <div className={cn("flex flex-col gap-6", "print:block")} data-report-printable>
         <div className={cn("grid grid-cols-1 gap-4", kpiColumns)}>
-        {reportData.kpis.map((kpi) => (
-          <MetricCard key={kpi.label} label={kpi.label} value={kpi.value} />
-        ))}
-      </div>
+          {reportData.kpis.map((kpi) => (
+            <MetricCard key={kpi.label} label={kpi.label} value={kpi.value} />
+          ))}
+        </div>
 
-      <ReportListCard
-        title={reportData.config.title}
-        description={reportData.config.description}
-        generatedOn={reportData.generatedOn}
-        rows={reportData.rows}
-      />
+        <ReportListCard
+          title={reportData.config.title}
+          description={reportData.config.description}
+          generatedOn={reportData.generatedOn}
+          rows={reportData.rows}
+          icon={REPORT_TAB_ICONS.hardware}
+        />
       </div>
     </div>
   )

@@ -39,11 +39,7 @@ function SubTabNav({
       className={cn("overflow-x-auto pb-0.5", hideOnExport && "data-report-export-hide", className)}
       {...props}
     >
-      <div
-        role="tablist"
-        aria-label="Report views"
-        className="inline-flex min-w-max flex-wrap gap-1.5"
-      >
+      <div role="tablist" aria-label="Report views" className="inline-flex min-w-max flex-wrap gap-1.5">
         {items.map((item) => {
           const Icon = item.icon
           const isActive = value === item.value

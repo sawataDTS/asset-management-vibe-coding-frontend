@@ -2,13 +2,7 @@
 
 import * as React from "react"
 import { useCallback, useState } from "react"
-import {
-  ClipboardCheck,
-  History,
-  Sparkles,
-  UserMinus,
-  UserPlus,
-} from "lucide-react"
+import { ClipboardCheck, History, Sparkles, UserMinus, UserPlus } from "lucide-react"
 
 import { DepartmentsTab } from "./departments-tab"
 import { GenerateLabelTab } from "./generate-label-tab"
@@ -46,9 +40,7 @@ function EmployeeLifecyclePage() {
   const [offboardingCandidates, setOffboardingCandidates] = useState<OffboardingCandidate[]>(
     initialOffboardingCandidates
   )
-  const [activeOffboardings, setActiveOffboardings] = useState<ActiveOffboarding[]>(
-    initialActiveOffboardings
-  )
+  const [activeOffboardings, setActiveOffboardings] = useState<ActiveOffboarding[]>(initialActiveOffboardings)
 
   const handleHistoryAdd = useCallback((entry: LifecycleHistoryEntry) => {
     setHistory((prev) => [entry, ...prev])
@@ -76,7 +68,11 @@ function EmployeeLifecyclePage() {
             <GenerateLabelTab employees={initialLabelEmployees} />
           </TabsContent>
 
-          <TabsContent value="offboarding" forceMount className={activeTab === "offboarding" ? undefined : "hidden"}>
+          <TabsContent
+            value="offboarding"
+            forceMount
+            className={activeTab === "offboarding" ? undefined : "hidden"}
+          >
             <OffboardingTab
               candidates={offboardingCandidates}
               activeOffboardings={activeOffboardings}

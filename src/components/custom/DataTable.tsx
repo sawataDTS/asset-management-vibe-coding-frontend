@@ -8,14 +8,7 @@ import { surfaceOutlineClassName } from "@/lib/surface"
 import { typeScale } from "@/lib/typography"
 import { Spinner } from "@/components/ui/spinner"
 import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription } from "@/components/ui/empty"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
 export type SortDirection = "asc" | "desc"
 
@@ -43,20 +36,18 @@ export const dataTableActionsHeaderClass = "text-right"
 export const dataTableActionsCellClass = "text-right"
 
 const tableHeadClassName = cn(
-  "group h-auto whitespace-nowrap bg-muted/50 px-3.5 py-2.5 align-middle",
+  "group h-auto bg-muted/50 px-3.5 py-2.5 align-middle whitespace-nowrap",
   typeScale.caption.tableHeader
 )
 
 const flexTableHeadCellClassName = cn(
-  "group box-border h-auto whitespace-nowrap px-3.5 py-2.5 align-middle",
+  "group box-border h-auto px-3.5 py-2.5 align-middle whitespace-nowrap",
   typeScale.caption.tableHeader
 )
 
 const tableCellClassName = "px-3.5 py-3 align-top whitespace-normal"
 
-const flexTableBodyCellClassName = cn(
-  "box-border min-w-0 px-3.5 py-3 align-top whitespace-normal"
-)
+const flexTableBodyCellClassName = cn("box-border min-w-0 px-3.5 py-3 align-top whitespace-normal")
 
 interface DataTableProps<T> {
   rowData: T[]
@@ -114,13 +105,7 @@ function compareSortValues(
   return String(a).localeCompare(String(b), undefined, { numeric: true, sensitivity: "base" }) * factor
 }
 
-function SortIndicator({
-  active,
-  direction,
-}: {
-  active: boolean
-  direction: SortDirection | null
-}) {
+function SortIndicator({ active, direction }: { active: boolean; direction: SortDirection | null }) {
   if (active && direction === "asc") {
     return <ArrowUp className="size-3.5 shrink-0 text-primary" aria-hidden />
   }
@@ -194,8 +179,7 @@ function getColumnLayoutStyle<T>(
 
 function usesFlexColumnLayout<T>(columns: DataTableColumn<T>[]) {
   return columns.some(
-    (column) =>
-      column.flex != null || column.width != null || column.resizable || column.minWidth != null
+    (column) => column.flex != null || column.width != null || column.resizable || column.minWidth != null
   )
 }
 
@@ -396,7 +380,7 @@ export function DataTable<T extends object>({
         {useFlexLayout ? (
           <div
             data-slot="table-container"
-            className="relative min-w-0 w-full overflow-x-auto overflow-y-hidden [scrollbar-width:thin]"
+            className="relative w-full min-w-0 [scrollbar-width:thin] overflow-x-auto overflow-y-hidden"
           >
             <div role="table" className="w-max min-w-full text-sm">
               <div role="rowgroup">

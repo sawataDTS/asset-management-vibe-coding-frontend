@@ -9,7 +9,8 @@ import { SuppliersTable } from "./suppliers-table"
 import { PageHeader } from "@/components/layout/PageHeader"
 import { settingsControlClassName } from "@/app/(dashboard)/settings/_components/settings-panel"
 import { Button } from "@/components/ui/button"
-import { Card, CardActions, CardContent } from "@/components/ui/card"
+import { CardActions } from "@/components/ui/card"
+import { CardContainer } from "@/components/ui/card-container"
 import {
   Dialog,
   DialogBody,
@@ -37,8 +38,7 @@ import { cn } from "@/lib/utils"
 
 type ActiveModal = "add" | "edit" | "delete" | null
 
-const suppliersCardClassName = "gap-0 py-0"
-const suppliersCardContentClassName = cn("p-(--card-spacing)", settingsControlClassName)
+const suppliersCardContentClassName = settingsControlClassName
 
 function SuppliersPage() {
   const [suppliers, setSuppliers] = useState<Supplier[]>(initialSuppliers)
@@ -135,9 +135,7 @@ function SuppliersPage() {
       toast.success(`Added supplier ${newSupplier.name}.`)
     } else if (activeModal === "edit" && selectedSupplier) {
       setSuppliers((prev) =>
-        prev.map((supplier) =>
-          supplier.id === selectedSupplier.id ? { ...supplier, ...payload } : supplier
-        )
+        prev.map((supplier) => (supplier.id === selectedSupplier.id ? { ...supplier, ...payload } : supplier))
       )
       toast.success(`Updated supplier ${payload.name}.`)
     }
@@ -166,26 +164,27 @@ function SuppliersPage() {
           </Button>
         }
       >
-        <Card className={suppliersCardClassName}>
-          <CardContent className={cn("flex flex-col gap-4", suppliersCardContentClassName)}>
-            <InputGroup className="min-w-[240px] max-w-xl">
-              <InputGroupAddon>
-                <Search className="size-4" />
-              </InputGroupAddon>
-              <InputGroupInput
-                placeholder="Search suppliers..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-            </InputGroup>
-
-            <SuppliersTable
-              rows={filteredSuppliers}
-              onEdit={(supplier) => handleOpenModal("edit", supplier)}
-              onDelete={(supplier) => handleOpenModal("delete", supplier)}
+        <CardContainer
+          formControls
+          contentClassName={cn("flex flex-col gap-4", suppliersCardContentClassName)}
+        >
+          <InputGroup className="max-w-xl min-w-[240px]">
+            <InputGroupAddon>
+              <Search className="size-4" />
+            </InputGroupAddon>
+            <InputGroupInput
+              placeholder="Search suppliers..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
-          </CardContent>
-        </Card>
+          </InputGroup>
+
+          <SuppliersTable
+            rows={filteredSuppliers}
+            onEdit={(supplier) => handleOpenModal("edit", supplier)}
+            onDelete={(supplier) => handleOpenModal("delete", supplier)}
+          />
+        </CardContainer>
       </PageHeader>
 
       <Dialog open={activeModal === "add" || activeModal === "edit"} onOpenChange={handleDialogOpenChange}>
@@ -285,9 +284,7 @@ function SuppliersPage() {
                   Cancel
                 </Button>
               </DialogClose>
-              <Button type="submit">
-                {activeModal === "add" ? "Add supplier" : "Save changes"}
-              </Button>
+              <Button type="submit">{activeModal === "add" ? "Add supplier" : "Save changes"}</Button>
             </CardActions>
           </form>
         </DialogContent>
@@ -303,19 +300,19 @@ function SuppliersPage() {
             <>
               <DialogBody className={dialogBodyBeforeActionsClassName}>
                 <DialogDescription>
-                  <span className={typeScale.body.emphasis}>&ldquo;{selectedSupplier.name}&rdquo;</span>{" "}
-                  will be unlinked from any hardware or software it supplies.
+                  <span className={typeScale.body.emphasis}>&ldquo;{selectedSupplier.name}&rdquo;</span> will
+                  be unlinked from any hardware or software it supplies.
                 </DialogDescription>
               </DialogBody>
               <CardActions>
-              <DialogClose asChild>
-                <Button type="button" variant="outline">
-                  Cancel
+                <DialogClose asChild>
+                  <Button type="button" variant="outline">
+                    Cancel
+                  </Button>
+                </DialogClose>
+                <Button type="button" variant="destructive" onClick={handleDeleteConfirm}>
+                  Remove
                 </Button>
-              </DialogClose>
-              <Button type="button" variant="destructive" onClick={handleDeleteConfirm}>
-                Remove
-              </Button>
               </CardActions>
             </>
           ) : null}

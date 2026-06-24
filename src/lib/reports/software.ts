@@ -43,12 +43,7 @@ export const DEFAULT_SOFTWARE_REPORT_FILTERS: SoftwareReportFilters = {
   cost: "Any Cost",
 }
 
-export const SOFTWARE_STATUS_OPTIONS = [
-  "All Statuses",
-  "Active",
-  "Expiring Soon",
-  "Expired",
-] as const
+export const SOFTWARE_STATUS_OPTIONS = ["All Statuses", "Active", "Expiring Soon", "Expired"] as const
 
 export const SOFTWARE_UTILISATION_OPTIONS = [
   "Any Utilisation",
@@ -58,12 +53,7 @@ export const SOFTWARE_UTILISATION_OPTIONS = [
   "Over-allocated",
 ] as const
 
-export const SOFTWARE_COST_OPTIONS = [
-  "Any Cost",
-  "Under $500",
-  "$500 – $2,000",
-  "Over $2,000",
-] as const
+export const SOFTWARE_COST_OPTIONS = ["Any Cost", "Under $500", "$500 – $2,000", "Over $2,000"] as const
 
 function parseCostAmount(cost: string) {
   return parseInt(cost.replace(/[^0-9]/g, ""), 10) || 0
@@ -94,9 +84,7 @@ function getUtilisationPercent(license: SoftwareLicense) {
   return Math.round((license.assignedSeats / license.totalSeats) * 100)
 }
 
-export function enrichSoftwareLicenses(
-  licenses: SoftwareLicense[] = initialLicenses
-): ReportLicense[] {
+export function enrichSoftwareLicenses(licenses: SoftwareLicense[] = initialLicenses): ReportLicense[] {
   return licenses.map((license) => ({
     ...license,
     vendor: normalizeVendor(license.supplier),
@@ -188,18 +176,12 @@ export function applySoftwareReportFilters(licenses: ReportLicense[], filters: S
 
     const matchesStatus = matchesStatusFilter(license, filters.status)
     const matchesVendor = filters.vendor === "All Vendors" || license.vendor === filters.vendor
-    const matchesCategory =
-      filters.category === "All Categories" || license.category === filters.category
+    const matchesCategory = filters.category === "All Categories" || license.category === filters.category
     const matchesUtilisation = matchesUtilisationFilter(license, filters.utilisation)
     const matchesCost = matchesCostFilter(license.annualCost, filters.cost)
 
     return (
-      matchesSearch &&
-      matchesStatus &&
-      matchesVendor &&
-      matchesCategory &&
-      matchesUtilisation &&
-      matchesCost
+      matchesSearch && matchesStatus && matchesVendor && matchesCategory && matchesUtilisation && matchesCost
     )
   })
 }
@@ -239,8 +221,7 @@ function fleetUtilisation(licenses: ReportLicense[]) {
 
 function complianceRiskScore(licenses: ReportLicense[]) {
   const issues = licenses.filter(
-    (license) =>
-      license.isOverAllocated || (isExpiredLicense(license) && license.assignedSeats > 0)
+    (license) => license.isOverAllocated || (isExpiredLicense(license) && license.assignedSeats > 0)
   ).length
   if (!licenses.length) return 0
   return Math.round((issues / licenses.length) * 100)
@@ -287,9 +268,7 @@ export const SOFTWARE_REPORT_CONFIG: Record<SoftwareReportKind, SoftwareReportCo
       ]
     },
     selectItems: (licenses) =>
-      licenses.filter(
-        (license) => isExpiringWithinDays(license, 90) || isExpiredLicense(license)
-      ),
+      licenses.filter((license) => isExpiringWithinDays(license, 90) || isExpiredLicense(license)),
     toRows: (licenses) =>
       licenses.map((license) => ({
         id: license.id,
@@ -339,8 +318,7 @@ export const SOFTWARE_REPORT_CONFIG: Record<SoftwareReportKind, SoftwareReportCo
         { label: "Under 50%", value: String(underHalf) },
       ]
     },
-    selectItems: (licenses) =>
-      [...licenses].sort((a, b) => b.utilisationPercent - a.utilisationPercent),
+    selectItems: (licenses) => [...licenses].sort((a, b) => b.utilisationPercent - a.utilisationPercent),
     toRows: (licenses) =>
       licenses.map((license) => ({
         id: license.id,
@@ -377,7 +355,7 @@ export const SOFTWARE_REPORT_CONFIG: Record<SoftwareReportKind, SoftwareReportCo
         title: license.name,
         subtitle: `${license.vendor} · ${license.category} · ${seatLabel(license)} · ${costDisplay(license)}`,
         badge: "Underused",
-        badgeVariant: "secondary",
+        badgeVariant: "outline",
       })),
   },
   "license-compliance": {
@@ -434,7 +412,7 @@ export const SOFTWARE_REPORT_CONFIG: Record<SoftwareReportKind, SoftwareReportCo
         badge: license.status,
         badgeVariant:
           license.status === "Active"
-            ? "secondary"
+            ? "success"
             : license.status === "Expiring Soon"
               ? "warning"
               : "destructive",

@@ -43,9 +43,7 @@ function ChartCard({
       <CardContent className={cn("flex flex-col gap-4", contentClassName)}>
         {eyebrow || meta ? (
           <div className="flex flex-col gap-0.5">
-            {eyebrow ? (
-              <span className={typeScale.caption.overline}>{eyebrow}</span>
-            ) : null}
+            {eyebrow ? <span className={typeScale.caption.overline}>{eyebrow}</span> : null}
             {meta ? <span className={typeScale.body.emphasis}>{meta}</span> : null}
           </div>
         ) : null}

@@ -20,8 +20,22 @@ const recentLicenses: RecentLicense[] = [
   { name: "META Whatsapp #4", vendor: "META", seatsUsed: 0, seatsTotal: 1, status: "Active", expires: null },
   { name: "META Whatsapp #6", vendor: "META", seatsUsed: 0, seatsTotal: 1, status: "Active", expires: null },
   { name: "META Whatsapp #2", vendor: "META", seatsUsed: 0, seatsTotal: 1, status: "Active", expires: null },
-  { name: "Microsoft 365 E3", vendor: "Microsoft", seatsUsed: 1, seatsTotal: 5, status: "Active", expires: "Dec 2026" },
-  { name: "Slack Business+", vendor: "Slack", seatsUsed: 0, seatsTotal: 10, status: "Expiring Soon", expires: "Aug 2026" },
+  {
+    name: "Microsoft 365 E3",
+    vendor: "Microsoft",
+    seatsUsed: 1,
+    seatsTotal: 5,
+    status: "Active",
+    expires: "Dec 2026",
+  },
+  {
+    name: "Slack Business+",
+    vendor: "Slack",
+    seatsUsed: 0,
+    seatsTotal: 10,
+    status: "Expiring Soon",
+    expires: "Aug 2026",
+  },
   { name: "Zoom Pro", vendor: "Zoom", seatsUsed: 2, seatsTotal: 5, status: "Active", expires: "Jan 2027" },
 ]
 

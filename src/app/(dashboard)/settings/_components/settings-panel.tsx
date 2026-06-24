@@ -3,9 +3,8 @@
 import * as React from "react"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardActions, CardContent } from "@/components/ui/card"
+import { CardContainer } from "@/components/ui/card-container"
 import { cn } from "@/lib/utils"
-import { typeScale } from "@/lib/typography"
 
 /** Shared control sizing for settings forms — input and select use global h-9. */
 export const settingsControlClassName = "[&_[data-slot=select-trigger]]:w-full"
@@ -43,41 +42,25 @@ function SettingsPanel({
   wide = false,
 }: SettingsPanelProps) {
   return (
-    <Card
+    <CardContainer
       id={id}
-      className={cn(
-        "scroll-mt-24 w-full gap-0 py-0",
-        wide ? "max-w-6xl" : "max-w-4xl",
-        className
-      )}
-    >
-      <CardContent
-        className={cn(
-          "flex flex-col gap-5",
-          onSave ? settingsCardContentWithActionsClassName : cn("p-(--card-spacing)", settingsControlClassName)
-        )}
-      >
-        <div className="flex items-start justify-between gap-4">
-          <div className="min-w-0 flex-1">
-            <h2 className={typeScale.heading}>{title}</h2>
-            {description ? (
-              <p className={cn("mt-1.5", typeScale.body.muted)}>{description}</p>
-            ) : null}
-          </div>
-          {actions ? <div className="shrink-0">{actions}</div> : null}
-        </div>
-
-        {children}
-      </CardContent>
-
-      {onSave ? (
-        <CardActions>
+      variant="form"
+      title={title}
+      description={description}
+      action={actions}
+      formControls
+      contentClassName="flex flex-col gap-5"
+      footer={
+        onSave ? (
           <Button onClick={onSave} disabled={saving}>
             {saveLabel}
           </Button>
-        </CardActions>
-      ) : null}
-    </Card>
+        ) : undefined
+      }
+      className={cn("w-full scroll-mt-24", wide ? "max-w-6xl" : "max-w-4xl", className)}
+    >
+      {children}
+    </CardContainer>
   )
 }
 

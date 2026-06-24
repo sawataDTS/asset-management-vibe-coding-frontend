@@ -15,7 +15,8 @@ import { SectionHeading } from "@/components/layout/SectionHeading"
 import { settingsControlClassName } from "@/app/(dashboard)/settings/_components/settings-panel"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardActions, CardContent } from "@/components/ui/card"
+import { CardActions } from "@/components/ui/card"
+import { CardContainer } from "@/components/ui/card-container"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   Dialog,
@@ -27,13 +28,16 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog"
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
-import { dialogBodyBeforeActionsClassName, dialogHeaderClassName, dialogShellClassNameCompact } from "@/lib/dialog-layout"
+import {
+  dialogBodyBeforeActionsClassName,
+  dialogHeaderClassName,
+  dialogShellClassNameCompact,
+} from "@/lib/dialog-layout"
 import { type PendingOnboardingEmployee, type StockItemStatus } from "@/lib/employee-lifecycle/data"
 import { typeScale } from "@/lib/typography"
 import { cn } from "@/lib/utils"
 
-const lifecycleCardClassName = "gap-0 py-0"
-const lifecycleCardContentClassName = cn("p-(--card-spacing)", settingsControlClassName)
+const lifecycleCardContentClassName = settingsControlClassName
 
 type OnboardingTableProps = {
   rows: PendingOnboardingEmployee[]
@@ -69,10 +73,7 @@ function EmployeeCell({ row }: { row: PendingOnboardingEmployee }) {
   )
 }
 
-const STOCK_STATUS_VARIANT: Record<
-  StockItemStatus,
-  React.ComponentProps<typeof Badge>["variant"]
-> = {
+const STOCK_STATUS_VARIANT: Record<StockItemStatus, React.ComponentProps<typeof Badge>["variant"]> = {
   in_stock: "success",
   out_of_stock: "destructive",
 }
@@ -201,33 +202,27 @@ function OnboardingTab({ employees }: OnboardingTabProps) {
 
   return (
     <>
-      <Card className={lifecycleCardClassName}>
-        <CardContent className={cn("flex flex-col gap-4", lifecycleCardContentClassName)}>
-          <SectionHeading
-            title="Pending vs department template"
-            description="Compare each employee against their department template. Stock counts reflect the tenant pool; assignable now is how many lines can still be fulfilled from current inventory."
-            actions={
-              <div className="flex flex-wrap items-center gap-2">
-                <Button type="button" variant="outline" onClick={handleSelectWithStock}>
-                  Select with stock
-                </Button>
-                <Button type="button" variant="outline" onClick={handleClear}>
-                  Clear
-                </Button>
-                <Button
-                  type="button"
-                  disabled={selectedCount === 0}
-                  onClick={() => setConfirmOpen(true)}
-                >
-                  Assign available ({selectedCount})
-                </Button>
-              </div>
-            }
-          />
+      <CardContainer formControls contentClassName={cn("flex flex-col gap-4", lifecycleCardContentClassName)}>
+        <SectionHeading
+          title="Pending vs department template"
+          description="Compare each employee against their department template. Stock counts reflect the tenant pool; assignable now is how many lines can still be fulfilled from current inventory."
+          actions={
+            <div className="flex flex-wrap items-center gap-2">
+              <Button type="button" variant="outline" onClick={handleSelectWithStock}>
+                Select with stock
+              </Button>
+              <Button type="button" variant="outline" onClick={handleClear}>
+                Clear
+              </Button>
+              <Button type="button" disabled={selectedCount === 0} onClick={() => setConfirmOpen(true)}>
+                Assign available ({selectedCount})
+              </Button>
+            </div>
+          }
+        />
 
-          <OnboardingTable rows={employees} selectedIds={selectedIds} onToggle={handleToggle} />
-        </CardContent>
-      </Card>
+        <OnboardingTable rows={employees} selectedIds={selectedIds} onToggle={handleToggle} />
+      </CardContainer>
 
       <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
         <DialogContent className={dialogShellClassNameCompact}>
@@ -238,8 +233,8 @@ function OnboardingTab({ employees }: OnboardingTabProps) {
           <DialogBody className={dialogBodyBeforeActionsClassName}>
             <DialogDescription>
               Runs onboarding for each selected employee in order (stock updates between runs), using each
-              person&apos;s department template. In-stock hardware and free license seats are applied until the
-              pool runs out; remaining gaps stay as shortfalls or skipped optional lines.
+              person&apos;s department template. In-stock hardware and free license seats are applied until
+              the pool runs out; remaining gaps stay as shortfalls or skipped optional lines.
             </DialogDescription>
           </DialogBody>
 

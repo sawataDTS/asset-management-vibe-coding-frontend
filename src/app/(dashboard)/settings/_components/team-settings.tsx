@@ -53,10 +53,7 @@ function TeamMemberCell({ member }: { member: TeamMember }) {
 
 function TeamRoleBadge({ role }: { role: string }) {
   return (
-    <Badge
-      variant={roleBadgeVariant(role)}
-      className="min-w-21 justify-center px-2.5"
-    >
+    <Badge variant={roleBadgeVariant(role)} className="min-w-21 justify-center px-2.5">
       {role}
     </Badge>
   )

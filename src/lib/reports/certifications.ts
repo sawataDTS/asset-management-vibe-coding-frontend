@@ -15,10 +15,7 @@ export type CertificationRecord = {
   hasEvidence: boolean
 }
 
-export type CertificationReportKind =
-  | "certification-status"
-  | "expiring-soon"
-  | "vendor-attestations"
+export type CertificationReportKind = "certification-status" | "expiring-soon" | "vendor-attestations"
 
 export type CertificationReportFilters = {
   search: string
@@ -78,95 +75,100 @@ export function applyCertificationFilters(
 
 export type CertificationReportConfig = ReportConfig<CertificationRecord>
 
-export const CERTIFICATION_REPORT_CONFIG: Record<CertificationReportKind, CertificationReportConfig> =
-  {
-    "certification-status": {
-      title: "Certification Status Report",
-      description: "Organization, vendor, and employee certification registry",
-      emptyMessage: "No data available for this report yet.",
-      kpis: (records) => {
-        const active = records.filter((record) => record.status === "Active").length
-        const expiring = records.filter((record) => isExpiringWithinDays(record, 90)).length
-        const frameworks = new Set(records.map((record) => record.framework)).size
+export const CERTIFICATION_REPORT_CONFIG: Record<CertificationReportKind, CertificationReportConfig> = {
+  "certification-status": {
+    title: "Certification Status Report",
+    description: "Organization, vendor, and employee certification registry",
+    emptyMessage: "No data available for this report yet.",
+    kpis: (records) => {
+      const active = records.filter((record) => record.status === "Active").length
+      const expiring = records.filter((record) => isExpiringWithinDays(record, 90)).length
+      const frameworks = new Set(records.map((record) => record.framework)).size
 
-        return [
-          { label: "Total", value: String(records.length) },
-          { label: "Active", value: String(active) },
-          { label: "Expiring", value: String(expiring) },
-          { label: "Frameworks", value: String(frameworks) },
-        ]
-      },
-      selectItems: (records) => records,
-      toRows: (records) =>
-        records.map((record) => ({
-          id: record.id,
-          title: record.name,
-          subtitle: `${record.framework} · ${record.type} · expires ${formatReportDate(record.expiryDate)}`,
-          badge: record.status,
-          badgeVariant:
-            record.status === "Active"
-              ? "secondary"
-              : record.status === "Expiring Soon"
-                ? "warning"
-                : "destructive",
-        })),
+      return [
+        { label: "Total", value: String(records.length) },
+        { label: "Active", value: String(active) },
+        { label: "Expiring", value: String(expiring) },
+        { label: "Frameworks", value: String(frameworks) },
+      ]
     },
-    "expiring-soon": {
-      title: "Expiring Certifications",
-      description: "ISO, SOC 2, and other certifications expiring within 90 days",
-      emptyMessage: "No data available for this report yet.",
-      kpis: (records) => {
-        const expiring = records.filter((record) => isExpiringWithinDays(record, 90))
-        const active = records.filter((record) => record.status === "Active").length
-        const expired = records.filter((record) => isExpired(record)).length
-        const noEvidence = records.filter((record) => !record.hasEvidence).length
+    selectItems: (records) => records,
+    toRows: (records) =>
+      records.map((record) => ({
+        id: record.id,
+        title: record.name,
+        subtitle: `${record.framework} · ${record.type} · expires ${formatReportDate(record.expiryDate)}`,
+        badge: record.status,
+        badgeVariant:
+          record.status === "Active"
+            ? "success"
+            : record.status === "Expiring Soon"
+              ? "warning"
+              : "destructive",
+      })),
+  },
+  "expiring-soon": {
+    title: "Expiring Certifications",
+    description: "ISO, SOC 2, and other certifications expiring within 90 days",
+    emptyMessage: "No data available for this report yet.",
+    kpis: (records) => {
+      const expiring = records.filter((record) => isExpiringWithinDays(record, 90))
+      const active = records.filter((record) => record.status === "Active").length
+      const expired = records.filter((record) => isExpired(record)).length
+      const noEvidence = records.filter((record) => !record.hasEvidence).length
 
-        return [
-          { label: "Expiring 90d", value: String(expiring.length) },
-          { label: "Active", value: String(active) },
-          { label: "Expired", value: String(expired) },
-          { label: "No Evidence", value: String(noEvidence) },
-        ]
-      },
-      selectItems: (records) =>
-        records.filter((record) => isExpiringWithinDays(record, 90) || isExpired(record)),
-      toRows: (records) =>
-        records.map((record) => ({
-          id: record.id,
-          title: record.name,
-          subtitle: `${record.framework} · expires ${formatReportDate(record.expiryDate)}`,
-          badge: isExpired(record) ? "Expired" : "Expiring",
-          badgeVariant: isExpired(record) ? "destructive" : "warning",
-        })),
+      return [
+        { label: "Expiring 90d", value: String(expiring.length) },
+        { label: "Active", value: String(active) },
+        { label: "Expired", value: String(expired) },
+        { label: "No Evidence", value: String(noEvidence) },
+      ]
     },
-    "vendor-attestations": {
-      title: "Vendor Attestations",
-      description: "Supplier SOC 2, ISO, and security certifications",
-      emptyMessage: "No data available for this report yet.",
-      kpis: (records) => {
-        const vendorRecords = records.filter((record) => record.type === "vendor")
-        const active = vendorRecords.filter((record) => record.status === "Active").length
-        const expiring = vendorRecords.filter((record) => isExpiringWithinDays(record, 90)).length
-        const missingEvidence = vendorRecords.filter((record) => !record.hasEvidence).length
+    selectItems: (records) =>
+      records.filter((record) => isExpiringWithinDays(record, 90) || isExpired(record)),
+    toRows: (records) =>
+      records.map((record) => ({
+        id: record.id,
+        title: record.name,
+        subtitle: `${record.framework} · expires ${formatReportDate(record.expiryDate)}`,
+        badge: isExpired(record) ? "Expired" : "Expiring",
+        badgeVariant: isExpired(record) ? "destructive" : "warning",
+      })),
+  },
+  "vendor-attestations": {
+    title: "Vendor Attestations",
+    description: "Supplier SOC 2, ISO, and security certifications",
+    emptyMessage: "No data available for this report yet.",
+    kpis: (records) => {
+      const vendorRecords = records.filter((record) => record.type === "vendor")
+      const active = vendorRecords.filter((record) => record.status === "Active").length
+      const expiring = vendorRecords.filter((record) => isExpiringWithinDays(record, 90)).length
+      const missingEvidence = vendorRecords.filter((record) => !record.hasEvidence).length
 
-        return [
-          { label: "Vendor Certs", value: String(vendorRecords.length) },
-          { label: "Active", value: String(active) },
-          { label: "Expiring", value: String(expiring) },
-          { label: "Missing Evidence", value: String(missingEvidence) },
-        ]
-      },
-      selectItems: (records) => records.filter((record) => record.type === "vendor"),
-      toRows: (records) =>
-        records.map((record) => ({
-          id: record.id,
-          title: record.name,
-          subtitle: `${record.vendor ?? record.framework} · expires ${formatReportDate(record.expiryDate)}`,
-          badge: record.hasEvidence ? record.status : "Missing Evidence",
-          badgeVariant: record.hasEvidence ? "secondary" : "warning",
-        })),
+      return [
+        { label: "Vendor Certs", value: String(vendorRecords.length) },
+        { label: "Active", value: String(active) },
+        { label: "Expiring", value: String(expiring) },
+        { label: "Missing Evidence", value: String(missingEvidence) },
+      ]
     },
-  }
+    selectItems: (records) => records.filter((record) => record.type === "vendor"),
+    toRows: (records) =>
+      records.map((record) => ({
+        id: record.id,
+        title: record.name,
+        subtitle: `${record.vendor ?? record.framework} · expires ${formatReportDate(record.expiryDate)}`,
+        badge: record.hasEvidence ? record.status : "Missing Evidence",
+        badgeVariant: record.hasEvidence
+          ? record.status === "Active"
+            ? "success"
+            : record.status === "Expiring Soon"
+              ? "warning"
+              : "destructive"
+          : "warning",
+      })),
+  },
+}
 
 export function getCertificationReportData(
   kind: CertificationReportKind,

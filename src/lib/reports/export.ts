@@ -47,9 +47,7 @@ export function reportRowsToExportSnapshot(reportTitle: string, rows: ReportRow[
 export function downloadReportCsv(snapshot: ReportExportSnapshot) {
   const header = snapshot.columns.map((column) => escapeCsvCell(column.header)).join(",")
   const body = snapshot.rows
-    .map((row) =>
-      snapshot.columns.map((column) => escapeCsvCell(row[column.key] ?? "")).join(",")
-    )
+    .map((row) => snapshot.columns.map((column) => escapeCsvCell(row[column.key] ?? "")).join(","))
     .join("\n")
 
   const csv = `\uFEFF${header}\n${body}`

@@ -17,8 +17,7 @@ export interface TabNavItem {
 }
 
 export interface TabNavProps
-  extends Omit<React.ComponentProps<typeof TabsList>, "children">,
-    VariantProps<typeof tabsListVariants> {
+  extends Omit<React.ComponentProps<typeof TabsList>, "children">, VariantProps<typeof tabsListVariants> {
   items: TabNavItem[]
   /** Allow triggers to grow and fill the available width. Defaults to false. */
   fill?: boolean
@@ -56,16 +55,12 @@ function TabNav({
           key={item.value}
           value={item.value}
           disabled={item.disabled}
-          className={cn(
-            "gap-1.5 px-3",
-            fill ? "flex-1" : "flex-none shrink-0",
-            triggerClassName
-          )}
+          className={cn("gap-1.5 px-3", fill ? "flex-1" : "flex-none shrink-0", triggerClassName)}
         >
           {item.icon ? <item.icon /> : null}
           {item.label}
           {item.badge != null ? (
-            <span className="ml-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-muted px-1.5 text-xs font-medium tabular-nums text-muted-foreground group-data-[variant=default]/tabs-list:bg-card in-data-active:bg-accent in-data-active:text-primary">
+            <span className="ml-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-muted px-1.5 text-xs font-medium text-muted-foreground tabular-nums group-data-[variant=default]/tabs-list:bg-card in-data-active:bg-accent in-data-active:text-primary">
               {item.badge}
             </span>
           ) : null}

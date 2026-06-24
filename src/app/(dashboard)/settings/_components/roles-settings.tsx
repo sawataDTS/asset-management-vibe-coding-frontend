@@ -71,13 +71,7 @@ function PermissionCheckbox({
   )
 }
 
-function PermissionGroupCard({
-  title,
-  children,
-}: {
-  title: string
-  children: React.ReactNode
-}) {
+function PermissionGroupCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <div className="rounded-xl border border-sidebar-border bg-muted/20 p-4">
       <p className={cn("mb-3", typeScale.title)}>{title}</p>
@@ -156,9 +150,7 @@ function RolePermissionsPanel({
                   label={permission}
                   checked={isPermissionGranted(role, module.id, permission)}
                   disabled={readOnly}
-                  onCheckedChange={(granted) =>
-                    onModulePermissionChange(module.id, permission, granted)
-                  }
+                  onCheckedChange={(granted) => onModulePermissionChange(module.id, permission, granted)}
                 />
               ))}
             </PermissionGroupCard>
@@ -327,9 +319,7 @@ function RolesSettings() {
         panelHeight == null && "lg:items-start"
       )}
       style={
-        panelHeight != null
-          ? ({ gridTemplateRows: `${panelHeight}px` } as React.CSSProperties)
-          : undefined
+        panelHeight != null ? ({ gridTemplateRows: `${panelHeight}px` } as React.CSSProperties) : undefined
       }
     >
       <aside ref={sidebarRef} className="flex w-full flex-col gap-4 self-start lg:w-auto">
@@ -385,9 +375,7 @@ function RolesSettings() {
                   id="new-role-template"
                   value={newRoleTemplate}
                   onChange={(value) =>
-                    setNewRoleTemplate(
-                      typeof value === "string" ? (value as RoleTemplateId) : "employee"
-                    )
+                    setNewRoleTemplate(typeof value === "string" ? (value as RoleTemplateId) : "employee")
                   }
                   options={ROLE_TEMPLATE_OPTIONS.map((option) => ({
                     label: option.label,
@@ -408,7 +396,7 @@ function RolesSettings() {
 
       <div
         className={cn(
-          "flex min-h-0 min-w-0 flex-col overflow-hidden self-stretch",
+          "flex min-h-0 min-w-0 flex-col self-stretch overflow-hidden",
           panelHeight == null && "max-h-[min(70vh,42rem)]"
         )}
       >

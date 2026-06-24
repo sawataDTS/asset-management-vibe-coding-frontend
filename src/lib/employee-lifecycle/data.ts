@@ -95,12 +95,7 @@ export type OffboardingCandidate = {
   status: string
 }
 
-export const CHECKLIST_ITEM_STATUSES: ChecklistItemStatus[] = [
-  "pending",
-  "in_progress",
-  "done",
-  "skipped",
-]
+export const CHECKLIST_ITEM_STATUSES: ChecklistItemStatus[] = ["pending", "in_progress", "done", "skipped"]
 
 export const CHECKLIST_STATUS_LABELS: Record<ChecklistItemStatus, string> = {
   pending: "Pending",
@@ -346,9 +341,7 @@ export function createDefaultOffboardingChecklist(): OffboardingChecklistItem[] 
 }
 
 export function getChecklistProgress(checklist: OffboardingChecklistItem[]) {
-  const doneCount = checklist.filter(
-    (item) => item.status === "done" || item.status === "skipped"
-  ).length
+  const doneCount = checklist.filter((item) => item.status === "done" || item.status === "skipped").length
   const requiredOpen = checklist.filter(
     (item) => !item.optional && item.status !== "done" && item.status !== "skipped"
   ).length
@@ -365,9 +358,8 @@ export function summarizeOffboardingResult(checklist: OffboardingChecklistItem[]
   return {
     successCount: checklist.filter((item) => item.status === "done").length,
     skippedCount: checklist.filter((item) => item.status === "skipped").length,
-    pendingCount: checklist.filter(
-      (item) => item.status === "pending" || item.status === "in_progress"
-    ).length,
+    pendingCount: checklist.filter((item) => item.status === "pending" || item.status === "in_progress")
+      .length,
   }
 }
 

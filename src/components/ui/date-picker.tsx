@@ -80,12 +80,7 @@ function DatePicker({
           </button>
         </PopoverTrigger>
         <PopoverContent className="w-auto p-0" align="start" sideOffset={POPOVER_SIDE_OFFSET}>
-          <Calendar
-            mode="single"
-            selected={selected}
-            onSelect={handleSelect}
-            defaultMonth={selected}
-          />
+          <Calendar mode="single" selected={selected} onSelect={handleSelect} defaultMonth={selected} />
         </PopoverContent>
       </Popover>
       {allowClear && selected && !disabled ? (

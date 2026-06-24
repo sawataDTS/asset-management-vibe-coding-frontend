@@ -77,7 +77,7 @@ descenders on letters like g and y are never clipped in the fixed `h-16` bar.
 All text falls into one of five levels. Do not invent ad-hoc sizes or weights per
 page — import the matching tier from `src/lib/typography.ts` (`typeScale`) or use
 the component that already encodes it (`PageHeader`, `SectionHeading`, `CardTitle`,
-`MetricCard`, `ChartCard`, `DataTable`, `SettingsPanel`).
+`CardContainer`, `MetricCard`, `ChartCard`, `DataTable`, `ReportListCard`).
 
 **Weight conventions:** `font-bold` on display page title + brand only;
 `font-semibold` on structural headings (L2–L3) and caption overlines (L5);
@@ -87,7 +87,7 @@ default body copy.
 | Level | Name    | Classes (via `typeScale`)                     | Used by                                                     |
 | ----- | ------- | --------------------------------------------- | ----------------------------------------------------------- |
 | L1    | Display | `display.page` / `.brand` / `.nav`            | `PageHeader` h1, `SidebarBrand`, `Navbar` title             |
-| L2    | Heading | `heading`                                     | `SectionHeading` h2, `SettingsPanel` title                  |
+| L2    | Heading | `heading`                                     | `SectionHeading` h2; `SettingsPanel` title (via `CardContainer`) |
 | L3    | Title   | `title` / `titleMetric`                       | `CardTitle`, `ChartCard` title; `MetricCard` KPI value      |
 | L4    | Body    | `body.default` / `.muted` / `.emphasis`       | Descriptions, nav items, table cells, form labels           |
 | L5    | Caption | `caption.overline` / `.meta` / `.tableHeader` | Section labels, KPI labels, eyebrows, emails, table headers |
@@ -226,7 +226,7 @@ children.
   description="Manage hardware inventory and software licenses in one place."
   actions={<Button>New Intake</Button>}
 >
-  <Card>…</Card>
+  <CardContainer>…</CardContainer>
   <section>…</section>
 </PageHeader>
 ```
@@ -413,7 +413,7 @@ surfaceOverlayClassName       // "border border-sidebar-border shadow-sm"
 
 **Primitives that encode this already** — compose them; do not re-style per page:
 
-- `Card` / `MetricCard` / `ChartCard` / `SettingsPanel`
+- `Card` / `CardContainer` / `MetricCard` / `ChartCard` / `ReportListCard`
 - `DataTable` outer shell
 - `TabNav` + `TabsTrigger` (default variant active state)
 - `SubTabNav` inactive pills
@@ -471,13 +471,278 @@ edge already separates; see `DashboardLayout`).
 | Extend `Card`, `TabNav`, `DataTable` | Fork per-page bordered wrappers around the same content |
 | Match active tab pills to card elevation | Add extra `ring-*` or `border-primary` on standard tabs |
 
-Decorated hero wrappers (e.g. Overview Executive Signals) may add gradient /
-primary tint **via `className` on `Card`** — their extra classes override the
-base border when needed; do not change the primitive for one-off marketing chrome.
+Decorated hero wrappers (e.g. Overview Executive Signals, prompt report executive
+summary) may add gradient / primary tint **via `className` on `Card`** — their
+extra classes override the base border when needed; do not change the primitive
+for one-off marketing chrome.
 
 ---
 
-## 10. Card padding
+## 10. Cards & panels
+
+This section is the **decision guide for every raised surface** on a dashboard
+page. Pick the right primitive first; only fall back to raw `Card` slots for
+documented exceptions.
+
+### Which component to use
+
+| Need | Component | Path |
+| ---- | --------- | ---- |
+| KPI stat (label + value + optional icon / footer slot) | **`MetricCard`** | `src/components/ui/metric-card.tsx` |
+| Chart panel (title + description + optional header action) | **`ChartCard`** | `src/components/ui/chart-card.tsx` |
+| Standard panel — title, description, body, optional header action / footer CTA | **`CardContainer`** | `src/components/ui/card-container.tsx` |
+| Modal / dialog — title, description, scrollable body, footer action row | **`ModalContainer`** | `src/components/ui/modal-container.tsx` |
+| Tabular data with column headers, sort, resize, pagination | **`DataTable`** | `src/components/custom/DataTable.tsx` |
+| Report result list (icon header + row list + pagination, no columns) | **`ReportListCard`** | `src/app/(dashboard)/reports/_components/shared/report-list-card.tsx` |
+| Settings section (title + form + save row) | **`SettingsPanel`** | wraps `CardContainer variant="form"` |
+| Decorated one-off hero (gradient / marketing chrome) | Raw **`Card`** + custom body | Overview Executive Signals only |
+
+**Do not** hand-roll `Card` + `CardHeader` + `CardTitle` + `CardContent` on new
+pages — use **`CardContainer`** instead. **Do not** hand-roll `Dialog` +
+`DialogHeader` + `DialogBody` + `CardActions` on new pages — use
+**`ModalContainer`** instead. **Do not** replace `MetricCard`, `ChartCard`, or
+`ReportListCard` with `CardContainer`.
+
+```mermaid
+flowchart TD
+  Q1{KPI / stat tile?}
+  Q2{Chart visualization?}
+  Q3{Tabular columns + sort?}
+  Q4{Report row list?}
+  Q5{Form + footer actions?}
+  Q6{Decorated hero?}
+  MetricCard[MetricCard]
+  ChartCard[ChartCard]
+  DataTable[DataTable]
+  ReportListCard[ReportListCard]
+  CardContainer[CardContainer]
+  RawCard[Raw Card exception]
+
+  Q1 -->|yes| MetricCard
+  Q1 -->|no| Q2
+  Q2 -->|yes| ChartCard
+  Q2 -->|no| Q3
+  Q3 -->|yes| DataTable
+  Q3 -->|no| Q4
+  Q4 -->|yes| ReportListCard
+  Q4 -->|no| Q5
+  Q5 -->|yes| CardContainer variant form
+  Q5 -->|no| Q6
+  Q6 -->|yes| RawCard
+  Q6 -->|no| CardContainer display
+```
+
+### `CardContainer` (default dashboard panel)
+
+The standard wrapper for lists, tables inside a card, intake forms, filter bars,
+settings sections, and read-only panels.
+
+| Prop | Purpose |
+| ---- | ------- |
+| `title` | Renders `CardTitle` (L3) |
+| `description` | Renders `CardDescription` |
+| `descriptionClassName` | Extra classes on `CardDescription` (e.g. `max-w-3xl leading-relaxed`) |
+| `icon` | Optional `LucideIcon` — accent tile before title, **top-aligned** (`items-start`) |
+| `action` | Top-right slot (`CardAction`) — links, buttons, row counts |
+| `footer` | Bottom row in `CardActions` |
+| `variant="display"` | Default — `CardHeader` + `CardContent`, card `gap-(--card-spacing)` |
+| `variant="form"` | `gap-0 py-0` shell; header/body spacing via slot padding; pair with `footer` |
+| `formControls` | Applies shared full-width select sizing (`settingsControlClassName`) |
+| `onSubmit` | Wraps body + footer in a `<form>` |
+
+```tsx
+{/* Display — recent assets table, department template card */}
+<CardContainer
+  title="Recent Assets"
+  description="Latest hardware records onboarded into the tenant."
+  action={<Button variant="ghost" asChild><Link href="/hardware">View all</Link></Button>}
+>
+  <RecentAssetsTable />
+</CardContainer>
+
+{/* Form — intake tab, settings panel, list-page filter shell */}
+<CardContainer
+  variant="form"
+  title="Add hardware"
+  description="Register a new asset into inventory."
+  formControls
+  footer={<Button type="submit">Save</Button>}
+  onSubmit={handleSubmit}
+>
+  …fields…
+</CardContainer>
+
+{/* Decorated header — Prompt report tab only */}
+<CardContainer
+  variant="form"
+  icon={Sparkles}
+  title="Prompt-based report"
+  description="…"
+  descriptionClassName="max-w-3xl leading-relaxed"
+  formControls
+  contentClassName="flex flex-col gap-6"
+>
+  …fields…
+</CardContainer>
+```
+
+**Nested inset panels** inside a `CardContainer` with a header (e.g. CSV mapping
+panel, accordion body): use a **`div`** with `surfaceOutlineClassName` and
+`p-(--card-spacing)` — **not** a nested `Card` (nested cards lose top content
+padding when a sibling header exists).
+
+**Header-only empty states:** pass `contentClassName="py-16"` with an `Empty`
+child; `CardContainer` skips empty `CardContent` when there is no body/footer.
+
+### `ModalContainer` (standard dashboard modal)
+
+Use for every **form, review, or confirmation dialog** on dashboard pages. It is a
+thin wrapper around the same structure documented under **Card actions → Dialogs**
+below — do not invent a alternate footer strip.
+
+| Prop | Purpose |
+| ---- | ------- |
+| `open` / `onOpenChange` | Controlled dialog state |
+| `title` | Renders `DialogTitle` |
+| `description` | Renders `DialogDescription` |
+| `footer` | Bottom row rendered in **`CardActions`** (not `DialogFooter`) |
+| `size="default"` | `dialogShellClassName` — `sm:max-w-md` |
+| `size="wide"` | `dialogShellClassNameWide` — `sm:max-w-2xl` |
+| `size="xl"` | `dialogShellClassNameXl` — `sm:max-w-4xl` |
+| `contentClassName` | Custom shell classes — e.g. `sm:max-w-3xl` when presets are not enough |
+| `formControls` | Applies shared full-width select sizing (`settingsControlClassName`) |
+| `onSubmit` | Wraps body + footer in a `<form>` |
+| `bodyClassName` / `footerClassName` | Extra classes on body / footer rows |
+
+```tsx
+{/* Form modal — matches Add supplier / Register software dialogs */}
+<ModalContainer
+  open={open}
+  onOpenChange={setOpen}
+  title="Add supplier"
+  description="Vendor details and contact info."
+  formControls
+  onSubmit={handleSubmit}
+  footer={
+    <>
+      <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
+      <Button type="submit">Add supplier</Button>
+    </>
+  }
+>
+  <FieldGroup>…fields…</FieldGroup>
+</ModalContainer>
+```
+
+**Structure** (implemented in `src/components/ui/modal-container.tsx`):
+
+| Region | Primitive / classes |
+| ------ | ------------------- |
+| Shell | `DialogContent` + `dialogShellClassName` — `bg-card p-0 gap-0`, `[--dialog-chrome:10rem]` |
+| Header | `DialogHeader` + `dialogHeaderClassName` — `border-b border-border px-4 py-4 pr-12` |
+| Body | `DialogBody` + `dialogFormBodyClassName` — scrollable, `px-4 py-4` (same as supplier add/edit) |
+| Footer | **`CardActions`** — `p-5` inset (`p-4` when `Card size="sm"`), `bg-card`, no `border-t`, right-aligned buttons |
+
+**Do not** use `DialogFooter` (muted strip) for submit rows. **Do not** add
+`bg-muted/50` or `border-t` on dialog action rows — that diverges from the card
+surface pattern.
+
+**Lazy mount on pages with multiple modals:** do not keep every dialog in the tree
+while closed. Gate each modal with page-level `open` state and render only when
+needed. Optional: `next/dynamic` only when the modal chunk is very heavy.
+
+```tsx
+{addRequestOpen ? (
+  <AddRequestDialog open={addRequestOpen} onOpenChange={setAddRequestOpen} … />
+) : null}
+
+{reviewOpen && selectedItem ? (
+  <ReviewDialog open={reviewOpen} onOpenChange={setReviewOpen} item={selectedItem} … />
+) : null}
+```
+
+Keep fetch / form reset logic inside the modal and keyed off `open` (or rely on
+unmount to reset local state). Inline dialogs on a single-action page (e.g. one
+Add supplier modal) may stay mounted; apply lazy mount when a page owns **several**
+modals or API-backed flows.
+
+**View filters** (Pending / All with counts): use **`TabNav`** with `size="default"`
+inside a `<Tabs>` root — pass counts via the `badge` prop, not `(n)` in the label.
+Do not hand-roll segmented filter pills.
+
+### `MetricCard`
+
+Use for **numeric KPI tiles** only — overview stats, report KPI rows, page header
+metric grids. Pass `iconVariant="badge"` for the accent icon tile (overview /
+inventory pages). Optional `children` for mini breakdowns; optional `footer` for
+supplementary copy (no top divider — built into the primitive).
+
+Do **not** use `MetricCard` where you need a title + free-form panel body — use
+`CardContainer`.
+
+### `ChartCard`
+
+Use for **Recharts / chart panels** with a standard chart header (title,
+description, optional `action` for legends or context badges). Do not fork
+chart wrappers per page.
+
+### `DataTable`
+
+Use when rows need **column headers**, sorting, optional column resize, and the
+shared pagination footer. Inventory pages (hardware, software, employees, …)
+compose `DataTable` inside `CardContainer` (filter bar in the card body, table
+below).
+
+Pagination footer pattern: `border-t border-border bg-muted/30 px-4 py-3`, text
+Previous/Next links, bordered page indicator — see `DataTable` implementation.
+
+### `ReportListCard` (reports only)
+
+A **list-shaped report panel** — not a columnar table. Used on hardware /
+software / certifications report tabs below the KPI grid.
+
+Characteristics:
+
+- **Custom header** (not `CardContainer`) — icon tile + `typeScale.title` +
+  caption meta + row count; required because reports use a decorated icon lockup.
+- Shell: `Card` with `gap-0 overflow-hidden py-0`; inner wrapper is a plain
+  **`div`**, not `CardContent` (avoids phantom top padding when no `CardHeader`).
+- **Header band:** `px-(--card-spacing) py-5`, `border-b border-border`, flex row
+  with `sm:items-center` (row count vertically centered against title block).
+- **List rows:** `px-(--card-spacing) py-3`, `items-center`, `divide-y divide-border`.
+- **Footer band:** `px-(--card-spacing) py-3`, `border-t border-border` — same
+  horizontal inset as header; pagination matches `DataTable` controls.
+- **Status pills:** `ReportStatusBadge` (`report-status-badge.tsx`) — semantic
+  variants (`success`, `info`, `warning`, `destructive`, …), not generic
+  `secondary` for every state. Map status in report data mappers
+  (`src/lib/reports/*`).
+
+```tsx
+<ReportListCard
+  title={reportData.config.title}
+  description={reportData.config.description}
+  generatedOn={reportData.generatedOn}
+  rows={reportData.rows}
+/>
+```
+
+Report filter bars use **`CardContainer`** with `formControls` (no title — body
+only with an overline label inside). Report “coming soon” placeholders use
+`CardContainer` with centered `Empty`.
+
+### Raw `Card` exceptions
+
+| Case | Pattern |
+| ---- | ------- |
+| Executive Signals hero (Overview) | `Card` + `CardContent`, gradient override |
+| Prompt report executive summary | Decorated `Card`, gradient tint |
+| `ReportListCard` | Custom header/footer bands (see above) |
+| Auth forms | `AuthPageShell` / auth-specific layout |
+
+Everywhere else → **`CardContainer`**, **`ModalContainer`**, **`MetricCard`**, **`ChartCard`**, or
+**`DataTable`**.
+
+### Card padding (slot rules)
 
 `Card` owns horizontal rhythm via `--card-spacing` (default `--spacing(5)` ≈ 20px;
 `size="sm"` ≈ 16px). **Vertical inset lives on the slots**, not on the card shell —
@@ -487,7 +752,7 @@ do not rely on ad-hoc `py-*` on the root `Card` for everyday display cards.
 | ---------------------------- | ------------------------------------------------------------------------------------------------- |
 | `CardHeader`                 | `px-(--card-spacing) pt-(--card-spacing)`                                                         |
 | `CardContent`                | `px-(--card-spacing) pb-(--card-spacing)`; adds `pt-(--card-spacing)` when there is **no** header; **`pb-0`** when `CardActions` follows (use `settingsCardContentWithActionsClassName` if overriding padding) |
-| `CardActions` / `CardFooter` | `p-(--card-spacing)` (full inset on the action/footer row)                                        |
+| `CardActions` / `CardFooter` | `p-5` on actions (`p-4` when `Card size="sm"`); `CardFooter` uses `p-(--card-spacing)` |
 
 The root `Card` keeps `gap-(--card-spacing)` between slots. Use that default gap for
 `CardHeader` + `CardContent` display cards (department templates, chart panels, …).
@@ -516,8 +781,12 @@ each region. That mismatch is what causes content flush to the card edges.
 For multi-column card grids, add `items-start` so cards stay content-height instead
 of stretching with empty space at the bottom.
 
-Do not add ad-hoc `p-*` overrides to align cards — adjust `size` or compose with
-`--card-spacing` instead.
+**Vertical rhythm reference:** header bands that need the full card inset use
+`py-5` (20px, same as `--card-spacing`). Report list header uses
+`px-(--card-spacing) py-5`; footer uses `px-(--card-spacing) py-3`.
+
+Do not add ad-hoc `p-*` overrides to align cards — adjust `size`, compose with
+`--card-spacing`, or use the documented band classes instead.
 
 ### Card actions (primary pattern)
 
@@ -565,6 +834,10 @@ card-based. `CardFooter` is for muted summary chrome only, not primary actions.
 ## 11. Reusable component rules
 
 - Prefer primitives in `src/components/ui/*`; never duplicate them.
+- **Cards:** follow §10 — `CardContainer` for panels, `ModalContainer` for dialogs,
+  `MetricCard` / `ChartCard` /
+  `ReportListCard` / `DataTable` for their specialized shapes; do not fork
+  `Card` + `CardTitle` + `CardContent` per page.
 - Global layout (`Sidebar`, `Navbar`, `DashboardLayout`) is shared — extend, do
   not fork per page.
 - Keep Server Components the default; add `"use client"` only where interactivity

@@ -74,7 +74,7 @@ function MetricCard({
       {footer ? (
         <div
           className={cn(
-            "mt-auto border-t border-border px-(--card-spacing) pt-2.5 pb-(--card-spacing) leading-relaxed",
+            "mt-auto px-(--card-spacing) pb-(--card-spacing) leading-relaxed",
             typeScale.caption.meta
           )}
         >

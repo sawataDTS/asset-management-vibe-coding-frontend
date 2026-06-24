@@ -8,7 +8,8 @@ import { toast } from "sonner"
 import { TemplateFormDialog } from "./template-form-dialog"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Card, CardAction, CardActions, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { CardActions } from "@/components/ui/card"
+import { CardContainer } from "@/components/ui/card-container"
 import {
   Dialog,
   DialogBody,
@@ -18,7 +19,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import { dialogBodyBeforeActionsClassName, dialogHeaderClassName, dialogShellClassNameCompact } from "@/lib/dialog-layout"
+import {
+  dialogBodyBeforeActionsClassName,
+  dialogHeaderClassName,
+  dialogShellClassNameCompact,
+} from "@/lib/dialog-layout"
 import { type DepartmentTemplate, type TemplateLine } from "@/lib/employee-lifecycle/data"
 import { typeScale } from "@/lib/typography"
 
@@ -62,37 +67,36 @@ function DepartmentTemplateCard({
   onDelete: () => void
 }) {
   return (
-    <Card size="sm" className="h-full">
-      <CardHeader>
-        <CardTitle>{template.department}</CardTitle>
-        <CardAction>
-          <div className="flex items-center gap-1">
-            <Button variant="ghost" size="icon-sm" aria-label="Edit template" onClick={onEdit}>
-              <Pencil />
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon-sm"
-              aria-label="Delete template"
-              className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-              onClick={onDelete}
-            >
-              <Trash2 />
-            </Button>
-          </div>
-        </CardAction>
-      </CardHeader>
-
-      <CardContent className="flex flex-col gap-4">
-        <div className="flex flex-col gap-1.5">
-          <p className={typeScale.caption.overline}>Notes</p>
-          <p className={typeScale.caption.meta}>{template.notes || "No notes"}</p>
+    <CardContainer
+      size="sm"
+      className="h-full"
+      title={template.department}
+      action={
+        <div className="flex items-center gap-1">
+          <Button variant="ghost" size="icon-sm" aria-label="Edit template" onClick={onEdit}>
+            <Pencil />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon-sm"
+            aria-label="Delete template"
+            className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+            onClick={onDelete}
+          >
+            <Trash2 />
+          </Button>
         </div>
+      }
+      contentClassName="flex flex-col gap-4"
+    >
+      <div className="flex flex-col gap-1.5">
+        <p className={typeScale.caption.overline}>Notes</p>
+        <p className={typeScale.caption.meta}>{template.notes || "No notes"}</p>
+      </div>
 
-        <TemplateLinesSection title="Hardware" lines={template.lines} />
-        <TemplateLinesSection title="Software" lines={template.lines} />
-      </CardContent>
-    </Card>
+      <TemplateLinesSection title="Hardware" lines={template.lines} />
+      <TemplateLinesSection title="Software" lines={template.lines} />
+    </CardContainer>
   )
 }
 
@@ -158,11 +162,9 @@ function DepartmentsTab({ templates, onTemplatesChange }: DepartmentsTabProps) {
         </Button>
 
         {templates.length === 0 ? (
-          <Card size="sm">
-            <CardContent className="py-12 text-center">
-              <p className={typeScale.body.muted}>No department templates yet. Create one to get started.</p>
-            </CardContent>
-          </Card>
+          <CardContainer size="sm" contentClassName="py-12 text-center">
+            <p className={typeScale.body.muted}>No department templates yet. Create one to get started.</p>
+          </CardContainer>
         ) : (
           <div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
             {templates.map((template) => (
@@ -196,19 +198,20 @@ function DepartmentsTab({ templates, onTemplatesChange }: DepartmentsTabProps) {
             <>
               <DialogBody className={dialogBodyBeforeActionsClassName}>
                 <DialogDescription>
-                  This removes the <span className={typeScale.body.emphasis}>{selectedTemplate.department}</span>{" "}
-                  template and all its lines. Existing assignments are not changed.
+                  This removes the{" "}
+                  <span className={typeScale.body.emphasis}>{selectedTemplate.department}</span> template and
+                  all its lines. Existing assignments are not changed.
                 </DialogDescription>
               </DialogBody>
               <CardActions>
-              <DialogClose asChild>
-                <Button type="button" variant="outline">
-                  Cancel
+                <DialogClose asChild>
+                  <Button type="button" variant="outline">
+                    Cancel
+                  </Button>
+                </DialogClose>
+                <Button type="button" variant="destructive" onClick={handleDeleteConfirm}>
+                  Delete
                 </Button>
-              </DialogClose>
-              <Button type="button" variant="destructive" onClick={handleDeleteConfirm}>
-                Delete
-              </Button>
               </CardActions>
             </>
           ) : null}

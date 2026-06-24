@@ -14,13 +14,7 @@ function AuthBrand({ className }: { className?: string }) {
   )
 }
 
-function AuthPageShell({
-  children,
-  className,
-}: {
-  children: React.ReactNode
-  className?: string
-}) {
+function AuthPageShell({ children, className }: { children: React.ReactNode; className?: string }) {
   return (
     <div className={cn("relative z-10 flex w-full max-w-md flex-col items-center gap-8", className)}>
       <AuthBrand />

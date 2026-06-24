@@ -11,7 +11,8 @@ import { EmployeesTable } from "./employees-table"
 import { PageHeader } from "@/components/layout/PageHeader"
 import { settingsControlClassName } from "@/app/(dashboard)/settings/_components/settings-panel"
 import { Button } from "@/components/ui/button"
-import { Card, CardActions, CardContent } from "@/components/ui/card"
+import { CardActions } from "@/components/ui/card"
+import { CardContainer } from "@/components/ui/card-container"
 import { Checkbox } from "@/components/ui/checkbox"
 import { DatePicker } from "@/components/ui/date-picker"
 import {
@@ -52,8 +53,7 @@ import { cn } from "@/lib/utils"
 
 type ActiveModal = "add" | "edit" | "delete" | null
 
-const employeesCardClassName = "gap-0 py-0"
-const employeesCardContentClassName = cn("p-(--card-spacing)", settingsControlClassName)
+const employeesCardContentClassName = settingsControlClassName
 
 function EmployeesPage() {
   const [employees, setEmployees] = useState<Employee[]>(initialEmployees)
@@ -320,43 +320,44 @@ function EmployeesPage() {
           </Button>
         }
       >
-        <Card className={employeesCardClassName}>
-          <CardContent className={cn("flex flex-col gap-4", employeesCardContentClassName)}>
-            <div className="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-center">
-              <InputGroup className="min-w-[240px] flex-1">
-                <InputGroupAddon>
-                  <Search className="size-4" />
-                </InputGroupAddon>
-                <InputGroupInput
-                  placeholder="Search by name, email, employee ID, role..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </InputGroup>
-
-              <CustomSelect
-                className="w-full lg:w-48"
-                value={selectedDepartment}
-                onChange={(value) =>
-                  setSelectedDepartment(typeof value === "string" ? value : "All Departments")
-                }
-                options={[
-                  { label: "All Departments", value: "All Departments" },
-                  { label: "Unassigned", value: "Unassigned" },
-                  ...EMPLOYEE_DEPARTMENTS.map((dept) => ({ label: dept, value: dept })),
-                ]}
-                showClear={false}
+        <CardContainer
+          formControls
+          contentClassName={cn("flex flex-col gap-4", employeesCardContentClassName)}
+        >
+          <div className="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-center">
+            <InputGroup className="min-w-[240px] flex-1">
+              <InputGroupAddon>
+                <Search className="size-4" />
+              </InputGroupAddon>
+              <InputGroupInput
+                placeholder="Search by name, email, employee ID, role..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
-            </div>
+            </InputGroup>
 
-            <EmployeesTable
-              rows={filteredEmployees}
-              onOpenDetail={openDetail}
-              onEdit={(emp) => handleOpenModal("edit", emp)}
-              onDelete={(emp) => handleOpenModal("delete", emp)}
+            <CustomSelect
+              className="w-full lg:w-48"
+              value={selectedDepartment}
+              onChange={(value) =>
+                setSelectedDepartment(typeof value === "string" ? value : "All Departments")
+              }
+              options={[
+                { label: "All Departments", value: "All Departments" },
+                { label: "Unassigned", value: "Unassigned" },
+                ...EMPLOYEE_DEPARTMENTS.map((dept) => ({ label: dept, value: dept })),
+              ]}
+              showClear={false}
             />
-          </CardContent>
-        </Card>
+          </div>
+
+          <EmployeesTable
+            rows={filteredEmployees}
+            onOpenDetail={openDetail}
+            onEdit={(emp) => handleOpenModal("edit", emp)}
+            onDelete={(emp) => handleOpenModal("delete", emp)}
+          />
+        </CardContainer>
       </PageHeader>
 
       <EmployeeDetailSheet
@@ -462,63 +463,59 @@ function EmployeesPage() {
                   </Field>
                 </div>
 
-                <Card size="sm" className={employeesCardClassName}>
-                  <CardContent className={cn("space-y-4", employeesCardContentClassName)}>
-                    <div>
-                      <p className={cn(typeScale.body.emphasis, "text-destructive")}>Shipping address *</p>
-                      <FieldDescription>
-                        Required so hardware can be shipped to the employee.
-                      </FieldDescription>
-                    </div>
+                <CardContainer size="sm" contentClassName={cn("space-y-4", employeesCardContentClassName)}>
+                  <div>
+                    <p className={cn(typeScale.body.emphasis, "text-destructive")}>Shipping address *</p>
+                    <FieldDescription>Required so hardware can be shipped to the employee.</FieldDescription>
+                  </div>
+                  <Field>
+                    <FieldLabel htmlFor="emp-address">Address *</FieldLabel>
+                    <Input
+                      id="emp-address"
+                      value={formAddress}
+                      onChange={(e) => setFormAddress(e.target.value)}
+                      required
+                    />
+                  </Field>
+                  <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
                     <Field>
-                      <FieldLabel htmlFor="emp-address">Address *</FieldLabel>
+                      <FieldLabel htmlFor="emp-city">City *</FieldLabel>
                       <Input
-                        id="emp-address"
-                        value={formAddress}
-                        onChange={(e) => setFormAddress(e.target.value)}
+                        id="emp-city"
+                        value={formCity}
+                        onChange={(e) => setFormCity(e.target.value)}
                         required
                       />
                     </Field>
-                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
-                      <Field>
-                        <FieldLabel htmlFor="emp-city">City *</FieldLabel>
-                        <Input
-                          id="emp-city"
-                          value={formCity}
-                          onChange={(e) => setFormCity(e.target.value)}
-                          required
-                        />
-                      </Field>
-                      <Field>
-                        <FieldLabel htmlFor="emp-state">State / region *</FieldLabel>
-                        <Input
-                          id="emp-state"
-                          value={formState}
-                          onChange={(e) => setFormState(e.target.value)}
-                          required
-                        />
-                      </Field>
-                      <Field>
-                        <FieldLabel htmlFor="emp-zip">ZIP / postal code *</FieldLabel>
-                        <Input
-                          id="emp-zip"
-                          value={formZip}
-                          onChange={(e) => setFormZip(e.target.value)}
-                          required
-                        />
-                      </Field>
-                      <Field>
-                        <FieldLabel htmlFor="emp-country">Country *</FieldLabel>
-                        <Input
-                          id="emp-country"
-                          value={formCountry}
-                          onChange={(e) => setFormCountry(e.target.value)}
-                          required
-                        />
-                      </Field>
-                    </div>
-                  </CardContent>
-                </Card>
+                    <Field>
+                      <FieldLabel htmlFor="emp-state">State / region *</FieldLabel>
+                      <Input
+                        id="emp-state"
+                        value={formState}
+                        onChange={(e) => setFormState(e.target.value)}
+                        required
+                      />
+                    </Field>
+                    <Field>
+                      <FieldLabel htmlFor="emp-zip">ZIP / postal code *</FieldLabel>
+                      <Input
+                        id="emp-zip"
+                        value={formZip}
+                        onChange={(e) => setFormZip(e.target.value)}
+                        required
+                      />
+                    </Field>
+                    <Field>
+                      <FieldLabel htmlFor="emp-country">Country *</FieldLabel>
+                      <Input
+                        id="emp-country"
+                        value={formCountry}
+                        onChange={(e) => setFormCountry(e.target.value)}
+                        required
+                      />
+                    </Field>
+                  </div>
+                </CardContainer>
 
                 <div className="space-y-4">
                   <div className="flex items-start gap-3 rounded-xl border border-border p-4">

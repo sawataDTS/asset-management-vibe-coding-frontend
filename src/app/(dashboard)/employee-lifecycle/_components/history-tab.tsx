@@ -7,19 +7,15 @@ import { Ban, CircleCheck, Inbox, RotateCcw } from "lucide-react"
 import { DataTable, type DataTableColumn } from "@/components/custom/DataTable"
 import { settingsControlClassName } from "@/app/(dashboard)/settings/_components/settings-panel"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent } from "@/components/ui/card"
+import { CardContainer } from "@/components/ui/card-container"
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
 import { formatHistoryWhen, type LifecycleHistoryEntry } from "@/lib/employee-lifecycle/data"
 import { typeScale } from "@/lib/typography"
 import { cn } from "@/lib/utils"
 
-const lifecycleCardClassName = "gap-0 py-0"
-const lifecycleCardContentClassName = cn("p-(--card-spacing)", settingsControlClassName)
+const lifecycleCardContentClassName = settingsControlClassName
 
-const MODE_VARIANT: Record<
-  LifecycleHistoryEntry["mode"],
-  React.ComponentProps<typeof Badge>["variant"]
-> = {
+const MODE_VARIANT: Record<LifecycleHistoryEntry["mode"], React.ComponentProps<typeof Badge>["variant"]> = {
   onboard: "success",
   offboard: "info",
 }
@@ -94,25 +90,23 @@ function HistoryTab({ entries }: HistoryTabProps) {
   )
 
   return (
-    <Card className={lifecycleCardClassName}>
-      <CardContent className={lifecycleCardContentClassName}>
-        <DataTable<LifecycleHistoryEntry>
-          rowData={entries}
-          columns={columns}
-          emptyState={
-            <Empty className="border-0 bg-transparent py-12">
-              <EmptyHeader>
-                <EmptyMedia variant="icon">
-                  <Inbox />
-                </EmptyMedia>
-                <EmptyTitle>No lifecycle history</EmptyTitle>
-                <EmptyDescription>Onboarding and offboarding runs will appear here.</EmptyDescription>
-              </EmptyHeader>
-            </Empty>
-          }
-        />
-      </CardContent>
-    </Card>
+    <CardContainer contentClassName={lifecycleCardContentClassName}>
+      <DataTable<LifecycleHistoryEntry>
+        rowData={entries}
+        columns={columns}
+        emptyState={
+          <Empty className="border-0 bg-transparent py-12">
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <Inbox />
+              </EmptyMedia>
+              <EmptyTitle>No lifecycle history</EmptyTitle>
+              <EmptyDescription>Onboarding and offboarding runs will appear here.</EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        }
+      />
+    </CardContainer>
   )
 }
 

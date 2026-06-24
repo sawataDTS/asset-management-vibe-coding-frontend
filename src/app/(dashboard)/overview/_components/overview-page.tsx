@@ -20,6 +20,7 @@ import { PageHeader } from "@/components/layout/PageHeader"
 import { SectionHeading } from "@/components/layout/SectionHeading"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { CardContainer } from "@/components/ui/card-container"
 import { Tabs, TabsContent } from "@/components/ui/tabs"
 import { TabNav, type TabNavItem } from "@/components/ui/tab-nav"
 import { Progress } from "@/components/ui/progress"
@@ -206,19 +207,17 @@ export function OverviewPage() {
             </TabsContent>
 
             <TabsContent value="mailbox">
-              <Card>
-                <CardContent className="py-16">
-                  <Empty className="border-0">
-                    <EmptyHeader>
-                      <EmptyMedia variant="icon" className="bg-accent text-primary">
-                        <Mail />
-                      </EmptyMedia>
-                      <EmptyTitle>Mailbox overview</EmptyTitle>
-                      <EmptyDescription>Coming soon — mailbox insights will appear here.</EmptyDescription>
-                    </EmptyHeader>
-                  </Empty>
-                </CardContent>
-              </Card>
+              <CardContainer contentClassName="py-16">
+                <Empty className="border-0">
+                  <EmptyHeader>
+                    <EmptyMedia variant="icon" className="bg-accent text-primary">
+                      <Mail />
+                    </EmptyMedia>
+                    <EmptyTitle>Mailbox overview</EmptyTitle>
+                    <EmptyDescription>Coming soon — mailbox insights will appear here.</EmptyDescription>
+                  </EmptyHeader>
+                </Empty>
+              </CardContainer>
             </TabsContent>
           </Tabs>
         </section>

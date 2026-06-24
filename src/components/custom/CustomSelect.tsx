@@ -113,7 +113,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
           {label}
         </label>
       ) : null}
-      <div className="relative min-w-0 w-full">
+      <div className="relative w-full min-w-0">
         <Popover
           open={open}
           onOpenChange={(nextOpen) => {
@@ -217,8 +217,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
                         onSelect={() => handleSelect(option.value)}
                         className={cn(
                           "mb-1 pr-1.5",
-                          hasPointerMoved &&
-                            "data-selected:bg-accent data-selected:text-accent-foreground",
+                          hasPointerMoved && "data-selected:bg-accent data-selected:text-accent-foreground",
                           showSelectedHighlight &&
                             "bg-accent text-accent-foreground data-selected:bg-accent data-selected:text-accent-foreground data-selected:*:[svg]:text-accent-foreground"
                         )}

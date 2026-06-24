@@ -36,9 +36,7 @@ function Calendar({
 }) {
   const defaultClassNames = getDefaultClassNames()
   const usesDropdown =
-    captionLayout === "dropdown" ||
-    captionLayout === "dropdown-months" ||
-    captionLayout === "dropdown-years"
+    captionLayout === "dropdown" || captionLayout === "dropdown-months" || captionLayout === "dropdown-years"
 
   return (
     <DayPicker
@@ -95,7 +93,7 @@ function Calendar({
           "font-medium select-none",
           captionLayout === "label"
             ? "text-sm"
-            : "flex h-8 items-center gap-1 rounded-md pl-2 pr-1 text-sm [&>svg]:size-3.5 [&>svg]:text-muted-foreground",
+            : "flex h-8 items-center gap-1 rounded-md pr-1 pl-2 text-sm [&>svg]:size-3.5 [&>svg]:text-muted-foreground",
           defaultClassNames.caption_label
         ),
         table: "w-full border-collapse",

@@ -46,37 +46,37 @@ export function SoftwareLicenseLegend({ className }: { className?: string }) {
 export function SoftwareLicensesChart() {
   return (
     <ChartContainer config={licenseTrendConfig} className="h-56 w-full">
-        <AreaChart data={licenseTrendData} margin={{ left: 0, right: 8, top: 8, bottom: 0 }}>
-          <defs>
-            <linearGradient id="softwareActiveFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="var(--color-success)" stopOpacity={0.35} />
-              <stop offset="100%" stopColor="var(--color-success)" stopOpacity={0} />
-            </linearGradient>
-            <linearGradient id="softwareExpiringFill" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="var(--color-warning)" stopOpacity={0.35} />
-              <stop offset="100%" stopColor="var(--color-warning)" stopOpacity={0} />
-            </linearGradient>
-          </defs>
-          <CartesianGrid vertical={false} strokeDasharray="3 3" />
-          <XAxis dataKey="month" tickLine={false} axisLine={false} tickMargin={8} />
-          <YAxis tickLine={false} axisLine={false} tickMargin={4} width={36} allowDecimals={false} />
-          <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-          <Area
-            dataKey="active"
-            type="monotone"
-            stroke="var(--color-success)"
-            strokeWidth={2}
-            fill="url(#softwareActiveFill)"
-          />
-          <Area
-            dataKey="expiring"
-            type="monotone"
-            stroke="var(--color-warning)"
-            strokeWidth={2}
-            fill="url(#softwareExpiringFill)"
-          />
-        </AreaChart>
-      </ChartContainer>
+      <AreaChart data={licenseTrendData} margin={{ left: 0, right: 8, top: 8, bottom: 0 }}>
+        <defs>
+          <linearGradient id="softwareActiveFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--color-success)" stopOpacity={0.35} />
+            <stop offset="100%" stopColor="var(--color-success)" stopOpacity={0} />
+          </linearGradient>
+          <linearGradient id="softwareExpiringFill" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="var(--color-warning)" stopOpacity={0.35} />
+            <stop offset="100%" stopColor="var(--color-warning)" stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <CartesianGrid vertical={false} strokeDasharray="3 3" />
+        <XAxis dataKey="month" tickLine={false} axisLine={false} tickMargin={8} />
+        <YAxis tickLine={false} axisLine={false} tickMargin={4} width={36} allowDecimals={false} />
+        <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+        <Area
+          dataKey="active"
+          type="monotone"
+          stroke="var(--color-success)"
+          strokeWidth={2}
+          fill="url(#softwareActiveFill)"
+        />
+        <Area
+          dataKey="expiring"
+          type="monotone"
+          stroke="var(--color-warning)"
+          strokeWidth={2}
+          fill="url(#softwareExpiringFill)"
+        />
+      </AreaChart>
+    </ChartContainer>
   )
 }
 
@@ -129,14 +129,7 @@ export function VendorSeatConcentrationChart() {
       >
         <CartesianGrid horizontal={false} strokeDasharray="3 3" />
         <XAxis type="number" tickLine={false} axisLine={false} tickMargin={8} allowDecimals={false} />
-        <YAxis
-          type="category"
-          dataKey="vendor"
-          tickLine={false}
-          axisLine={false}
-          tickMargin={8}
-          width={96}
-        />
+        <YAxis type="category" dataKey="vendor" tickLine={false} axisLine={false} tickMargin={8} width={96} />
         <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
         <Bar dataKey="seats" radius={6} maxBarSize={56}>
           {vendorConcentrationData.map((entry) => (

@@ -11,7 +11,8 @@ import { PageHeader } from "@/components/layout/PageHeader"
 import { settingsControlClassName } from "@/app/(dashboard)/settings/_components/settings-panel"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { Card, CardActions, CardContent } from "@/components/ui/card"
+import { CardActions } from "@/components/ui/card"
+import { CardContainer } from "@/components/ui/card-container"
 import { DatePicker } from "@/components/ui/date-picker"
 import {
   Dialog,
@@ -49,8 +50,7 @@ import { cn } from "@/lib/utils"
 
 type ActiveModal = "add" | "edit" | "assign" | "repair" | "history" | "delete" | null
 
-const hardwareCardClassName = "gap-0 py-0"
-const hardwareCardContentClassName = cn("p-(--card-spacing)", settingsControlClassName)
+const hardwareCardContentClassName = settingsControlClassName
 
 function getInitials(name: string) {
   return name
@@ -359,62 +359,61 @@ function HardwarePage() {
           <MetricCard label="Retired" value={String(kpis.retired)} icon={Archive} iconVariant="badge" />
         </div>
 
-        <Card className={hardwareCardClassName}>
-          <CardContent className={cn("flex flex-col gap-4", hardwareCardContentClassName)}>
-            <div className="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-center">
-              <InputGroup className="min-w-[240px] flex-1">
-                <InputGroupAddon>
-                  <Search className="size-4" />
-                </InputGroupAddon>
-                <InputGroupInput
-                  placeholder="Search by name, tag, serial, or supplier..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </InputGroup>
-
-              <CustomSelect
-                className="w-full lg:w-44"
-                value={selectedStatus}
-                onChange={(value) => setSelectedStatus(typeof value === "string" ? value : "All Statuses")}
-                options={[
-                  { label: "All Statuses", value: "All Statuses" },
-                  ...ASSET_STATUSES.map((status) => ({
-                    label: status === "Repair" ? "In Repair" : status,
-                    value: status,
-                  })),
-                ]}
-                showClear={false}
+        <CardContainer
+          formControls
+          contentClassName={cn("flex flex-col gap-4", hardwareCardContentClassName)}
+        >
+          <div className="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-center">
+            <InputGroup className="min-w-[240px] flex-1">
+              <InputGroupAddon>
+                <Search className="size-4" />
+              </InputGroupAddon>
+              <InputGroupInput
+                placeholder="Search by name, tag, serial, or supplier..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
+            </InputGroup>
 
-              <CustomSelect
-                className="w-full lg:w-48"
-                value={selectedCategory}
-                onChange={(value) =>
-                  setSelectedCategory(typeof value === "string" ? value : "All Categories")
-                }
-                options={[
-                  { label: "All Categories", value: "All Categories" },
-                  { label: "Laptops", value: "Laptop" },
-                  { label: "Monitors", value: "Monitor" },
-                  { label: "Phones", value: "Phone" },
-                  { label: "Accessories", value: "Accessories" },
-                  { label: "Other", value: "Other" },
-                ]}
-                showClear={false}
-              />
-            </div>
-
-            <HardwareAssetsTable
-              rows={filteredAssets}
-              onHistory={(asset) => handleOpenModal("history", asset)}
-              onAssign={(asset) => handleOpenModal("assign", asset)}
-              onRepair={(asset) => handleOpenModal("repair", asset)}
-              onEdit={(asset) => handleOpenModal("edit", asset)}
-              onDelete={(asset) => handleOpenModal("delete", asset)}
+            <CustomSelect
+              className="w-full lg:w-44"
+              value={selectedStatus}
+              onChange={(value) => setSelectedStatus(typeof value === "string" ? value : "All Statuses")}
+              options={[
+                { label: "All Statuses", value: "All Statuses" },
+                ...ASSET_STATUSES.map((status) => ({
+                  label: status === "Repair" ? "In Repair" : status,
+                  value: status,
+                })),
+              ]}
+              showClear={false}
             />
-          </CardContent>
-        </Card>
+
+            <CustomSelect
+              className="w-full lg:w-48"
+              value={selectedCategory}
+              onChange={(value) => setSelectedCategory(typeof value === "string" ? value : "All Categories")}
+              options={[
+                { label: "All Categories", value: "All Categories" },
+                { label: "Laptops", value: "Laptop" },
+                { label: "Monitors", value: "Monitor" },
+                { label: "Phones", value: "Phone" },
+                { label: "Accessories", value: "Accessories" },
+                { label: "Other", value: "Other" },
+              ]}
+              showClear={false}
+            />
+          </div>
+
+          <HardwareAssetsTable
+            rows={filteredAssets}
+            onHistory={(asset) => handleOpenModal("history", asset)}
+            onAssign={(asset) => handleOpenModal("assign", asset)}
+            onRepair={(asset) => handleOpenModal("repair", asset)}
+            onEdit={(asset) => handleOpenModal("edit", asset)}
+            onDelete={(asset) => handleOpenModal("delete", asset)}
+          />
+        </CardContainer>
       </PageHeader>
 
       <Dialog open={activeModal === "add" || activeModal === "edit"} onOpenChange={handleDialogOpenChange}>
@@ -735,8 +734,8 @@ function HardwarePage() {
             <>
               <DialogBody className={dialogBodyBeforeActionsClassName}>
                 <DialogDescription>
-                  Are you sure you want to delete this hardware asset? This action will permanently remove it from
-                  tracking logs.
+                  Are you sure you want to delete this hardware asset? This action will permanently remove it
+                  from tracking logs.
                 </DialogDescription>
                 <div className="mt-4 space-y-1.5 rounded-lg border border-destructive/20 bg-destructive/5 p-4">
                   <p className={typeScale.body.muted}>

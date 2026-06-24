@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { useMemo, useState } from "react"
-import { Box, Inbox, Search } from "lucide-react"
+import { Inbox, Search } from "lucide-react"
 import { toast } from "sonner"
 
 import {
@@ -14,7 +14,7 @@ import {
 import { settingsControlClassName } from "@/app/(dashboard)/settings/_components/settings-panel"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent } from "@/components/ui/card"
+import { CardContainer } from "@/components/ui/card-container"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
@@ -22,8 +22,7 @@ import { type LabelEmployee } from "@/lib/employee-lifecycle/data"
 import { typeScale } from "@/lib/typography"
 import { cn } from "@/lib/utils"
 
-const lifecycleCardClassName = "gap-0 py-0"
-const lifecycleCardContentClassName = cn("p-(--card-spacing)", settingsControlClassName)
+const lifecycleCardContentClassName = settingsControlClassName
 
 type LabelTableProps = {
   rows: LabelEmployee[]
@@ -192,55 +191,42 @@ function GenerateLabelTab({ employees }: GenerateLabelTabProps) {
   }
 
   return (
-    <Card className={lifecycleCardClassName}>
-      <CardContent className={cn("flex flex-col gap-4", lifecycleCardContentClassName)}>
-        <div className="space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="flex size-8 items-center justify-center rounded-lg bg-accent text-primary ring-1 ring-border/60">
-              <Box className="size-4" />
-            </span>
-            <h2 className={typeScale.title}>Generate Label</h2>
-          </div>
-          <p className={typeScale.body.muted}>
-            After kit assignment, generate hardware labels for one employee or in bulk using Company shipping
-            defaults (carrier: FedEx).
-          </p>
+    <CardContainer
+      variant="form"
+      title="Generate Label"
+      description="After kit assignment, generate hardware labels for one employee or in bulk using Company shipping defaults (carrier: FedEx)."
+      formControls
+      contentClassName={cn("flex flex-col gap-4", lifecycleCardContentClassName)}
+    >
+      <div className="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-center">
+        <InputGroup className="min-w-[240px] flex-1">
+          <InputGroupAddon>
+            <Search className="size-4" />
+          </InputGroupAddon>
+          <InputGroupInput
+            placeholder="Search by employee, email, department, code"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+        </InputGroup>
+
+        <div className="flex flex-wrap gap-2">
+          <Button type="button" variant="outline" onClick={handleRefresh}>
+            Refresh
+          </Button>
+          <Button type="button" disabled={selectedIds.size === 0 || generating} onClick={handleBulkGenerate}>
+            {generating ? "Generating…" : "Generate Label"}
+          </Button>
         </div>
+      </div>
 
-        <div className="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-center">
-          <InputGroup className="min-w-[240px] flex-1">
-            <InputGroupAddon>
-              <Search className="size-4" />
-            </InputGroupAddon>
-            <InputGroupInput
-              placeholder="Search by employee, email, department, code"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-          </InputGroup>
-
-          <div className="flex flex-wrap gap-2">
-            <Button type="button" variant="outline" onClick={handleRefresh}>
-              Refresh
-            </Button>
-            <Button
-              type="button"
-              disabled={selectedIds.size === 0 || generating}
-              onClick={handleBulkGenerate}
-            >
-              {generating ? "Generating…" : "Generate Label"}
-            </Button>
-          </div>
-        </div>
-
-        <LabelTable
-          rows={filteredEmployees}
-          selectedIds={selectedIds}
-          onToggle={handleToggle}
-          onGenerate={handleGenerateOne}
-        />
-      </CardContent>
-    </Card>
+      <LabelTable
+        rows={filteredEmployees}
+        selectedIds={selectedIds}
+        onToggle={handleToggle}
+        onGenerate={handleGenerateOne}
+      />
+    </CardContainer>
   )
 }
 

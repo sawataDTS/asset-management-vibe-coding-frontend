@@ -34,7 +34,27 @@ mandatory and non-negotiable.
    workspace themes at runtime. Never reference a specific theme's colors; only
    reference tokens. Test that a component looks correct after switching themes.
 10. **Follow `DESIGN.md` before generating UI.** Layout, sidebar, navbar, header,
-    token, scroll, and responsive specifications are defined there.
+    token, scroll, card selection (§10), and responsive specifications are defined there.
+
+## Card & panel primitives
+
+See **`DESIGN.md` §10** for the full decision guide. In short:
+
+- **`CardContainer`** — default panel (title + body + optional action/footer). Use
+  `variant="form"` for forms with a save row.
+- **`MetricCard`** — KPI stats only.
+- **`ChartCard`** — chart panels only.
+- **`DataTable`** — tabular data with columns.
+- **`ReportListCard`** — report row lists (hardware / software / certifications reports).
+- **`ModalContainer`** — standard dashboard modal (title, body, `CardActions` footer). See **`DESIGN.md` §10**.
+- Do **not** hand-roll `Card` + `CardTitle` + `CardContent` on new pages.
+
+## Modal performance
+
+On pages with **multiple** modals (or modals that will fetch on mount), render each
+dialog only when its `open` flag is true (and required props exist for review
+flows). Do not mount all dialogs up front. Use `next/dynamic` only for unusually
+heavy modal bundles. See **`DESIGN.md` §10** (`ModalContainer` → lazy mount).
 
 ## Branding & navigation standards
 

@@ -24,7 +24,8 @@ import { settingsControlClassName } from "@/app/(dashboard)/settings/_components
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { Card, CardActions, CardContent } from "@/components/ui/card"
+import { CardActions } from "@/components/ui/card"
+import { CardContainer } from "@/components/ui/card-container"
 import { DatePicker } from "@/components/ui/date-picker"
 import {
   Dialog,
@@ -60,8 +61,7 @@ import { cn } from "@/lib/utils"
 
 type ActiveModal = "add" | "edit" | "seats" | "history" | "delete" | null
 
-const softwareCardClassName = "gap-0 py-0"
-const softwareCardContentClassName = cn("p-(--card-spacing)", settingsControlClassName)
+const softwareCardContentClassName = settingsControlClassName
 
 function getInitials(name: string) {
   return name
@@ -369,54 +369,53 @@ function SoftwarePage() {
           <MetricCard label="Monthly Spend" value={kpis.monthlySpend} icon={CreditCard} iconVariant="badge" />
         </div>
 
-        <Card className={softwareCardClassName}>
-          <CardContent className={cn("flex flex-col gap-4", softwareCardContentClassName)}>
-            <div className="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-center">
-              <InputGroup className="min-w-[240px] flex-1">
-                <InputGroupAddon>
-                  <Search className="size-4" />
-                </InputGroupAddon>
-                <InputGroupInput
-                  placeholder="Search by license name, supplier, or key..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-              </InputGroup>
-
-              <CustomSelect
-                className="w-full lg:w-44"
-                value={selectedStatus}
-                onChange={(value) => setSelectedStatus(typeof value === "string" ? value : "All Statuses")}
-                options={[
-                  { label: "All Statuses", value: "All Statuses" },
-                  ...LICENSE_STATUSES.map((status) => ({ label: status, value: status })),
-                ]}
-                showClear={false}
+        <CardContainer
+          formControls
+          contentClassName={cn("flex flex-col gap-4", softwareCardContentClassName)}
+        >
+          <div className="flex flex-col gap-3 lg:flex-row lg:flex-wrap lg:items-center">
+            <InputGroup className="min-w-[240px] flex-1">
+              <InputGroupAddon>
+                <Search className="size-4" />
+              </InputGroupAddon>
+              <InputGroupInput
+                placeholder="Search by license name, supplier, or key..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
               />
+            </InputGroup>
 
-              <CustomSelect
-                className="w-full lg:w-48"
-                value={selectedCategory}
-                onChange={(value) =>
-                  setSelectedCategory(typeof value === "string" ? value : "All Categories")
-                }
-                options={[
-                  { label: "All Categories", value: "All Categories" },
-                  ...SOFTWARE_CATEGORIES.map((category) => ({ label: category, value: category })),
-                ]}
-                showClear={false}
-              />
-            </div>
-
-            <SoftwareLicensesTable
-              rows={filteredLicenses}
-              onHistory={(license) => handleOpenModal("history", license)}
-              onSeats={(license) => handleOpenModal("seats", license)}
-              onEdit={(license) => handleOpenModal("edit", license)}
-              onDelete={(license) => handleOpenModal("delete", license)}
+            <CustomSelect
+              className="w-full lg:w-44"
+              value={selectedStatus}
+              onChange={(value) => setSelectedStatus(typeof value === "string" ? value : "All Statuses")}
+              options={[
+                { label: "All Statuses", value: "All Statuses" },
+                ...LICENSE_STATUSES.map((status) => ({ label: status, value: status })),
+              ]}
+              showClear={false}
             />
-          </CardContent>
-        </Card>
+
+            <CustomSelect
+              className="w-full lg:w-48"
+              value={selectedCategory}
+              onChange={(value) => setSelectedCategory(typeof value === "string" ? value : "All Categories")}
+              options={[
+                { label: "All Categories", value: "All Categories" },
+                ...SOFTWARE_CATEGORIES.map((category) => ({ label: category, value: category })),
+              ]}
+              showClear={false}
+            />
+          </div>
+
+          <SoftwareLicensesTable
+            rows={filteredLicenses}
+            onHistory={(license) => handleOpenModal("history", license)}
+            onSeats={(license) => handleOpenModal("seats", license)}
+            onEdit={(license) => handleOpenModal("edit", license)}
+            onDelete={(license) => handleOpenModal("delete", license)}
+          />
+        </CardContainer>
       </PageHeader>
 
       <Dialog open={activeModal === "add" || activeModal === "edit"} onOpenChange={handleDialogOpenChange}>
@@ -547,20 +546,18 @@ function SoftwarePage() {
             <>
               <DialogBody className={dialogScrollBodyClassName}>
                 <div className="space-y-5">
-                  <Card size="sm" className={softwareCardClassName}>
-                    <CardContent className={softwareCardContentClassName}>
-                      <div className="mb-2 flex items-center justify-between gap-2">
-                        <span className={typeScale.caption.overline}>Seat utilization</span>
-                        <span className={typeScale.body.emphasis}>
-                          {selectedLicense.assignedSeats} / {selectedLicense.totalSeats} seats
-                        </span>
-                      </div>
-                      <SeatUtilization
-                        assigned={selectedLicense.assignedSeats}
-                        total={selectedLicense.totalSeats}
-                      />
-                    </CardContent>
-                  </Card>
+                  <CardContainer size="sm" contentClassName={softwareCardContentClassName}>
+                    <div className="mb-2 flex items-center justify-between gap-2">
+                      <span className={typeScale.caption.overline}>Seat utilization</span>
+                      <span className={typeScale.body.emphasis}>
+                        {selectedLicense.assignedSeats} / {selectedLicense.totalSeats} seats
+                      </span>
+                    </div>
+                    <SeatUtilization
+                      assigned={selectedLicense.assignedSeats}
+                      total={selectedLicense.totalSeats}
+                    />
+                  </CardContainer>
 
                   {selectedLicense.assignedSeats < selectedLicense.totalSeats ? (
                     eligibleEmployees.length > 0 ? (
@@ -708,8 +705,8 @@ function SoftwarePage() {
             <>
               <DialogBody className={dialogBodyBeforeActionsClassName}>
                 <DialogDescription>
-                  Are you sure you want to permanently delete this software license registry? All seat allocations
-                  will be terminated.
+                  Are you sure you want to permanently delete this software license registry? All seat
+                  allocations will be terminated.
                 </DialogDescription>
                 <div className="mt-4 space-y-1.5 rounded-lg border border-destructive/20 bg-destructive/5 p-4">
                   <p className={typeScale.body.muted}>

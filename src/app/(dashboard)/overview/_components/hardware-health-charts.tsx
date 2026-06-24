@@ -71,11 +71,7 @@ export function LifecycleLegend({ className }: { className?: string }) {
     <ul className={cn("flex flex-wrap items-center gap-3", className)}>
       {lifecycleData.map((item) => (
         <li key={item.status} className={cn("flex items-center gap-1.5", typeScale.caption.meta)}>
-          <span
-            className="size-2 shrink-0 rounded-full"
-            style={{ backgroundColor: item.fill }}
-            aria-hidden
-          />
+          <span className="size-2 shrink-0 rounded-full" style={{ backgroundColor: item.fill }} aria-hidden />
           <span className="text-muted-foreground">{item.label}</span>
           <span className="font-medium text-foreground tabular-nums">{item.value}</span>
         </li>

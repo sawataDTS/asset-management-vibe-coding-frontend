@@ -3,35 +3,22 @@
 import * as React from "react"
 import { useMemo } from "react"
 import { format, isValid, parseISO } from "date-fns"
-import {
-  Building2,
-  Globe,
-  Inbox,
-  Mail,
-  Pencil,
-  Phone,
-  Power,
-  PowerOff,
-  Sparkles,
-  Trash2,
-} from "lucide-react"
+import { Building2, Globe, Inbox, Mail, Pencil, Phone, Power, PowerOff, Sparkles, Trash2 } from "lucide-react"
 
-import { DataTable, dataTableActionsCellClass, dataTableActionsHeaderClass, type DataTableColumn } from "@/components/custom/DataTable"
+import {
+  DataTable,
+  dataTableActionsCellClass,
+  dataTableActionsHeaderClass,
+  type DataTableColumn,
+} from "@/components/custom/DataTable"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
-import {
-  formatOrganizationStatus,
-  type Organization,
-  type OrganizationStatus,
-} from "@/lib/organization/data"
+import { formatOrganizationStatus, type Organization, type OrganizationStatus } from "@/lib/organization/data"
 import { typeScale } from "@/lib/typography"
 import { cn } from "@/lib/utils"
 
-const statusBadgeVariant: Record<
-  OrganizationStatus,
-  "success" | "warning" | "destructive" | "secondary"
-> = {
+const statusBadgeVariant: Record<OrganizationStatus, "success" | "warning" | "destructive" | "secondary"> = {
   active: "success",
   pending: "warning",
   suspended: "destructive",
@@ -59,9 +46,7 @@ function OrganizationCell({ row }: { row: Organization }) {
 }
 
 function StatusCell({ row }: { row: Organization }) {
-  return (
-    <Badge variant={statusBadgeVariant[row.status]}>{formatOrganizationStatus(row.status)}</Badge>
-  )
+  return <Badge variant={statusBadgeVariant[row.status]}>{formatOrganizationStatus(row.status)}</Badge>
 }
 
 function RegionCell({ row }: { row: Organization }) {
@@ -163,13 +148,7 @@ export interface OrganizationsTableProps {
   onToggleActive: (organization: Organization) => void
 }
 
-function OrganizationsTable({
-  rows,
-  onEdit,
-  onDelete,
-  onOnboard,
-  onToggleActive,
-}: OrganizationsTableProps) {
+function OrganizationsTable({ rows, onEdit, onDelete, onOnboard, onToggleActive }: OrganizationsTableProps) {
   const columns = useMemo<DataTableColumn<Organization>[]>(
     () => [
       {
@@ -200,9 +179,7 @@ function OrganizationsTable({
         id: "activatedAt",
         header: "Activated",
         sortValue: (row) => row.activatedAt,
-        cell: (row) => (
-          <span className={typeScale.body.default}>{formatActivatedAt(row.activatedAt)}</span>
-        ),
+        cell: (row) => <span className={typeScale.body.default}>{formatActivatedAt(row.activatedAt)}</span>,
       },
       {
         id: "region",

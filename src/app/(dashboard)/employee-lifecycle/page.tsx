@@ -4,7 +4,8 @@ import { EmployeeLifecyclePage } from "./_components/employee-lifecycle-page"
 
 export const metadata: Metadata = {
   title: "Employee Lifecycle",
-  description: "Configure department templates, onboard employees, generate labels, and track lifecycle history.",
+  description:
+    "Configure department templates, onboard employees, generate labels, and track lifecycle history.",
 }
 
 export default function EmployeeLifecycleRoute() {

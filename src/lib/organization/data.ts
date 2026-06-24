@@ -1,8 +1,4 @@
-import {
-  CURRENCY_OPTIONS,
-  ORG_SIZE_OPTIONS,
-  TIMEZONE_OPTIONS,
-} from "@/lib/settings-data"
+import { CURRENCY_OPTIONS, ORG_SIZE_OPTIONS, TIMEZONE_OPTIONS } from "@/lib/settings-data"
 
 export type OrganizationStatus = "active" | "pending" | "suspended" | "inactive"
 

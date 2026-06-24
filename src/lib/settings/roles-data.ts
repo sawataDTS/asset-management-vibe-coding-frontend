@@ -57,7 +57,7 @@ export const PERMISSION_MODULES: PermissionModuleDefinition[] = [
     permissions: ["View", "Onboard", "Offboard"],
     visible: true,
   },
-  { id: "requests", label: "Requests", permissions: ["View", "Manage"], visible: true },
+  { id: "requests", label: "Requests", permissions: ["View", "Submit", "Manage"], visible: true },
   // { label: "Campaigns", href: "/campaigns" }
   { id: "campaigns", label: "Campaigns", permissions: ["View", "Manage"], visible: false },
   // { label: "Integrations", href: "/integrations" }
@@ -91,9 +91,7 @@ export const VISIBLE_PERMISSION_MODULES = PERMISSION_MODULES.filter((module) => 
 export const VISIBLE_SETTINGS_PERMISSIONS = SETTINGS_PERMISSIONS.filter((permission) => permission.visible)
 
 function allModuleGrants(): Record<string, readonly string[]> {
-  return Object.fromEntries(
-    PERMISSION_MODULES.map((module) => [module.id, [...module.permissions]])
-  )
+  return Object.fromEntries(PERMISSION_MODULES.map((module) => [module.id, [...module.permissions]]))
 }
 
 function allSettingsGrants(): string[] {
@@ -110,7 +108,7 @@ const EMPLOYEE_MODULE_GRANTS: Record<string, readonly string[]> = {
   compliance: ["View", "Edit", "Assign certifications"],
   employees: ["View", "Edit", "Provision"],
   "employee-lifecycle": ["View", "Onboard", "Offboard"],
-  requests: ["View", "Manage"],
+  requests: ["View", "Submit"],
   campaigns: ["View", "Manage"],
   integrations: ["View", "Manage"],
   "integrations-demo": ["View"],
@@ -143,6 +141,14 @@ const HR_MODULE_GRANTS = MANAGER_MODULE_GRANTS
 
 const HR_SETTINGS_GRANTS = MANAGER_SETTINGS_GRANTS
 
+function adminModuleGrants(): Record<string, readonly string[]> {
+  const grants = allModuleGrants()
+  return {
+    ...grants,
+    requests: ["View", "Submit", "Manage"],
+  }
+}
+
 export const BUILT_IN_ROLES: RoleDefinition[] = [
   {
     id: "admin",
@@ -151,7 +157,7 @@ export const BUILT_IN_ROLES: RoleDefinition[] = [
     description: "Admin has all permissions and cannot be edited.",
     badge: "Admin",
     locked: true,
-    moduleGrants: allModuleGrants(),
+    moduleGrants: adminModuleGrants(),
     settingsGrants: allSettingsGrants(),
   },
   {
@@ -184,11 +190,7 @@ export const ROLE_TEMPLATE_OPTIONS = [
   { value: "employee", label: "Employee (limited)" },
 ] as const
 
-export function isPermissionGranted(
-  role: RoleDefinition,
-  moduleId: string,
-  permission: string
-): boolean {
+export function isPermissionGranted(role: RoleDefinition, moduleId: string, permission: string): boolean {
   return role.moduleGrants[moduleId]?.includes(permission) ?? false
 }
 

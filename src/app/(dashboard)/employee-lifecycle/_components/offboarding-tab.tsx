@@ -14,14 +14,14 @@ import {
   Play,
   RefreshCw,
   Search,
-  UserMinus,
 } from "lucide-react"
 import { toast } from "sonner"
 
 import { CustomSelect } from "@/components/custom/CustomSelect"
 import { settingsControlClassName } from "@/app/(dashboard)/settings/_components/settings-panel"
 import { Button } from "@/components/ui/button"
-import { Card, CardActions, CardContent } from "@/components/ui/card"
+import { CardActions } from "@/components/ui/card"
+import { CardContainer } from "@/components/ui/card-container"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
 import { DatePicker } from "@/components/ui/date-picker"
@@ -38,7 +38,11 @@ import { Field, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { InputGroup, InputGroupAddon, InputGroupInput } from "@/components/ui/input-group"
 import { Textarea } from "@/components/ui/textarea"
-import { dialogBodyBeforeActionsClassName, dialogHeaderClassName, dialogShellClassNameCompact } from "@/lib/dialog-layout"
+import {
+  dialogBodyBeforeActionsClassName,
+  dialogHeaderClassName,
+  dialogShellClassNameCompact,
+} from "@/lib/dialog-layout"
 import {
   canFinalizeOffboarding,
   CHECKLIST_ITEM_STATUSES,
@@ -56,8 +60,9 @@ import {
 import { typeScale } from "@/lib/typography"
 import { cn } from "@/lib/utils"
 
-const lifecycleCardClassName = "gap-0 py-0"
-const lifecycleCardContentClassName = cn("p-(--card-spacing)", settingsControlClassName)
+const lifecycleCardContentClassName = settingsControlClassName
+/** Padding for nested panels (accordions, inset blocks) — not supplied by CardContainer slots. */
+const lifecycleNestedPanelClassName = cn("p-(--card-spacing)", settingsControlClassName)
 
 const CHECKLIST_ICONS = [HardDrive, Key, FileText, ArrowRightLeft, CheckCircle2, EyeOff, ClipboardList]
 
@@ -93,32 +98,35 @@ function ActiveOffboardingCard({
   function updateChecklistItem(itemId: string, status: ChecklistItemStatus) {
     onUpdate({
       ...offboarding,
-      checklist: offboarding.checklist.map((item) =>
-        item.id === itemId ? { ...item, status } : item
-      ),
+      checklist: offboarding.checklist.map((item) => (item.id === itemId ? { ...item, status } : item)),
     })
   }
 
   return (
     <Collapsible open={expanded} onOpenChange={onExpandedChange} className="rounded-lg border border-border">
-      <CollapsibleTrigger className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/50">
+      <CollapsibleTrigger className="flex w-full items-center justify-between gap-3 px-(--card-spacing) py-3 text-left transition-colors hover:bg-muted/50">
         <span className={typeScale.body.emphasis}>
           {offboarding.employeeName} · {offboarding.department}
         </span>
-        <ChevronDown className={cn("size-4 shrink-0 text-muted-foreground transition-transform", expanded && "rotate-180")} />
+        <ChevronDown
+          className={cn(
+            "size-4 shrink-0 text-muted-foreground transition-transform",
+            expanded && "rotate-180"
+          )}
+        />
       </CollapsibleTrigger>
 
       <CollapsibleContent className="border-t border-border">
-        <div className={cn("flex flex-col gap-4", lifecycleCardContentClassName)}>
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <h3 className={typeScale.title}>{offboarding.employeeName}</h3>
-              <p className={typeScale.caption.meta}>
-                Initiated {formatInitiatedAt(offboarding.initiatedAt)}
-              </p>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              <Button type="button" variant="outline" size="sm" onClick={() => toast.info("Refreshed checklist.")}>
+        <div className={cn("flex flex-col gap-4", lifecycleNestedPanelClassName)}>
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <p className={typeScale.caption.meta}>Initiated {formatInitiatedAt(offboarding.initiatedAt)}</p>
+            <div className="flex flex-wrap gap-2 sm:justify-end">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => toast.info("Refreshed checklist.")}
+              >
                 <RefreshCw />
                 Refresh
               </Button>
@@ -144,7 +152,10 @@ function ActiveOffboardingCard({
                 const Icon = CHECKLIST_ICONS[index] ?? CheckCircle2
                 const isComplete = item.status === "done" || item.status === "skipped"
                 return (
-                  <li key={item.id} className="flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between">
+                  <li
+                    key={item.id}
+                    className="flex flex-col gap-2 p-3 sm:flex-row sm:items-center sm:justify-between"
+                  >
                     <div className="flex min-w-0 items-start gap-3">
                       <span
                         className={cn(
@@ -163,9 +174,7 @@ function ActiveOffboardingCard({
                         >
                           {item.label}
                         </p>
-                        {item.optional ? (
-                          <p className={typeScale.caption.meta}>OPTIONAL</p>
-                        ) : null}
+                        {item.optional ? <p className={typeScale.caption.meta}>OPTIONAL</p> : null}
                       </div>
                     </div>
                     <CustomSelect
@@ -321,9 +330,7 @@ function OffboardingTab({
       reasonNotes,
       checklist: createDefaultOffboardingChecklist(),
       hardware:
-        candidate.name === "employee_3"
-          ? [{ id: "hw-off-1", name: 'MacBook Pro 14"', tag: "LAP-0047" }]
-          : [],
+        candidate.name === "employee_3" ? [{ id: "hw-off-1", name: 'MacBook Pro 14"', tag: "LAP-0047" }] : [],
       licenses: [],
     }))
 
@@ -336,9 +343,7 @@ function OffboardingTab({
   }
 
   function handleUpdateOffboarding(updated: ActiveOffboarding) {
-    onActiveOffboardingsChange((prev) =>
-      prev.map((entry) => (entry.id === updated.id ? updated : entry))
-    )
+    onActiveOffboardingsChange((prev) => prev.map((entry) => (entry.id === updated.id ? updated : entry)))
     setFinalizeTarget((current) => (current?.id === updated.id ? updated : current))
   }
 
@@ -391,157 +396,147 @@ function OffboardingTab({
   return (
     <>
       <div className="flex flex-col gap-4">
-        <Card className={lifecycleCardClassName}>
-          <CardContent className={cn("flex flex-col gap-4", lifecycleCardContentClassName)}>
-            <div className="flex items-start gap-3">
-              <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-accent text-primary ring-1 ring-border/60">
-                <UserMinus className="size-4" />
-              </span>
-              <div>
-                <h2 className={typeScale.title}>Initiate offboarding (single or bulk)</h2>
-                <p className={typeScale.body.muted}>
-                  Initiating creates a 7-step checklist and flags the employee as pending. Hardware and
-                  licenses are not changed until you finalize each offboarding.
-                </p>
+        <CardContainer
+          variant="form"
+          title="Initiate offboarding (single or bulk)"
+          description="Initiating creates a 7-step checklist and flags the employee as pending. Hardware and licenses are not changed until you finalize each offboarding."
+          formControls
+          contentClassName={cn("flex flex-col gap-4", lifecycleCardContentClassName)}
+        >
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+            <Field>
+              <FieldLabel htmlFor="offboard-search">Search employees</FieldLabel>
+              <InputGroup>
+                <InputGroupAddon>
+                  <Search className="size-4" />
+                </InputGroupAddon>
+                <InputGroupInput
+                  id="offboard-search"
+                  placeholder="Name, email, department, status..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+              </InputGroup>
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor="offboard-dept">Department filter</FieldLabel>
+              <CustomSelect
+                id="offboard-dept"
+                value={departmentFilter}
+                onChange={(value) =>
+                  setDepartmentFilter(typeof value === "string" ? value : "All departments")
+                }
+                options={departmentOptions}
+                showClear={false}
+              />
+            </Field>
+
+            <Field>
+              <FieldLabel htmlFor="offboard-last-day">Last Day</FieldLabel>
+              <DatePicker
+                id="offboard-last-day"
+                value={lastDay}
+                onChange={setLastDay}
+                placeholder="dd-mm-yyyy"
+              />
+            </Field>
+
+            <Field className="lg:col-span-2">
+              <FieldLabel htmlFor="offboard-reason">Reason / notes (optional)</FieldLabel>
+              <Textarea
+                id="offboard-reason"
+                placeholder="Voluntary resignation, end of contract, role change..."
+                value={reasonNotes}
+                onChange={(e) => setReasonNotes(e.target.value)}
+                rows={3}
+              />
+            </Field>
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className={typeScale.caption.overline}>Select employees</p>
+              <div className="flex flex-wrap gap-2">
+                <Button type="button" variant="outline" size="sm" onClick={handleSelectAllFiltered}>
+                  Select all filtered
+                </Button>
+                <Button type="button" variant="outline" size="sm" onClick={handleClearSelection}>
+                  Clear
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  disabled={selectedCount === 0}
+                  onClick={() => setStartConfirmOpen(true)}
+                >
+                  <Play />
+                  Start selected ({selectedCount})
+                </Button>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-              <Field>
-                <FieldLabel htmlFor="offboard-search">Search employees</FieldLabel>
-                <InputGroup>
-                  <InputGroupAddon>
-                    <Search className="size-4" />
-                  </InputGroupAddon>
-                  <InputGroupInput
-                    id="offboard-search"
-                    placeholder="Name, email, department, status..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                </InputGroup>
-              </Field>
-
-              <Field>
-                <FieldLabel htmlFor="offboard-dept">Department filter</FieldLabel>
-                <CustomSelect
-                  id="offboard-dept"
-                  value={departmentFilter}
-                  onChange={(value) =>
-                    setDepartmentFilter(typeof value === "string" ? value : "All departments")
-                  }
-                  options={departmentOptions}
-                  showClear={false}
-                />
-              </Field>
-
-              <Field>
-                <FieldLabel htmlFor="offboard-last-day">Last Day</FieldLabel>
-                <DatePicker
-                  id="offboard-last-day"
-                  value={lastDay}
-                  onChange={setLastDay}
-                  placeholder="dd-mm-yyyy"
-                />
-              </Field>
-
-              <Field className="lg:col-span-2">
-                <FieldLabel htmlFor="offboard-reason">Reason / notes (optional)</FieldLabel>
-                <Textarea
-                  id="offboard-reason"
-                  placeholder="Voluntary resignation, end of contract, role change..."
-                  value={reasonNotes}
-                  onChange={(e) => setReasonNotes(e.target.value)}
-                  rows={3}
-                />
-              </Field>
-            </div>
-
-            <div className="space-y-3">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <p className={typeScale.caption.overline}>Select employees</p>
-                <div className="flex flex-wrap gap-2">
-                  <Button type="button" variant="outline" size="sm" onClick={handleSelectAllFiltered}>
-                    Select all filtered
-                  </Button>
-                  <Button type="button" variant="outline" size="sm" onClick={handleClearSelection}>
-                    Clear
-                  </Button>
-                  <Button
-                    type="button"
-                    size="sm"
-                    disabled={selectedCount === 0}
-                    onClick={() => setStartConfirmOpen(true)}
-                  >
-                    <Play />
-                    Start selected ({selectedCount})
-                  </Button>
-                </div>
-              </div>
-
-              <ul className="divide-y divide-border rounded-lg border border-border">
-                {filteredCandidates.length === 0 ? (
-                  <li className="px-4 py-8 text-center">
-                    <p className={typeScale.body.muted}>No employees match your search.</p>
+            <ul className="divide-y divide-border rounded-lg border border-border">
+              {filteredCandidates.length === 0 ? (
+                <li className="px-4 py-8 text-center">
+                  <p className={typeScale.body.muted}>No employees match your search.</p>
+                </li>
+              ) : (
+                filteredCandidates.map((candidate) => (
+                  <li key={candidate.id}>
+                    <label className="flex cursor-pointer items-center gap-3 px-4 py-3 hover:bg-muted/40">
+                      <Checkbox
+                        checked={selectedCandidateIds.has(candidate.id)}
+                        onCheckedChange={(checked) => toggleCandidate(candidate.id, checked === true)}
+                      />
+                      <span className={typeScale.body.default}>
+                        {candidate.name} · {candidate.department}
+                      </span>
+                    </label>
                   </li>
-                ) : (
-                  filteredCandidates.map((candidate) => (
-                    <li key={candidate.id}>
-                      <label className="flex cursor-pointer items-center gap-3 px-4 py-3 hover:bg-muted/40">
-                        <Checkbox
-                          checked={selectedCandidateIds.has(candidate.id)}
-                          onCheckedChange={(checked) => toggleCandidate(candidate.id, checked === true)}
-                        />
-                        <span className={typeScale.body.default}>
-                          {candidate.name} · {candidate.department}
-                        </span>
-                      </label>
-                    </li>
-                  ))
-                )}
-              </ul>
-            </div>
-          </CardContent>
-        </Card>
+                ))
+              )}
+            </ul>
+          </div>
+        </CardContainer>
 
-        <Card className={lifecycleCardClassName}>
-          <CardContent className={cn("flex flex-col gap-4", lifecycleCardContentClassName)}>
-            <div className="flex items-center justify-between gap-2">
-              <h2 className={typeScale.title}>Active offboardings ({activeOffboardings.length})</h2>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => toast.info("Refreshed active offboardings.")}
-              >
-                <RefreshCw />
-                Refresh
-              </Button>
+        <CardContainer
+          title={`Active offboardings (${activeOffboardings.length})`}
+          action={
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => toast.info("Refreshed active offboardings.")}
+            >
+              <RefreshCw />
+              Refresh
+            </Button>
+          }
+          contentClassName="flex flex-col gap-3"
+        >
+          {activeOffboardings.length === 0 ? (
+            <p className={typeScale.body.muted}>No employees are currently being offboarded.</p>
+          ) : (
+            <div className="space-y-3">
+              {activeOffboardings.map((offboarding) => (
+                <ActiveOffboardingCard
+                  key={offboarding.id}
+                  offboarding={offboarding}
+                  expanded={expandedOffboardingId === offboarding.id}
+                  onExpandedChange={(open) => setExpandedOffboardingId(open ? offboarding.id : null)}
+                  onUpdate={handleUpdateOffboarding}
+                  onCancelRequest={() => setCancelTarget(offboarding)}
+                  onFinalizeRequest={() => {
+                    setRevokeReason("Offboarding finalized")
+                    setSkipAwaitingReturn(false)
+                    setFinalizeTarget(offboarding)
+                  }}
+                />
+              ))}
             </div>
-
-            {activeOffboardings.length === 0 ? (
-              <p className={typeScale.body.muted}>No employees are currently being offboarded.</p>
-            ) : (
-              <div className="space-y-3">
-                {activeOffboardings.map((offboarding) => (
-                  <ActiveOffboardingCard
-                    key={offboarding.id}
-                    offboarding={offboarding}
-                    expanded={expandedOffboardingId === offboarding.id}
-                    onExpandedChange={(open) => setExpandedOffboardingId(open ? offboarding.id : null)}
-                    onUpdate={handleUpdateOffboarding}
-                    onCancelRequest={() => setCancelTarget(offboarding)}
-                    onFinalizeRequest={() => {
-                      setRevokeReason("Offboarding finalized")
-                      setSkipAwaitingReturn(false)
-                      setFinalizeTarget(offboarding)
-                    }}
-                  />
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+          )}
+        </CardContainer>
       </div>
 
       <Dialog open={startConfirmOpen} onOpenChange={setStartConfirmOpen}>
@@ -588,7 +583,8 @@ function OffboardingTab({
                   className="mt-0.5"
                 />
                 <span className={typeScale.body.muted}>
-                  Skip &apos;awaiting return&apos; — assets are already in hand, return them straight to stock.
+                  Skip &apos;awaiting return&apos; — assets are already in hand, return them straight to
+                  stock.
                 </span>
               </label>
 

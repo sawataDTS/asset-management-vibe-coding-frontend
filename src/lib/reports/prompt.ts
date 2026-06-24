@@ -91,9 +91,7 @@ function buildSoftwareUtilisationReport(): PromptReportResult {
   }))
 
   const avgUtilisation = licenses.length
-    ? Math.round(
-        licenses.reduce((sum, license) => sum + license.utilisationPercent, 0) / licenses.length
-      )
+    ? Math.round(licenses.reduce((sum, license) => sum + license.utilisationPercent, 0) / licenses.length)
     : 0
   const totalSeatsUsed = licenses.reduce((sum, license) => sum + license.assignedSeats, 0)
 
@@ -188,7 +186,11 @@ export function generatePromptReport(query: string): PromptReportResult | null {
     return buildEmployeesWithHardwareReport()
   }
 
-  if (normalized.includes("in-stock") || normalized.includes("in stock") || normalized.includes("purchase cost")) {
+  if (
+    normalized.includes("in-stock") ||
+    normalized.includes("in stock") ||
+    normalized.includes("purchase cost")
+  ) {
     return buildInStockCostReport()
   }
 

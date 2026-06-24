@@ -3,26 +3,52 @@
 import * as React from "react"
 import { ChevronDown, FileText, Sparkles } from "lucide-react"
 
+import {
+  REPORT_PAGE_SIZE,
+  ReportCardHeader,
+  ReportCardPaginationFooter,
+  ReportCardShell,
+} from "../shared/report-card-shell"
+import { REPORT_TAB_ICONS } from "../shared/report-tab-icons"
+import { ReportStatusBadge } from "../shared/report-status-badge"
 import { MetricCard } from "@/components/ui/metric-card"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible"
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from "@/components/ui/empty"
-import type { PromptReportResult } from "@/lib/reports/prompt"
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible"
+import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import type { PromptReportColumn, PromptReportResult } from "@/lib/reports/prompt"
+import { accentIconTileClassName } from "@/lib/surface"
 import { typeScale } from "@/lib/typography"
 import { cn } from "@/lib/utils"
 
-const PAGE_SIZE = 20
+const tableHeadClassName = cn(
+  "h-auto bg-muted/50 px-3.5 py-2.5 align-middle whitespace-nowrap",
+  typeScale.caption.tableHeader
+)
+const tableCellClassName = "px-3.5 py-3 align-middle whitespace-normal"
+
+function formatStatusLabel(value: string) {
+  return value
+    .split(/[\s_-]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join(" ")
+}
+
+function isStatusColumn(column: PromptReportColumn) {
+  return /status/i.test(column.key) || /status/i.test(column.header)
+}
+
+function PromptReportCell({ column, value }: { column: PromptReportColumn; value: string | undefined }) {
+  if (!value) return "—"
+
+  if (isStatusColumn(column)) {
+    return <ReportStatusBadge badge={formatStatusLabel(value)} />
+  }
+
+  return value
+}
 
 type PromptReportResultsProps = {
   result: PromptReportResult
@@ -30,19 +56,16 @@ type PromptReportResultsProps = {
 }
 
 function PromptReportResults({ result, generatedOn }: PromptReportResultsProps) {
-  const [page, setPage] = React.useState(1)
+  const [currentPage, setCurrentPage] = React.useState(0)
   const [sqlOpen, setSqlOpen] = React.useState(false)
-  const totalPages = Math.max(1, Math.ceil(result.rows.length / PAGE_SIZE))
 
-  React.useEffect(() => {
-    setPage(1)
-  }, [result])
-
-  const safePage = Math.min(page, totalPages)
-  const startIndex = (safePage - 1) * PAGE_SIZE
-  const pageRows = result.rows.slice(startIndex, startIndex + PAGE_SIZE)
-  const rangeStart = result.rows.length ? startIndex + 1 : 0
-  const rangeEnd = Math.min(startIndex + PAGE_SIZE, result.rows.length)
+  const totalPages = Math.max(1, Math.ceil(result.rows.length / REPORT_PAGE_SIZE))
+  const pageIndex = Math.min(currentPage, Math.max(0, totalPages - 1))
+  const startIndex = pageIndex * REPORT_PAGE_SIZE
+  const pageRows = result.rows.slice(startIndex, startIndex + REPORT_PAGE_SIZE)
+  const rangeStart = result.rows.length === 0 ? 0 : startIndex + 1
+  const rangeEnd = Math.min(startIndex + REPORT_PAGE_SIZE, result.rows.length)
+  const hasFooter = result.rows.length > 0
 
   const kpiColumns =
     result.kpis.length >= 3
@@ -55,7 +78,7 @@ function PromptReportResults({ result, generatedOn }: PromptReportResultsProps) 
     <div className="flex flex-col gap-6">
       <Card className="gap-0 border border-primary/25 bg-linear-to-b from-primary/8 via-accent/30 to-card py-0 ring-1 ring-primary/15">
         <CardContent className="flex items-start gap-3 p-(--card-spacing)">
-          <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent/80 text-primary ring-1 ring-primary/20">
+          <span className={accentIconTileClassName}>
             <Sparkles className="size-5" strokeWidth={1.75} />
           </span>
           <div className="min-w-0">
@@ -85,91 +108,67 @@ function PromptReportResults({ result, generatedOn }: PromptReportResultsProps) 
         ))}
       </div>
 
-      <Card className="gap-0 overflow-hidden py-0">
-        <CardContent className="flex flex-col gap-0 p-0">
-          <div className="flex flex-col gap-3 border-b border-border p-(--card-spacing) sm:flex-row sm:items-start sm:justify-between">
-            <div className="flex min-w-0 items-start gap-3">
-              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent text-primary ring-1 ring-border/60">
-                <FileText className="size-5" strokeWidth={1.75} />
-              </span>
-              <div className="min-w-0">
-                <h3 className={typeScale.title}>{result.title}</h3>
-                <p className={cn("mt-1", typeScale.caption.meta)}>
-                  {result.description} · generated {generatedOn}
-                </p>
-              </div>
-            </div>
-            <span className={cn("shrink-0", typeScale.caption.meta)}>
-              {result.rows.length} {result.rows.length === 1 ? "row" : "rows"}
-            </span>
-          </div>
+      <ReportCardShell>
+        <ReportCardHeader
+          title={result.title}
+          description={`${result.description} · generated ${generatedOn}`}
+          rowCount={result.rows.length}
+          icon={REPORT_TAB_ICONS.prompt}
+        />
 
-          {pageRows.length === 0 ? (
-            <Empty className="border-0 py-16">
-              <EmptyHeader>
-                <EmptyMedia variant="icon">
-                  <FileText />
-                </EmptyMedia>
-                <EmptyTitle>No rows returned for this prompt.</EmptyTitle>
-                <EmptyDescription>Try a different question or connect the required data source.</EmptyDescription>
-              </EmptyHeader>
-            </Empty>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full min-w-[640px] border-collapse text-left">
-                <thead>
-                  <tr className="border-b border-border bg-muted/40">
-                    {result.columns.map((column) => (
-                      <th
-                        key={column.key}
-                        className={cn("px-(--card-spacing) py-3", typeScale.caption.tableHeader)}
-                      >
-                        {column.header}
-                      </th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {pageRows.map((row, rowIndex) => (
-                    <tr key={`${startIndex + rowIndex}`} className="border-b border-border last:border-0">
-                      {result.columns.map((column) => (
-                        <td key={column.key} className={cn("px-(--card-spacing) py-3", typeScale.body.default)}>
-                          {row[column.key] ?? "—"}
-                        </td>
-                      ))}
-                    </tr>
+        {pageRows.length === 0 ? (
+          <Empty className="border-0 py-16">
+            <EmptyHeader>
+              <EmptyMedia variant="icon">
+                <FileText />
+              </EmptyMedia>
+              <EmptyTitle>No rows returned for this prompt.</EmptyTitle>
+              <EmptyDescription>
+                Try a different question or connect the required data source.
+              </EmptyDescription>
+            </EmptyHeader>
+          </Empty>
+        ) : (
+          <div className="overflow-x-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="border-border hover:bg-transparent">
+                  {result.columns.map((column) => (
+                    <TableHead key={column.key} className={tableHeadClassName}>
+                      {column.header}
+                    </TableHead>
                   ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-
-          <div className="flex flex-col gap-3 border-t border-border px-(--card-spacing) py-3 sm:flex-row sm:items-center sm:justify-between">
-            <p className={typeScale.caption.meta}>
-              Showing {rangeStart}–{rangeEnd} of {result.rows.length}
-            </p>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                disabled={safePage <= 1}
-                onClick={() => setPage((current) => Math.max(1, current - 1))}
-              >
-                Previous
-              </Button>
-              <span className={cn("min-w-12 text-center tabular-nums", typeScale.body.emphasis)}>
-                {safePage}/{totalPages}
-              </span>
-              <Button
-                variant="outline"
-                disabled={safePage >= totalPages}
-                onClick={() => setPage((current) => Math.min(totalPages, current + 1))}
-              >
-                Next
-              </Button>
-            </div>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {pageRows.map((row, rowIndex) => (
+                  <TableRow key={`${startIndex + rowIndex}`} className="border-border">
+                    {result.columns.map((column) => (
+                      <TableCell key={column.key} className={tableCellClassName}>
+                        <PromptReportCell column={column} value={row[column.key]} />
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           </div>
-        </CardContent>
-      </Card>
+        )}
+
+        {hasFooter ? (
+          <ReportCardPaginationFooter
+            rangeStart={rangeStart}
+            rangeEnd={rangeEnd}
+            totalRows={result.rows.length}
+            pageIndex={pageIndex}
+            totalPages={totalPages}
+            onPrevious={() => setCurrentPage((page) => Math.max(0, Math.min(page, totalPages - 1) - 1))}
+            onNext={() =>
+              setCurrentPage((page) => Math.min(totalPages - 1, Math.min(page, totalPages - 1) + 1))
+            }
+          />
+        ) : null}
+      </ReportCardShell>
     </div>
   )
 }

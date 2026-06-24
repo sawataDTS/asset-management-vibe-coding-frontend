@@ -2,15 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import {
-  ArrowRight,
-  Clock,
-  DollarSign,
-  KeyRound,
-  TrendingUp,
-  Users,
-  type LucideIcon,
-} from "lucide-react"
+import { ArrowRight, Clock, DollarSign, KeyRound, TrendingUp, Users, type LucideIcon } from "lucide-react"
 
 import { RecentLicensesTable } from "./recent-licenses-table"
 import {
@@ -20,33 +12,11 @@ import {
   VendorSeatConcentrationChart,
 } from "./software-health-charts"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardAction } from "@/components/ui/card"
+import { CardContainer } from "@/components/ui/card-container"
 import { ChartCard } from "@/components/ui/chart-card"
 import { MetricCard } from "@/components/ui/metric-card"
 import { cn } from "@/lib/utils"
 import { typeScale } from "@/lib/typography"
-
-type MetricTone = "primary" | "success" | "warning" | "info"
-
-const METRIC_TONE_CLASS: Record<MetricTone, string> = {
-  primary: "bg-accent/80 text-primary ring-primary/20",
-  success: "bg-success/12 text-success ring-success/20",
-  warning: "bg-warning/12 text-warning ring-warning/20",
-  info: "bg-info/12 text-info ring-info/20",
-}
-
-function MetricIconBadge({ icon: Icon, tone }: { icon: LucideIcon; tone: MetricTone }) {
-  return (
-    <span
-      className={cn(
-        "flex size-8 shrink-0 items-center justify-center rounded-lg ring-1 ring-border/60",
-        METRIC_TONE_CLASS[tone]
-      )}
-    >
-      <Icon className="size-4" strokeWidth={1.75} />
-    </span>
-  )
-}
 
 function MetricFooter({ icon: Icon, children }: { icon: LucideIcon; children: React.ReactNode }) {
   return (
@@ -57,18 +27,23 @@ function MetricFooter({ icon: Icon, children }: { icon: LucideIcon; children: Re
   )
 }
 
+/** Stretch alerts panel to match adjacent Recent Licenses table height (Operations row). */
+const OPERATIONS_ALERTS_CARD_CLASSNAME = "h-full"
+const OPERATIONS_ALERTS_CONTENT_CLASSNAME = "flex flex-1 flex-col"
+
 export function SoftwareHealthTab() {
   return (
     <div className="flex flex-col gap-4">
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid grid-cols-1 items-start gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <MetricCard
           label="Total Licenses"
           value="71"
-          action={<MetricIconBadge icon={KeyRound} tone="primary" />}
+          icon={KeyRound}
+          iconVariant="badge"
           footer={
             <MetricFooter icon={TrendingUp}>
               <span>
-                <span className="text-foreground">51 Active</span>
+                <span className={typeScale.body.emphasis}>51 Active</span>
                 <span className="text-muted-foreground"> · +71 New vs prior month</span>
               </span>
             </MetricFooter>
@@ -78,11 +53,12 @@ export function SoftwareHealthTab() {
         <MetricCard
           label="Seats Used"
           value="2"
-          action={<MetricIconBadge icon={Users} tone="success" />}
+          icon={Users}
+          iconVariant="badge"
           footer={
             <MetricFooter icon={Users}>
               <span>
-                <span className="text-foreground">3%</span>
+                <span className={typeScale.body.emphasis}>3%</span>
                 <span className="text-muted-foreground"> of 78 seats</span>
               </span>
             </MetricFooter>
@@ -92,7 +68,8 @@ export function SoftwareHealthTab() {
         <MetricCard
           label="Expiring Soon"
           value="20"
-          action={<MetricIconBadge icon={Clock} tone="warning" />}
+          icon={Clock}
+          iconVariant="badge"
           footer={
             <MetricFooter icon={Clock}>
               <span className="text-muted-foreground">Next 60-day window</span>
@@ -103,7 +80,8 @@ export function SoftwareHealthTab() {
         <MetricCard
           label="Annual Spend"
           value="$5,300"
-          action={<MetricIconBadge icon={DollarSign} tone="info" />}
+          icon={DollarSign}
+          iconVariant="badge"
           footer={
             <MetricFooter icon={DollarSign}>
               <span className="text-muted-foreground">≈ $68 / seat / year</span>
@@ -140,49 +118,49 @@ export function SoftwareHealthTab() {
         </ChartCard>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="text-base">Recent Licenses</CardTitle>
-            <CardDescription>Latest software subscriptions onboarded into the tenant.</CardDescription>
-            <CardAction>
-              <Button variant="ghost" asChild>
-                <Link href="/software">
-                  View All
-                  <ArrowRight />
-                </Link>
-              </Button>
-            </CardAction>
-          </CardHeader>
-          <CardContent>
-            <RecentLicensesTable />
-          </CardContent>
-        </Card>
+      <div className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-3">
+        <CardContainer
+          className="lg:col-span-2"
+          title="Recent Licenses"
+          description="Latest software subscriptions onboarded into the tenant."
+          action={
+            <Button variant="ghost" asChild>
+              <Link href="/software">
+                View All
+                <ArrowRight />
+              </Link>
+            </Button>
+          }
+        >
+          <RecentLicensesTable />
+        </CardContainer>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-base">Software Alerts</CardTitle>
-            <CardDescription>Needs your attention</CardDescription>
-          </CardHeader>
-          <CardContent className="flex flex-1 flex-col gap-4">
-            <div className="flex items-start gap-3 rounded-lg border border-warning/25 bg-warning/8 px-3 py-2.5">
-              <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-warning/12 text-warning">
-                <Clock className="size-4" strokeWidth={1.75} />
-              </span>
-              <p className={cn("pt-0.5", typeScale.body.default)}>
-                <span className="font-medium text-foreground">20 licenses</span>{" "}
-                <span className="text-muted-foreground">expiring within 60 days</span>
-              </p>
-            </div>
-
-            <Button variant="outline" className="mt-auto w-full" asChild>
+        <CardContainer
+          variant="form"
+          className={OPERATIONS_ALERTS_CARD_CLASSNAME}
+          contentClassName={OPERATIONS_ALERTS_CONTENT_CLASSNAME}
+          title="Software Alerts"
+          description="Needs your attention"
+          footer={
+            <Button variant="outline" asChild>
               <Link href="/software">
                 <KeyRound />
                 Open Software
               </Link>
             </Button>
-          </CardContent>
-        </Card>
+          }
+          footerClassName="*:w-full"
+        >
+          <div className="flex items-start gap-3 rounded-lg bg-muted px-3 py-2.5">
+            <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-warning/12 text-warning">
+              <Clock className="size-4" strokeWidth={1.75} />
+            </span>
+            <p className={cn("pt-0.5", typeScale.body.default)}>
+              <span className={typeScale.body.emphasis}>20 licenses</span>{" "}
+              <span className="text-muted-foreground">expiring within 60 days</span>
+            </p>
+          </div>
+        </CardContainer>
       </div>
     </div>
   )

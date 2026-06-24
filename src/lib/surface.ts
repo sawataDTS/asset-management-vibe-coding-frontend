@@ -15,3 +15,7 @@ export const surfaceOutlineClassName = `border ${shellBorderClassName} shadow-xs
 
 /** Modals / overlays — same border, slightly stronger lift. */
 export const surfaceOverlayClassName = `border ${shellBorderClassName} shadow-sm`
+
+/** Accent icon tile — report headers, prompt cards, executive summary blocks. */
+export const accentIconTileClassName =
+  "flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent/80 text-primary ring-1 ring-primary/20"

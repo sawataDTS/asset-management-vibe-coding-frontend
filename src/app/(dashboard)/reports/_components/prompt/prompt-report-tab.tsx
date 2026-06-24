@@ -8,7 +8,7 @@ import { Bookmark, Download, FileDown, Sparkles } from "lucide-react"
 import { PromptReportResults } from "./prompt-report-results"
 import { useRegisterReportExport } from "../shared/reports-export-context"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
+import { CardContainer } from "@/components/ui/card-container"
 import { Field, FieldLabel } from "@/components/ui/field"
 import { Textarea } from "@/components/ui/textarea"
 import { downloadReportCsv, openPrintableReport } from "@/lib/reports/export"
@@ -19,7 +19,6 @@ import {
   type PromptReportResult,
 } from "@/lib/reports/prompt"
 import { typeScale } from "@/lib/typography"
-import { cn } from "@/lib/utils"
 
 function PromptReportTab() {
   const [query, setQuery] = useState("")
@@ -112,99 +111,91 @@ function PromptReportTab() {
 
   return (
     <div className="flex flex-col gap-6">
-      <Card className="gap-0 py-0" data-report-export-hide>
-        <CardContent className="flex flex-col gap-6 p-(--card-spacing)">
-          <div className="flex items-start gap-3">
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent text-primary ring-1 ring-border/60">
-              <Sparkles className="size-5" strokeWidth={1.75} />
-            </span>
-            <div className="min-w-0">
-              <h3 className={typeScale.title}>Prompt-based report</h3>
-              <p className={cn("mt-1.5 max-w-3xl leading-relaxed", typeScale.body.muted)}>
-                Describe what you need in plain language — assets, licenses, employees, or Google
-                Workspace mailbox storage and quotas (synced from directory). Asset360Hub converts your
-                prompt to read-only SQL and builds a presentation-ready report with KPIs and detail
-                rows.
-              </p>
-            </div>
+      <CardContainer
+        variant="form"
+        formControls
+        icon={Sparkles}
+        data-report-export-hide
+        title="Prompt-based report"
+        description="Describe what you need in plain language — assets, licenses, employees, or Google Workspace mailbox storage and quotas (synced from directory). Asset360Hub converts your prompt to read-only SQL and builds a presentation-ready report with KPIs and detail rows."
+        descriptionClassName="max-w-3xl leading-relaxed"
+        contentClassName="flex flex-col gap-6"
+      >
+        <Field>
+          <FieldLabel htmlFor="prompt-query">Your question</FieldLabel>
+          <Textarea
+            id="prompt-query"
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="e.g. Employees over 90% mailbox quota with department, or assigned MacBooks with warranty expiring in 60 days"
+            className="min-h-28"
+          />
+        </Field>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            className="bg-gradient-brand text-primary-foreground hover:opacity-90"
+            onClick={() => handleGenerate()}
+          >
+            <Sparkles />
+            Generate report
+          </Button>
+          <Button variant="outline" onClick={handleSavePrompt}>
+            <Bookmark />
+            Save prompt
+          </Button>
+          {result ? (
+            <>
+              <Button variant="outline" onClick={handleCsvExport}>
+                <Download />
+                CSV
+              </Button>
+              <Button variant="outline" onClick={handlePdfExport}>
+                <FileDown />
+                PDF
+              </Button>
+            </>
+          ) : null}
+        </div>
+
+        <div className="flex flex-col gap-3">
+          <p className={typeScale.caption.overline}>Try an example</p>
+          <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
+            {PROMPT_EXAMPLES.map((example) => (
+              <button
+                key={example}
+                type="button"
+                onClick={() => handleExampleClick(example)}
+                className="rounded-lg border border-sidebar-border bg-card px-3 py-2.5 text-left shadow-xs transition-colors hover:bg-muted/50"
+              >
+                <span className={typeScale.body.default}>{example}</span>
+              </button>
+            ))}
           </div>
+        </div>
 
-          <Field>
-            <FieldLabel htmlFor="prompt-query">Your question</FieldLabel>
-            <Textarea
-              id="prompt-query"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              placeholder="e.g. Employees over 90% mailbox quota with department, or assigned MacBooks with warranty expiring in 60 days"
-              className="min-h-28"
-            />
-          </Field>
-
-          <div className="flex flex-wrap items-center gap-2">
-            <Button
-              className="bg-gradient-brand text-primary-foreground hover:opacity-90"
-              onClick={() => handleGenerate()}
-            >
-              <Sparkles />
-              Generate report
-            </Button>
-            <Button variant="outline" onClick={handleSavePrompt}>
-              <Bookmark />
-              Save prompt
-            </Button>
-            {result ? (
-              <>
-                <Button variant="outline" onClick={handleCsvExport}>
-                  <Download />
-                  CSV
-                </Button>
-                <Button variant="outline" onClick={handlePdfExport}>
-                  <FileDown />
-                  PDF
-                </Button>
-              </>
-            ) : null}
-          </div>
-
-          <div className="flex flex-col gap-3">
-            <p className={typeScale.caption.overline}>Try an example</p>
-            <div className="grid grid-cols-1 gap-2 lg:grid-cols-2">
-              {PROMPT_EXAMPLES.map((example) => (
+        <div className="flex flex-col gap-3 border-t border-border/60 pt-6">
+          <p className={typeScale.caption.overline}>Saved prompts</p>
+          {savedPrompts.length === 0 ? (
+            <p className={typeScale.body.muted}>
+              Save a prompt to reuse it later — your saved questions appear here.
+            </p>
+          ) : (
+            <div className="flex flex-col gap-2">
+              {savedPrompts.map((prompt) => (
                 <button
-                  key={example}
+                  key={prompt}
                   type="button"
-                  onClick={() => handleExampleClick(example)}
-                  className="rounded-lg border border-sidebar-border bg-card shadow-xs px-3 py-2.5 text-left transition-colors hover:bg-muted/50"
+                  onClick={() => handleSavedPromptClick(prompt)}
+                  className="rounded-lg border border-sidebar-border bg-card px-3 py-2.5 text-left shadow-xs transition-colors hover:bg-muted/50"
                 >
-                  <span className={typeScale.body.default}>{example}</span>
+                  <span className={typeScale.body.default}>{prompt}</span>
                 </button>
               ))}
             </div>
-          </div>
-
-          <div className="flex flex-col gap-3 border-t border-border/60 pt-6">
-            <p className={typeScale.caption.overline}>Saved prompts</p>
-            {savedPrompts.length === 0 ? (
-              <p className={typeScale.body.muted}>
-                Save a prompt to reuse it later — your saved questions appear here.
-              </p>
-            ) : (
-              <div className="flex flex-col gap-2">
-                {savedPrompts.map((prompt) => (
-                  <button
-                    key={prompt}
-                    type="button"
-                    onClick={() => handleSavedPromptClick(prompt)}
-                    className="rounded-lg border border-sidebar-border bg-card shadow-xs px-3 py-2.5 text-left transition-colors hover:bg-muted/50"
-                  >
-                    <span className={typeScale.body.default}>{prompt}</span>
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        </CardContent>
-      </Card>
+          )}
+        </div>
+      </CardContainer>
 
       {result ? (
         <div data-report-printable>

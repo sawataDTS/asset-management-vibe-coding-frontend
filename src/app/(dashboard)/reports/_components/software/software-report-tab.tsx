@@ -2,18 +2,11 @@
 
 import { useMemo, useState } from "react"
 import { toast } from "sonner"
-import {
-  ClipboardList,
-  DollarSign,
-  KeyRound,
-  RefreshCw,
-  ShieldCheck,
-  Users,
-  PackageOpen,
-} from "lucide-react"
+import { ClipboardList, DollarSign, KeyRound, RefreshCw, ShieldCheck, Users, PackageOpen } from "lucide-react"
 
 import { SoftwareReportFiltersPanel } from "./software-report-filters"
 import { ReportListCard } from "../shared/report-list-card"
+import { REPORT_TAB_ICONS } from "../shared/report-tab-icons"
 import { useRegisterReportExport } from "../shared/reports-export-context"
 import { MetricCard } from "@/components/ui/metric-card"
 import { SubTabNav, type SubTabNavItem } from "@/components/ui/sub-tab-nav"
@@ -68,27 +61,24 @@ function SoftwareReportTab() {
         onValueChange={(next) => setActiveReport(next as SoftwareReportKind)}
       />
 
-      <SoftwareReportFiltersPanel
-        filters={filters}
-        onChange={setFilters}
-        licenses={sourceLicenses}
-      />
+      <SoftwareReportFiltersPanel filters={filters} onChange={setFilters} licenses={sourceLicenses} />
 
       <div className="flex flex-col gap-6" data-report-printable>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {reportData.kpis.map((kpi) => (
-          <MetricCard key={kpi.label} label={kpi.label} value={kpi.value} />
-        ))}
-      </div>
+          {reportData.kpis.map((kpi) => (
+            <MetricCard key={kpi.label} label={kpi.label} value={kpi.value} />
+          ))}
+        </div>
 
-      <ReportListCard
-        title={reportData.config.title}
-        description={reportData.config.description}
-        generatedOn={reportData.generatedOn}
-        rows={reportData.rows}
-        emptyMessage={reportData.config.emptyMessage}
-        onRowAction={activeReport === "renewals-eol" ? handleRenewAction : undefined}
-      />
+        <ReportListCard
+          title={reportData.config.title}
+          description={reportData.config.description}
+          generatedOn={reportData.generatedOn}
+          rows={reportData.rows}
+          icon={REPORT_TAB_ICONS.software}
+          emptyMessage={reportData.config.emptyMessage}
+          onRowAction={activeReport === "renewals-eol" ? handleRenewAction : undefined}
+        />
       </div>
     </div>
   )

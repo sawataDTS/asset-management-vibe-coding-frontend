@@ -25,12 +25,7 @@ const sonnerThemeStyle = {
   "--error-text": "var(--destructive)",
 } as React.CSSProperties
 
-function Toaster({
-  richColors = true,
-  closeButton = true,
-  position = "top-right",
-  ...props
-}: ToasterProps) {
+function Toaster({ richColors = true, closeButton = true, position = "top-right", ...props }: ToasterProps) {
   const { theme = DEFAULT_THEME } = useTheme()
   const sonnerTheme = getWorkspaceThemeMode(theme)
 

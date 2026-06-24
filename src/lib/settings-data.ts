@@ -1,9 +1,12 @@
+import type { RoleTemplateId } from "@/lib/settings/roles-data"
+
 export interface ProfileSettings {
   fullName: string
   email: string
   jobTitle: string
   phone: string
   avatarUrl: string
+  workspaceRole: RoleTemplateId
 }
 
 export interface OrganizationSettings {
@@ -29,6 +32,7 @@ export const DEFAULT_PROFILE: ProfileSettings = {
   jobTitle: "",
   phone: "",
   avatarUrl: "",
+  workspaceRole: "employee",
 }
 
 export const DEFAULT_ORGANIZATION: OrganizationSettings = {

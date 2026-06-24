@@ -26,15 +26,7 @@ function getInitials(name: string) {
     .toUpperCase()
 }
 
-function UserMenuShortcut({
-  href,
-  icon: Icon,
-  label,
-}: {
-  href: string
-  icon: LucideIcon
-  label: string
-}) {
+function UserMenuShortcut({ href, icon: Icon, label }: { href: string; icon: LucideIcon; label: string }) {
   return (
     <DropdownMenuItem asChild className="gap-2.5 px-2 py-2">
       <Link href={href}>
@@ -69,7 +61,7 @@ export function UserMenu({
           type="button"
           aria-label="Open account menu"
           className={cn(
-            "flex shrink-0 items-center rounded-full outline-none transition-shadow",
+            "flex shrink-0 items-center rounded-full transition-shadow outline-none",
             "focus-visible:ring-2 focus-visible:ring-ring/50 aria-expanded:ring-2 aria-expanded:ring-ring/40",
             className
           )}

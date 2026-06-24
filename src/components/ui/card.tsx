@@ -69,7 +69,7 @@ function CardContent({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-content"
       className={cn(
-        "px-(--card-spacing) pb-(--card-spacing) group-has-data-[slot=card-actions]/card:pb-0 group-has-data-[slot=card-header]/card:pt-0 group-has-not-data-[slot=card-header]/card:pt-(--card-spacing)",
+        "px-(--card-spacing) pb-(--card-spacing) group-has-not-data-[slot=card-header]/card:pt-(--card-spacing) group-has-data-[slot=card-actions]/card:pb-0 group-has-data-[slot=card-header]/card:pt-0",
         className
       )}
       {...props}
@@ -84,7 +84,7 @@ function CardFooter({ className, ...props }: React.ComponentProps<"div">) {
       className={cn(
         "flex items-center rounded-b-xl bg-muted/50",
         surfaceDividerTopClassName,
-        "[--card-spacing:--spacing(5)] p-(--card-spacing)",
+        "p-(--card-spacing) [--card-spacing:--spacing(5)]",
         "group-data-[size=sm]/card:[--card-spacing:--spacing(4)]",
         className
       )}
@@ -99,9 +99,8 @@ function CardActions({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-actions"
       className={cn(
-        "flex shrink-0 flex-wrap items-center justify-end gap-2 rounded-b-xl bg-card",
-        "[--card-spacing:--spacing(5)] p-(--card-spacing)",
-        "group-data-[size=sm]/card:[--card-spacing:--spacing(4)]",
+        "flex shrink-0 flex-wrap items-center justify-end gap-2 rounded-b-xl bg-card p-5",
+        "group-data-[size=sm]/card:p-4",
         className
       )}
       {...props}

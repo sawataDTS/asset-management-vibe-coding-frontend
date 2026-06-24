@@ -4,7 +4,12 @@ import * as React from "react"
 import { useMemo } from "react"
 import { Inbox, Mail, Pencil, Phone, Trash2, Truck } from "lucide-react"
 
-import { DataTable, dataTableActionsCellClass, dataTableActionsHeaderClass, type DataTableColumn } from "@/components/custom/DataTable"
+import {
+  DataTable,
+  dataTableActionsCellClass,
+  dataTableActionsHeaderClass,
+  type DataTableColumn,
+} from "@/components/custom/DataTable"
 import { Button } from "@/components/ui/button"
 import { Empty, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty"
 import { type Supplier } from "@/lib/suppliers/data"
@@ -148,9 +153,7 @@ function SuppliersTable({ rows, onEdit, onDelete }: SuppliersTableProps) {
               <Inbox />
             </EmptyMedia>
             <EmptyTitle>No suppliers found</EmptyTitle>
-            <EmptyDescription>
-              Try adjusting your search, or add a vendor to your directory.
-            </EmptyDescription>
+            <EmptyDescription>Try adjusting your search, or add a vendor to your directory.</EmptyDescription>
           </EmptyHeader>
         </Empty>
       }

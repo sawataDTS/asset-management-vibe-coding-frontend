@@ -11,7 +11,8 @@ import { PageHeader } from "@/components/layout/PageHeader"
 import { SectionHeading } from "@/components/layout/SectionHeading"
 import { settingsControlClassName } from "@/app/(dashboard)/settings/_components/settings-panel"
 import { Button } from "@/components/ui/button"
-import { Card, CardActions, CardContent } from "@/components/ui/card"
+import { CardActions } from "@/components/ui/card"
+import { CardContainer } from "@/components/ui/card-container"
 import { DatePicker } from "@/components/ui/date-picker"
 import {
   Dialog,
@@ -51,8 +52,7 @@ import { cn } from "@/lib/utils"
 
 type ActiveModal = "add" | "edit" | "delete" | null
 
-const organizationsCardClassName = "gap-0 py-0"
-const organizationsCardContentClassName = cn("p-(--card-spacing)", settingsControlClassName)
+const organizationsCardContentClassName = settingsControlClassName
 
 function OrganizationPage() {
   const [organizations, setOrganizations] = useState<Organization[]>(initialOrganizations)
@@ -163,9 +163,7 @@ function OrganizationPage() {
 
   function handleDeleteConfirm() {
     if (!selectedOrganization) return
-    setOrganizations((prev) =>
-      prev.filter((organization) => organization.id !== selectedOrganization.id)
-    )
+    setOrganizations((prev) => prev.filter((organization) => organization.id !== selectedOrganization.id))
     toast.success(`Deleted organization ${selectedOrganization.name}.`)
     handleCloseModal()
   }
@@ -199,9 +197,7 @@ function OrganizationPage() {
       )
     )
     toast.success(
-      nextStatus === "active"
-        ? `Activated ${organization.name}.`
-        : `Deactivated ${organization.name}.`
+      nextStatus === "active" ? `Activated ${organization.name}.` : `Deactivated ${organization.name}.`
     )
   }
 
@@ -219,53 +215,52 @@ function OrganizationPage() {
           </Button>
         }
       >
-        <Card className={organizationsCardClassName}>
-          <CardContent className={cn("flex flex-col gap-4", organizationsCardContentClassName)}>
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <InputGroup className="min-w-[240px] max-w-xl">
-                <InputGroupAddon>
-                  <Search className="size-4" />
-                </InputGroupAddon>
-                <InputGroupInput
-                  placeholder="Search organizations..."
-                  value={searchQuery}
-                  onChange={(event) => setSearchQuery(event.target.value)}
-                />
-              </InputGroup>
-
-              <CustomSelect
-                id="org-status-filter"
-                className="w-full sm:w-52"
-                placeholder="Filter by status"
-                value={statusFilter}
-                options={ORGANIZATION_STATUS_FILTER_OPTIONS.map((option) => ({
-                  label: option.label,
-                  value: option.value,
-                }))}
-                showClear={false}
-                onChange={(value) => {
-                  if (typeof value === "string") setStatusFilter(value)
-                }}
+        <CardContainer
+          formControls
+          contentClassName={cn("flex flex-col gap-4", organizationsCardContentClassName)}
+        >
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <InputGroup className="max-w-xl min-w-[240px]">
+              <InputGroupAddon>
+                <Search className="size-4" />
+              </InputGroupAddon>
+              <InputGroupInput
+                placeholder="Search organizations..."
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.target.value)}
               />
-            </div>
+            </InputGroup>
 
-            <OrganizationsTable
-              rows={filteredOrganizations}
-              onEdit={(organization) => handleOpenModal("edit", organization)}
-              onDelete={(organization) => handleOpenModal("delete", organization)}
-              onOnboard={handleOnboard}
-              onToggleActive={handleToggleActive}
+            <CustomSelect
+              id="org-status-filter"
+              className="w-full sm:w-52"
+              placeholder="Filter by status"
+              value={statusFilter}
+              options={ORGANIZATION_STATUS_FILTER_OPTIONS.map((option) => ({
+                label: option.label,
+                value: option.value,
+              }))}
+              showClear={false}
+              onChange={(value) => {
+                if (typeof value === "string") setStatusFilter(value)
+              }}
             />
-          </CardContent>
-        </Card>
+          </div>
+
+          <OrganizationsTable
+            rows={filteredOrganizations}
+            onEdit={(organization) => handleOpenModal("edit", organization)}
+            onDelete={(organization) => handleOpenModal("delete", organization)}
+            onOnboard={handleOnboard}
+            onToggleActive={handleToggleActive}
+          />
+        </CardContainer>
       </PageHeader>
 
       <Dialog open={activeModal === "add" || activeModal === "edit"} onOpenChange={handleDialogOpenChange}>
         <DialogContent className={dialogShellClassNameWide}>
           <DialogHeader className={dialogHeaderClassName}>
-            <DialogTitle>
-              {activeModal === "add" ? "New organization" : "Edit organization"}
-            </DialogTitle>
+            <DialogTitle>{activeModal === "add" ? "New organization" : "Edit organization"}</DialogTitle>
             <DialogDescription>
               {activeModal === "add"
                 ? "Create a workspace and configure billing, regional defaults, and contact details."
@@ -277,10 +272,7 @@ function OrganizationPage() {
             <DialogBody className={cn(dialogScrollBodyClassName, settingsControlClassName)}>
               <div className="flex flex-col gap-8">
                 <section className="flex flex-col gap-5">
-                  <SectionHeading
-                    title="Company details"
-                    description="Identity and workspace metadata."
-                  />
+                  <SectionHeading title="Company details" description="Identity and workspace metadata." />
 
                   <FieldGroup>
                     <Field>
@@ -476,9 +468,7 @@ function OrganizationPage() {
                   Cancel
                 </Button>
               </DialogClose>
-              <Button type="submit">
-                {activeModal === "add" ? "Create organization" : "Save changes"}
-              </Button>
+              <Button type="submit">{activeModal === "add" ? "Create organization" : "Save changes"}</Button>
             </CardActions>
           </form>
         </DialogContent>
@@ -499,14 +489,14 @@ function OrganizationPage() {
                 </DialogDescription>
               </DialogBody>
               <CardActions>
-              <DialogClose asChild>
-                <Button type="button" variant="outline">
-                  Cancel
+                <DialogClose asChild>
+                  <Button type="button" variant="outline">
+                    Cancel
+                  </Button>
+                </DialogClose>
+                <Button type="button" variant="destructive" onClick={handleDeleteConfirm}>
+                  Delete
                 </Button>
-              </DialogClose>
-              <Button type="button" variant="destructive" onClick={handleDeleteConfirm}>
-                Delete
-              </Button>
               </CardActions>
             </>
           ) : null}

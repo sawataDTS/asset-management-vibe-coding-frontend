@@ -1,9 +1,13 @@
+import type * as React from "react"
+
+import type { Badge } from "@/components/ui/badge"
+
 export type ReportRow = {
   id: string
   title: string
   subtitle: string
   badge?: string
-  badgeVariant?: "default" | "secondary" | "outline" | "warning" | "destructive"
+  badgeVariant?: NonNullable<React.ComponentProps<typeof Badge>["variant"]>
   /** Right-aligned text (cost, utilisation %, seat counts). */
   trailingText?: string
   /** Renders an outline action button on the right (e.g. Renew). */
