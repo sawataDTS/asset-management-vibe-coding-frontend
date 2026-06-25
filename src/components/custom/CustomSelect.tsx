@@ -189,12 +189,19 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
               minWidth: contentMinWidth || "var(--radix-popover-trigger-width)",
             }}
           >
-            <Command className="p-1 pb-0">
-              {searchable ? <CommandInput placeholder="Search" className="text-sm font-medium" /> : null}
+            <Command className={cn("p-0", searchable && "gap-1")}>
+              {searchable ? (
+                <CommandInput
+                  variant="underline"
+                  placeholder="Search"
+                  className="font-medium"
+                />
+              ) : null}
               <CommandEmpty>No options found</CommandEmpty>
               <CommandList
+                hideScrollbar={false}
                 className={cn(
-                  "max-h-72 w-full overflow-auto",
+                  "custom-scrollbar w-full pr-0",
                   !hasPointerMoved &&
                     "[&_[data-slot=command-item][data-selected=true]:not([data-is-selected=true])]:bg-transparent [&_[data-slot=command-item][data-selected=true]:not([data-is-selected=true])]:text-inherit"
                 )}
@@ -202,7 +209,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
                 onPointerDown={(event) => event.stopPropagation()}
                 onPointerMove={() => setHasPointerMoved(true)}
               >
-                <CommandGroup className="p-0">
+                <CommandGroup className={cn("p-0", searchable ? "px-1" : "p-1")}>
                   {options.map((option, index) => {
                     const isSelected = selectedValues.includes(option.value)
 

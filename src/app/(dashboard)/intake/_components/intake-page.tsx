@@ -113,6 +113,7 @@ function HardwareIntakeForm() {
               value={supplier}
               onChange={(value) => setSupplier(typeof value === "string" ? value : "")}
               options={toSelectOptions(suppliers)}
+              searchable
             />
           </Field>
           <Field>

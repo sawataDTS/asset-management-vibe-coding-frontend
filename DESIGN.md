@@ -275,6 +275,27 @@ one card should have a title **and** a one-line description.
 - Do not add page-level `min-h-screen`/`h-screen` wrappers — the shell owns
   height. Pages render plain content.
 
+### Custom scrollbars (`custom-scrollbar`)
+
+Use the shared **`custom-scrollbar`** utility (`src/app/globals.css`) on
+in-panel scroll regions that should show a styled scrollbar instead of hiding it
+with `no-scrollbar`.
+
+| Property | Value |
+| -------- | ----- |
+| Width | 6px (WebKit); `scrollbar-width: thin` (Firefox) |
+| Track | Transparent |
+| Thumb | `color-mix` of `--muted-foreground` + `--border` |
+| Thumb hover | `--primary` tint via `color-mix` |
+| Placement | Flush to the scroll container’s right edge — no thumb inset border |
+
+**Do not** hardcode scrollbar colors. The utility is token-driven and re-themes
+with the workspace palette.
+
+**Default vs opt-in:** `CommandList` hides scrollbars by default
+(`hideScrollbar` prop, `no-scrollbar`). **`CustomSelect`** opts in with
+`hideScrollbar={false}` + `custom-scrollbar` — see §11.
+
 ---
 
 ## 7. Responsive rules
@@ -845,6 +866,43 @@ card-based. `CardFooter` is for muted summary chrome only, not primary actions.
   client because they use `usePathname`/state; pages stay server when possible.
 - New shared building blocks belong in `src/components/layout` (shell-level) or
   `src/components/ui` (primitives) — not inline in pages.
+
+### `CustomSelect` (dropdown + searchable list)
+
+Use **`CustomSelect`** (`src/components/custom/CustomSelect.tsx`) for every
+form select — intake, settings, organization, lifecycle templates, etc. Do not
+fork a one-off popover + list per page.
+
+| Prop | Purpose |
+| ---- | ------- |
+| `searchable` | Shows filter input above options (`CommandInput`) |
+| `formControls` | (via parent) full-width trigger — pair with `CardContainer formControls` |
+| `isMultiple` | Multi-select with count label |
+| `showClear` | Clear affordance on trigger (default `true`) |
+
+**Dropdown shell** (implemented in `CustomSelect`):
+
+| Region | Classes / behavior |
+| ------ | ------------------ |
+| `Command` root | `gap-1 p-0` — vertical gap between search and list; no outer padding (scrollbar flush right) |
+| Search (`CommandInput`) | `variant="underline"` — full-width straight `border-b` only (`surfaceDividerBottomClassName`), no box or rounded corners |
+| `CommandList` | `hideScrollbar={false}`, `custom-scrollbar`, `pr-0`, `max-h-72` |
+| `CommandGroup` | `px-1` when searchable; `p-1` when list-only |
+| Scrollbar | §6 `custom-scrollbar` — visible when options exceed list cap |
+
+**Search input styling:** use `CommandInput` with **`variant="underline"`** — a plain
+flex row with icon + field and a straight bottom divider (`surfaceDividerBottomClassName`).
+No `InputGroup`, no rounded border, no focus ring. Do not reuse the default
+`CommandInput` box for select filters.
+
+**Scrolling:** long option lists scroll inside `CommandList` (`max-h-72`). The
+custom scrollbar sits on the popover’s right edge (`Command` has `p-0`,
+`CommandList` has `pr-0`). Do not wrap the list in `ScrollArea` or re-add
+`no-scrollbar` on this path.
+
+**`CommandList` elsewhere:** command palettes and comboboxes keep
+`hideScrollbar={true}` (default). Only opt in where users need a visible scroll
+affordance (currently `CustomSelect`).
 
 ---
 

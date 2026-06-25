@@ -80,13 +80,19 @@ function CardContainer({
             isFormShell && "flex flex-col gap-6",
             isFormShell && formControls && settingsControlClassName,
             !isFormShell && formControls && settingsControlClassName,
+            // Footer follows — keep bottom inset on content (focus rings) instead of pb-0 + actions pt.
+            hasFooter && "pb-(--card-spacing)!",
             contentClassName
           )}
         >
           {children}
         </CardContent>
       ) : null}
-      {hasFooter ? <CardActions className={footerClassName}>{footer}</CardActions> : null}
+      {hasFooter ? (
+        <CardActions className={cn("p-0 px-(--card-spacing) pb-(--card-spacing)", footerClassName)}>
+          {footer}
+        </CardActions>
+      ) : null}
     </>
   )
 

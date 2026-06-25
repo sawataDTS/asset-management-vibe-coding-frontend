@@ -4,6 +4,7 @@ import * as React from "react"
 import { Command as CommandPrimitive } from "cmdk"
 
 import { cn } from "@/lib/utils"
+import { surfaceDividerBottomClassName } from "@/lib/surface"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { InputGroup, InputGroupAddon } from "@/components/ui/input-group"
 import { SearchIcon, CheckIcon } from "lucide-react"
@@ -50,10 +51,50 @@ function CommandDialog({
   )
 }
 
-function CommandInput({ className, ...props }: React.ComponentProps<typeof CommandPrimitive.Input>) {
+function CommandInput({
+  className,
+  inputGroupClassName,
+  inputWrapperClassName,
+  variant = "default",
+  ...props
+}: React.ComponentProps<typeof CommandPrimitive.Input> & {
+  inputGroupClassName?: string
+  inputWrapperClassName?: string
+  /** `underline` — full-width bottom divider only (CustomSelect search). */
+  variant?: "default" | "underline"
+}) {
+  if (variant === "underline") {
+    return (
+      <div data-slot="command-input-wrapper" className={cn(inputWrapperClassName)}>
+        <div
+          className={cn(
+            "flex h-9 w-full items-center gap-2 bg-transparent px-3",
+            surfaceDividerBottomClassName,
+            inputGroupClassName
+          )}
+        >
+          <SearchIcon className="size-4 shrink-0 text-muted-foreground opacity-50" />
+          <CommandPrimitive.Input
+            data-slot="input-group-control"
+            className={cn(
+              "h-full min-h-0 w-full bg-transparent text-sm outline-hidden placeholder:text-muted-foreground disabled:cursor-not-allowed disabled:opacity-50",
+              className
+            )}
+            {...props}
+          />
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div data-slot="command-input-wrapper" className="p-1 pb-0">
-      <InputGroup className="h-9! rounded-lg! border-input/30 bg-input/30 shadow-none! *:data-[slot=input-group-addon]:pl-2!">
+    <div data-slot="command-input-wrapper" className={cn("p-1 pb-0", inputWrapperClassName)}>
+      <InputGroup
+        className={cn(
+          "h-9! rounded-lg! border-input/30 bg-input/30 shadow-none! *:data-[slot=input-group-addon]:pl-2!",
+          inputGroupClassName
+        )}
+      >
         <CommandPrimitive.Input
           data-slot="input-group-control"
           className={cn(
@@ -70,12 +111,20 @@ function CommandInput({ className, ...props }: React.ComponentProps<typeof Comma
   )
 }
 
-function CommandList({ className, ...props }: React.ComponentProps<typeof CommandPrimitive.List>) {
+function CommandList({
+  className,
+  hideScrollbar = true,
+  ...props
+}: React.ComponentProps<typeof CommandPrimitive.List> & {
+  /** When false, the list can show a styled scrollbar (e.g. `custom-scrollbar`). */
+  hideScrollbar?: boolean
+}) {
   return (
     <CommandPrimitive.List
       data-slot="command-list"
       className={cn(
-        "no-scrollbar max-h-72 scroll-py-1 overflow-x-hidden overflow-y-auto outline-none",
+        hideScrollbar && "no-scrollbar",
+        "max-h-72 scroll-py-1 overflow-x-hidden overflow-y-auto outline-none",
         className
       )}
       {...props}
