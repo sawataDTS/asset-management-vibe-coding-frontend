@@ -8,23 +8,23 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import {
   downloadReportCsv,
   openPrintableReport,
-  getExportMenuLabel,
   printReportPreview,
 } from "@/lib/reports/export"
 import { typeScale } from "@/lib/typography"
-import { cn } from "@/lib/utils"
 import { useReportsExport } from "./reports-export-context"
+
+const exportItemClassName = "gap-2.5 px-2 py-2"
 
 function ReportExportMenu() {
   const { snapshot } = useReportsExport()
-  const hasRows = (snapshot?.rowCount ?? 0) > 0
+  const rowCount = snapshot?.rowCount ?? 0
+  const hasRows = rowCount > 0
 
   function handleCsvExport() {
     if (!snapshot || !hasRows) {
@@ -71,24 +71,50 @@ function ReportExportMenu() {
           Export
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="min-w-56">
-        <DropdownMenuLabel className={cn(typeScale.caption.overline, "font-semibold normal-case")}>
-          {getExportMenuLabel(snapshot).toUpperCase()}
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={handleCsvExport} disabled={!hasRows}>
-          <FileText />
-          Download as CSV
-        </DropdownMenuItem>
-        <DropdownMenuItem onSelect={handlePdfExport} disabled={!hasRows}>
-          <Download />
-          Download as PDF
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={handlePrintPreview} disabled={!hasRows}>
-          <Printer />
-          Print preview
-        </DropdownMenuItem>
+      <DropdownMenuContent align="end" sideOffset={10} className="w-64 p-0">
+        <div className="flex flex-col gap-0.5 px-3 py-2.5">
+          <p className={typeScale.body.emphasis}>Export report</p>
+          <p className={typeScale.caption.meta}>
+            {snapshot?.reportTitle ?? "No report loaded"}
+            {hasRows
+              ? ` · ${rowCount} ${rowCount === 1 ? "row" : "rows"}`
+              : " · No rows to export"}
+          </p>
+        </div>
+
+        <DropdownMenuSeparator className="mx-0 my-0" />
+
+        <div className="p-1">
+          <DropdownMenuItem
+            className={exportItemClassName}
+            onSelect={handleCsvExport}
+            disabled={!hasRows}
+          >
+            <FileText className="size-4 text-muted-foreground" strokeWidth={1.75} />
+            <span className="font-medium">Download as CSV</span>
+          </DropdownMenuItem>
+          <DropdownMenuItem
+            className={exportItemClassName}
+            onSelect={handlePdfExport}
+            disabled={!hasRows}
+          >
+            <Download className="size-4 text-muted-foreground" strokeWidth={1.75} />
+            <span className="font-medium">Download as PDF</span>
+          </DropdownMenuItem>
+        </div>
+
+        <DropdownMenuSeparator className="mx-0 my-0" />
+
+        <div className="p-1">
+          <DropdownMenuItem
+            className={exportItemClassName}
+            onSelect={handlePrintPreview}
+            disabled={!hasRows}
+          >
+            <Printer className="size-4 text-muted-foreground" strokeWidth={1.75} />
+            <span className="font-medium">Print preview</span>
+          </DropdownMenuItem>
+        </div>
       </DropdownMenuContent>
     </DropdownMenu>
   )

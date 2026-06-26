@@ -28,7 +28,7 @@ export const dialogBodyBeforeActionsClassName = "pb-0"
  * `--dialog-chrome` is set on the shell (≈ header + CardActions).
  */
 export const dialogScrollBodyClassName =
-  "min-h-0 overflow-y-auto max-h-[calc(100vh-2.5rem-var(--dialog-chrome))]"
+  "custom-scrollbar min-h-0 overflow-y-auto max-h-[calc(100vh-2.5rem-var(--dialog-chrome))]"
 
 /** Dialog body for form modals — scroll cap + optional full-width controls. */
 export const dialogFormBodyClassName = dialogScrollBodyClassName

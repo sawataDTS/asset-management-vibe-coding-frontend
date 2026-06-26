@@ -27,6 +27,29 @@ import {
 import { type DepartmentTemplate, type TemplateLine } from "@/lib/employee-lifecycle/data"
 import { TABLE_EMPTY_CELL } from "@/lib/table-empty"
 import { typeScale } from "@/lib/typography"
+import { cn } from "@/lib/utils"
+
+function TemplateSection({
+  label,
+  children,
+  bordered = true,
+}: {
+  label: string
+  children: React.ReactNode
+  bordered?: boolean
+}) {
+  return (
+    <div
+      className={cn(
+        "flex flex-col gap-2",
+        bordered && "border-t border-border pt-4"
+      )}
+    >
+      <p className={typeScale.caption.overline}>{label}</p>
+      {children}
+    </div>
+  )
+}
 
 function TemplateLinesSection({ title, lines }: { title: "Hardware" | "Software"; lines: TemplateLine[] }) {
   const filtered = lines.filter((line) =>
@@ -34,16 +57,16 @@ function TemplateLinesSection({ title, lines }: { title: "Hardware" | "Software"
   )
 
   return (
-    <div className="flex flex-col gap-1.5">
-      <p className={typeScale.caption.overline}>{title}</p>
+    <TemplateSection label={title}>
       {filtered.length === 0 ? (
-        <p className={typeScale.caption.meta}>{TABLE_EMPTY_CELL}</p>
+        <p className={typeScale.body.muted}>{TABLE_EMPTY_CELL}</p>
       ) : (
-        <ul className="flex flex-col gap-1.5">
+        <ul className="flex flex-col gap-2">
           {filtered.map((line) => (
-            <li key={line.id} className="flex items-center justify-between gap-3">
-              <span className={typeScale.body.emphasis}>
-                {line.item} × {line.quantity}
+            <li key={line.id} className="flex items-start justify-between gap-3">
+              <span className={cn(typeScale.body.default, "min-w-0 leading-snug")}>
+                {line.item}{" "}
+                <span className={cn(typeScale.body.muted, "tabular-nums")}>× {line.quantity}</span>
               </span>
               {line.required ? (
                 <Badge variant="warning" className="shrink-0">
@@ -54,8 +77,23 @@ function TemplateLinesSection({ title, lines }: { title: "Hardware" | "Software"
           ))}
         </ul>
       )}
-    </div>
+    </TemplateSection>
   )
+}
+
+function getTemplateSummary(template: DepartmentTemplate) {
+  const hardwareCount = template.lines.filter((line) => line.type === "hardware").length
+  const softwareCount = template.lines.filter((line) => line.type === "software").length
+  const parts: string[] = []
+
+  if (hardwareCount > 0) {
+    parts.push(`${hardwareCount} hardware ${hardwareCount === 1 ? "line" : "lines"}`)
+  }
+  if (softwareCount > 0) {
+    parts.push(`${softwareCount} software ${softwareCount === 1 ? "line" : "lines"}`)
+  }
+
+  return parts.length > 0 ? parts.join(" · ") : "No hardware or software lines yet"
 }
 
 function DepartmentTemplateCard({
@@ -67,13 +105,18 @@ function DepartmentTemplateCard({
   onEdit: () => void
   onDelete: () => void
 }) {
+  const notes = template.notes.trim()
+
   return (
     <CardContainer
       size="sm"
       className="h-full"
-      title={template.department}
+      title={<span className={cn(typeScale.title, "truncate")}>{template.department}</span>}
+      description={getTemplateSummary(template)}
+      descriptionClassName={typeScale.caption.meta}
+      headerClassName="gap-2"
       action={
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-0.5">
           <Button variant="ghost" size="icon-sm" aria-label="Edit template" onClick={onEdit}>
             <Pencil />
           </Button>
@@ -88,12 +131,13 @@ function DepartmentTemplateCard({
           </Button>
         </div>
       }
-      contentClassName="flex flex-col gap-4"
+      contentClassName="flex flex-col gap-4 pt-1"
     >
-      <div className="flex flex-col gap-1.5">
-        <p className={typeScale.caption.overline}>Notes</p>
-        <p className={typeScale.caption.meta}>{template.notes || "No notes"}</p>
-      </div>
+      <TemplateSection label="Notes" bordered={false}>
+        <p className={cn(notes ? typeScale.body.default : typeScale.body.muted, "leading-relaxed")}>
+          {notes || "No notes"}
+        </p>
+      </TemplateSection>
 
       <TemplateLinesSection title="Hardware" lines={template.lines} />
       <TemplateLinesSection title="Software" lines={template.lines} />

@@ -152,9 +152,9 @@ function adminModuleGrants(): Record<string, readonly string[]> {
 export const BUILT_IN_ROLES: RoleDefinition[] = [
   {
     id: "admin",
-    name: "Admin",
+    name: "Administrator",
     subtitle: "Full workspace access",
-    description: "Admin has all permissions and cannot be edited.",
+    description: "Administrator has all permissions and cannot be edited.",
     badge: "Admin",
     locked: true,
     moduleGrants: adminModuleGrants(),

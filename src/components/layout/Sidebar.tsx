@@ -102,7 +102,7 @@ function SidebarItem({
       )}
       {...props}
     >
-      <Icon strokeWidth={1.75} className="size-4 shrink-0 [color:inherit] transition-colors" />
+      <Icon strokeWidth={1.75} className="size-4 shrink-0 text-inherit transition-colors" />
       <span className="min-w-0 truncate">{label}</span>
       {badge ? (
         <Badge variant="secondary" className="ml-auto h-4.5 px-1.5 text-[0.625rem]">

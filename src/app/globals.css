@@ -638,11 +638,13 @@
 
   .custom-scrollbar::-webkit-scrollbar {
     width: 6px;
+    height: 6px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-track {
     background: transparent;
     margin-block: 4px;
+    margin-inline: 4px;
   }
 
   .custom-scrollbar::-webkit-scrollbar-thumb {

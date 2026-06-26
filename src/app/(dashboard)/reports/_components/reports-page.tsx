@@ -56,7 +56,7 @@ function ReportsPage() {
           }
         >
           <Tabs value={activeTab} onValueChange={setActiveTab} className="gap-4">
-            <div className="relative z-10 shrink-0 overflow-x-auto pb-1" data-report-export-hide>
+            <div className="relative z-10 shrink-0" data-report-export-hide>
               <TabNav items={REPORT_TABS} size="lg" />
             </div>
 

@@ -1,7 +1,5 @@
 "use client"
 
-import * as React from "react"
-
 import { LicenseStatusBadge } from "@/app/(dashboard)/software/_components/license-status-badge"
 import { DataTable, type DataTableColumn } from "@/components/custom/DataTable"
 import { typeScale } from "@/lib/typography"

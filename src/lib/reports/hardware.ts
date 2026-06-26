@@ -475,7 +475,14 @@ export const HARDWARE_REPORT_CONFIG: Record<HardwareReportKind, HardwareReportCo
         title: `${asset.name} · ${asset.tag}`,
         subtitle: `${asset.supplier} · ${asset.model} · ${asset.category.toLowerCase()} · status: ${asset.status === "Repair" ? "in_repair" : asset.condition.toLowerCase()}`,
         badge: asset.status === "Repair" ? "In Repair" : asset.condition,
-        badgeVariant: asset.status === "Repair" ? "warning" : "secondary",
+        badgeVariant:
+          asset.status === "Repair"
+            ? "warning"
+            : asset.condition === "Broken"
+              ? "destructive"
+              : asset.condition === "Poor"
+                ? "warning"
+                : "secondary",
       })),
   },
 }

@@ -44,6 +44,8 @@ export const HARDWARE_CATEGORIES = ["Laptop", "Monitor", "Phone", "Accessories",
 
 export const ASSET_STATUSES: AssetStatus[] = ["In Stock", "Assigned", "Repair", "Retired"]
 
+export const Condition = ["New", "Good", "Fair", "Poor", "Broken"] as const
+
 export const REPAIR_REASONS = [
   "Battery replacement/swollen",
   "Display/Screen replacement",

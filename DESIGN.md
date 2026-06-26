@@ -84,13 +84,13 @@ the component that already encodes it (`PageHeader`, `SectionHeading`, `CardTitl
 `font-medium` on body emphasis (active nav, names, labels); `font-normal` on
 default body copy.
 
-| Level | Name    | Classes (via `typeScale`)                     | Used by                                                     |
-| ----- | ------- | --------------------------------------------- | ----------------------------------------------------------- |
-| L1    | Display | `display.page` / `.brand` / `.nav`            | `PageHeader` h1, `SidebarBrand`, `Navbar` title             |
+| Level | Name    | Classes (via `typeScale`)                     | Used by                                                          |
+| ----- | ------- | --------------------------------------------- | ---------------------------------------------------------------- |
+| L1    | Display | `display.page` / `.brand` / `.nav`            | `PageHeader` h1, `SidebarBrand`, `Navbar` title                  |
 | L2    | Heading | `heading`                                     | `SectionHeading` h2; `SettingsPanel` title (via `CardContainer`) |
-| L3    | Title   | `title` / `titleMetric`                       | `CardTitle`, `ChartCard` title; `MetricCard` KPI value      |
-| L4    | Body    | `body.default` / `.muted` / `.emphasis`       | Descriptions, nav items, table cells, form labels           |
-| L5    | Caption | `caption.overline` / `.meta` / `.tableHeader` | Section labels, KPI labels, eyebrows, emails, table headers |
+| L3    | Title   | `title` / `titleMetric`                       | `CardTitle`, `ChartCard` title; `MetricCard` KPI value           |
+| L4    | Body    | `body.default` / `.muted` / `.emphasis`       | Descriptions, nav items, table cells, form labels                |
+| L5    | Caption | `caption.overline` / `.meta` / `.tableHeader` | Section labels, KPI labels, eyebrows, emails, table headers      |
 
 Face rules: `font-display` is title-only (page, navbar, brand); structural titles
 use `font-heading`; everything else is `font-sans`. All secondary copy is
@@ -99,10 +99,11 @@ use `font-heading`; everything else is `font-sans`. All secondary copy is
 
 ### Available themes
 
-Light (default + 6): `purple-workspace` (default), `arctic-light`, `ocean-cyan`,
-`emerald-workspace`, `slate-enterprise`, `rose-quartz`, `amber-executive`.
-Dark (3): `midnight-dark`, `graphite-dark`, `neon-cyber`. Metadata (incl. each
-theme's `mode`) lives in `src/lib/themes.ts`.
+The default theme is **`carbon-enterprise`**. All workspace themes (20 light, 5
+dark) are defined in `src/lib/themes.ts` as `WORKSPACE_THEMES`, with helpers
+`LIGHT_THEMES`, `DARK_THEMES`, and `DEFAULT_THEME`. Do not hardcode a partial
+theme list in pages or components; read from that module when you need theme
+metadata.
 
 Beyond the surface/text/primary/sidebar source tokens, the `:root` bridge also
 exposes status tokens (`--success`, `--warning`, `--info`, `--danger`/
@@ -148,7 +149,7 @@ DashboardLayout
 | Component        | Responsibility                         |
 | ---------------- | -------------------------------------- |
 | `Sidebar`        | Fixed sidebar container                |
-| `SidebarBrand`   | Prominent product wordmark + mark      |
+| `SidebarBrand`   | Prominent product wordmark (text only) |
 | `SidebarSection` | Labeled group of nav items             |
 | `SidebarItem`    | A single nav link (active/hover/badge) |
 | `SidebarFooter`  | Bottom region (settings, profile)      |
@@ -171,8 +172,9 @@ Navigation is data-driven from `src/components/layout/nav-config.ts`.
 - **Surface:** `bg-sidebar`, right border `border-sidebar-border`, plus `shadow-xs` for soft depth alongside the divider.
 - **Structure:** brand (`h-16`) → scrollable nav → footer (settings + profile).
 - **Brand (`SidebarBrand`):** a single, prominent text wordmark — no icon mark.
-  `font-display text-xl font-bold tracking-tight`: **Asset** in
-  `text-foreground`, **360Hub** in `text-primary` (theme brand hue). Brand height
+  Use `typeScale.display.brand` (`font-display text-2xl font-extrabold
+  tracking-tight`): **Asset** in `text-foreground`, **360Hub** in
+  `text-primary` (theme brand hue). Brand height
   (`h-16`) matches the navbar so the divider lines align across the two columns.
   Render the wordmark once in the sidebar only; do not duplicate the brand
   elsewhere.
@@ -205,7 +207,7 @@ sm:text-xl font-semibold tracking-tight text-foreground`), derived from the nav
   consistent, premium hierarchy.
 - **Content:** title (left), actions + account avatar (right). On mobile it also
   renders the sidebar menu trigger.
-- **Account avatar:** opens the `UserMenu` profile dropdown (see §12).
+- **Account avatar:** opens the `UserMenu` profile dropdown.
 - Stays fixed while the content area scrolls.
 
 ---
@@ -268,46 +270,28 @@ one card should have a title **and** a one-line description.
 
 ## 6. Scroll behavior rules
 
-- The page uses the **default browser (body) scroll**. The shell uses `min-h-svh`
-  (no `overflow-hidden`); the sidebar (`sticky top-0 h-svh`) and navbar
-  (`sticky top-0`) are pinned while the body scrolls.
-- The sidebar nav has its own internal `overflow-y-auto` for long nav lists.
-- Do not add page-level `min-h-screen`/`h-screen` wrappers — the shell owns
-  height. Pages render plain content.
+- Use default browser (body) scrolling.
+- Shell uses min-h-svh.
+- Sidebar remains sticky (top-0 h-svh).
+- Navbar remains sticky (top-0).
+- Do not add page-level h-screen or min-h-screen wrappers.
+- Pages should not manage their own scrolling.
 
-### Custom scrollbars (`custom-scrollbar`)
+### Custom scrollbars
 
-Use the shared **`custom-scrollbar`** utility (`src/app/globals.css`) on
-in-panel scroll regions that should show a styled scrollbar instead of hiding it
-with `no-scrollbar`.
-
-| Property | Value |
-| -------- | ----- |
-| Width | 6px (WebKit); `scrollbar-width: thin` (Firefox) |
-| Track | Transparent |
-| Thumb | `color-mix` of `--muted-foreground` + `--border` |
-| Thumb hover | `--primary` tint via `color-mix` |
-| Placement | Flush to the scroll container’s right edge — no thumb inset border |
-
-**Do not** hardcode scrollbar colors. The utility is token-driven and re-themes
-with the workspace palette.
-
-**Default vs opt-in:** `CommandList` hides scrollbars by default
-(`hideScrollbar` prop, `no-scrollbar`). **`CustomSelect`** opts in with
-`hideScrollbar={false}` + `custom-scrollbar` — see §11.
+Use the shared custom-scrollbar utility for internal scrollable regions.
 
 ---
 
 ## 7. Responsive rules
 
-- **Breakpoints:** Tailwind defaults. `md` (768px) is the desktop/mobile divide
-  for the shell.
-- `< md`: sidebar collapses into a `Sheet`; navbar shows the menu trigger.
-- `>= md`: persistent sidebar; menu trigger hidden.
-- Content max width: `1400px`, centered (via `ContentWrapper`). Page padding
-  (`p-4 sm:p-6 lg:p-8`) and inter-block spacing (`space-y-6`) are owned by
-  `PageHeader`.
-- Grids should be mobile-first: e.g. `grid-cols-1 sm:grid-cols-2 xl:grid-cols-4`.
+- Use a mobile-first approach.
+- `md` (768px) is the primary mobile/desktop breakpoint.
+- Below `md`, the sidebar collapses into a `Sheet`.
+- At `md` and above, use the persistent sidebar layout.
+- Prefer responsive grids such as:
+  - `grid-cols-1 sm:grid-cols-2`
+  - `grid-cols-1 sm:grid-cols-2 xl:grid-cols-4`
 
 ---
 
@@ -348,525 +332,189 @@ standalone pills with the same border token on inactive items. Never swap in
 
 ## 9. Borders, shadows & surface elevation
 
-This section is the **source of truth for outer edges** — thin outline + soft
-lift. Read it before adding borders, rings, or shadows to any new surface.
+Use consistent surface styling across the application.
 
-### Three layers (do not mix them up)
+### Surface layers
 
-| Layer | Role | Border | Shadow | Examples |
-| ----- | ---- | ------ | ------ | -------- |
-| **Shell chrome** | Frame the app; sticky sidebar/navbar | Structural edge only: `border-r border-sidebar-border`, `border-b border-navbar-border` | `shadow-xs` | `Sidebar`, `Navbar` |
-| **Raised content** | Cards, tables, tab pills sitting on the page | Full box: `border border-sidebar-border` | `shadow-xs` | `Card`, `DataTable` shell, active `TabNav` pill, inactive `SubTabNav` pill |
-| **Floating overlays** | Menus, popovers, modal shells above content | Full box: `border border-sidebar-border` | `shadow-sm` | `Dialog`, `AlertDialog`, `Popover`, `DropdownMenu` |
+| Layer             | Border                                           | Shadow      | Examples                     |
+| ----------------- | ------------------------------------------------ | ----------- | ---------------------------- |
+| Shell chrome      | `border-sidebar-border` / `border-navbar-border` | `shadow-xs` | Sidebar, Navbar              |
+| Raised content    | `border-sidebar-border`                          | `shadow-xs` | Cards, Tables, Active Tabs   |
+| Floating overlays | `border-sidebar-border`                          | `shadow-sm` | Dialogs, Popovers, Dropdowns |
 
-```mermaid
-flowchart TB
-  subgraph shell [Shell chrome]
-    Sidebar["Sidebar: border-r + shadow-xs"]
-    Navbar["Navbar: border-b + shadow-xs"]
-  end
-  subgraph content [Raised content]
-    Card["Card / table: border-sidebar-border + shadow-xs"]
-    TabPill["Active tab pill: same as Card"]
-    ActiveNav["Active sidebar item: border-sidebar-border + shadow-xs"]
-  end
-  subgraph overlay [Floating overlays]
-    Dialog["Dialog / menu: border-sidebar-border + shadow-sm"]
-  end
-  shell --> content
-  content --> overlay
-```
+### Border rules
 
-**Stacking at the inner corner:** sidebar is `relative z-20`; navbar is
-`sticky z-30` so shadows meet cleanly where the brand row meets the page header.
+| Utility                 | Use                                                  |
+| ----------------------- | ---------------------------------------------------- |
+| `border-sidebar-border` | Outer edge of cards, tables, tabs, dialogs, popovers |
+| `border-navbar-border`  | Navbar bottom border                                 |
+| `border-border`         | Internal dividers only                               |
 
-### Border tokens — which one to use
+Do not use `border-border` for card or panel outer edges.
 
-All three shell-aligned tokens resolve to `--border` per theme in
-`src/app/globals.css` (`--sidebar-border`, `--navbar-border`, and `--border`
-bridge to the same value). Use the **semantic utility** that matches the surface:
+### Shadow rules
 
-| Utility | When to use |
-| ------- | ----------- |
-| `border-sidebar-border` | **Outer box** on cards, tables, tab pills, active nav items, popovers, dialogs — anything that should match sidebar/navbar divider weight |
-| `border-navbar-border` | **Shell only** — bottom edge of `Navbar` |
-| `border-border` | **Internal dividers only** — `border-t` on `CardFooter`, table rows, dialog header strips, section splits inside a surface |
+| Utility      | Use                                  |
+| ------------ | ------------------------------------ |
+| `shadow-xs`  | Cards, tables, tabs, sidebar, navbar |
+| `shadow-sm`  | Dialogs, popovers, dropdowns         |
+| `shadow-md+` | Avoid unless specifically required   |
 
-**Do not** use `border-border` on the **outer shell** of a card or panel — it
-reads lighter/wrong next to sidebar chrome. **Do not** use `ring-1 ring-foreground/10`
-(or any ring) as a card/table outer edge; rings are for focus states and legacy
-popover chrome we have migrated away from.
-
-### Shadow tokens — which one to use
-
-Shadows are defined in `:root` via `--shadow-color` and exposed as
-`shadow-2xs` … `shadow-2xl`. Stick to the smallest tiers:
-
-| Utility | When to use |
-| ------- | ----------- |
-| `shadow-xs` | Cards, table shells, empty states, tab pills, sidebar/navbar shell, active sidebar item |
-| `shadow-sm` | Dialogs, alert dialogs, popovers, dropdown menus |
-| `shadow-md` and up | **Avoid** on dashboard surfaces unless there is a strong reason (e.g. chart tooltip) |
-
-Never pair `shadow-md`/`shadow-lg` with card shells — it fights the minimal
-reference look.
-
-### Shared helpers — always prefer these
-
-Import from [`src/lib/surface.ts`](src/lib/surface.ts):
+### Shared helpers
 
 ```ts
-/** Border color token shared with sidebar/navbar dividers */
-shellBorderClassName          // "border-sidebar-border"
-
-/** Raised dashboard surfaces (cards, tables, tab pills) */
-surfaceOutlineClassName       // "border border-sidebar-border shadow-xs"
-
-/** Modals and floating panels */
-surfaceOverlayClassName       // "border border-sidebar-border shadow-sm"
+shellBorderClassName
+surfaceOutlineClassName
+surfaceOverlayClassName
 ```
 
-| Helper | Composed classes | Used by |
-| ------ | ---------------- | ------- |
-| `surfaceOutlineClassName` | `border border-sidebar-border shadow-xs` | `Card` (root shell), `DataTable` shell, requests empty/filter pills |
-| `surfaceOverlayClassName` | `border border-sidebar-border shadow-sm` | `DialogContent`, `AlertDialogContent` |
-| `shellBorderClassName` | `border-sidebar-border` | Compose manually when you need border color without the full outline |
-
-**Primitives that encode this already** — compose them; do not re-style per page:
-
-- `Card` / `CardContainer` / `MetricCard` / `ChartCard` / `ReportListCard`
-- `DataTable` outer shell
-- `TabNav` + `TabsTrigger` (default variant active state)
-- `SubTabNav` inactive pills
-- `Popover`, `DropdownMenu` content
-- `SidebarItem` active state (`border-sidebar-border`, `shadow-xs`)
-
-### Surface recipes (copy these)
-
-**Card / KPI / chart panel** — use `Card`; the primitive applies
-`surfaceOutlineClassName` automatically:
+### Standard patterns
 
 ```tsx
 <Card>
-  <CardHeader>…</CardHeader>
-  <CardContent>…</CardContent>
+  ...
 </Card>
 ```
 
-**Custom raised box** (only when `Card` is not the right shape):
-
 ```tsx
-<div className={cn("rounded-xl bg-card", surfaceOutlineClassName)}>…</div>
+<div className={cn("rounded-xl bg-card", surfaceOutlineClassName)}>
+  ...
+</div>
 ```
 
-**Table shell** — `DataTable` already wraps rows in `surfaceOutlineClassName`.
+### Rules
 
-**Active sidebar nav item** — built into `SidebarItem`:
-
-```
-border border-transparent          → default
-data-[active=true]:border-sidebar-border
-data-[active=true]:bg-sidebar-active
-data-[active=true]:shadow-xs
-```
-
-**Shell sidebar / navbar** — keep structural border **and** `shadow-xs`:
-
-```
-Sidebar:  border-r border-sidebar-border shadow-xs  (z-20)
-Navbar:   border-b border-navbar-border shadow-xs   (z-30)
-```
-
-Mobile sheet sidebar: pass `shadow-none` on the nested `Sidebar` (the sheet
-edge already separates; see `DashboardLayout`).
-
-### Do / Don't (common mistakes)
-
-| Do | Don't |
-| -- | ----- |
-| Import `surfaceOutlineClassName` for new raised panels | Hand-roll `border border-border` on card shells |
-| Use `border-sidebar-border` for outer boxes | Use `border-border` on card/table/tab outer edges |
-| Use `shadow-xs` on content surfaces | Default to `shadow-sm` or `shadow-md` on cards |
-| Use `shadow-sm` on dialogs/menus only | Put `shadow-lg` on dashboard cards |
-| Keep internal splits as `border-t border-border` | Add `border-t` on `CardActions` (use padding rhythm instead) |
-| Extend `Card`, `TabNav`, `DataTable` | Fork per-page bordered wrappers around the same content |
-| Match active tab pills to card elevation | Add extra `ring-*` or `border-primary` on standard tabs |
-
-Decorated hero wrappers (e.g. Overview Executive Signals, prompt report executive
-summary) may add gradient / primary tint **via `className` on `Card`** — their
-extra classes override the base border when needed; do not change the primitive
-for one-off marketing chrome.
+- Use `surfaceOutlineClassName` for custom raised panels.
+- Use `surfaceOverlayClassName` for dialogs and overlays.
+- Use `border-border` only for internal dividers.
+- Match active tab elevation with card elevation.
+- Do not use `ring-*` as a card border.
+- Do not use heavy shadows on dashboard surfaces.
 
 ---
 
 ## 10. Cards & panels
 
-This section is the **decision guide for every raised surface** on a dashboard
-page. Pick the right primitive first; only fall back to raw `Card` slots for
-documented exceptions.
+Use the appropriate primitive instead of creating custom card layouts.
 
-### Which component to use
+### Component selection
 
-| Need | Component | Path |
-| ---- | --------- | ---- |
-| KPI stat (label + value + optional icon / footer slot) | **`MetricCard`** | `src/components/ui/metric-card.tsx` |
-| Chart panel (title + description + optional header action) | **`ChartCard`** | `src/components/ui/chart-card.tsx` |
-| Standard panel — title, description, body, optional header action / footer CTA | **`CardContainer`** | `src/components/ui/card-container.tsx` |
-| Modal / dialog — title, description, scrollable body, footer action row | **`ModalContainer`** | `src/components/ui/modal-container.tsx` |
-| Tabular data with column headers, sort, resize, pagination | **`DataTable`** | `src/components/custom/DataTable.tsx` |
-| Report result list (icon header + row list + pagination, no columns) | **`ReportListCard`** | `src/app/(dashboard)/reports/_components/shared/report-list-card.tsx` |
-| Settings section (title + form + save row) | **`SettingsPanel`** | wraps `CardContainer variant="form"` |
-| Decorated one-off hero (gradient / marketing chrome) | Raw **`Card`** + custom body | Overview Executive Signals only |
+| Need                   | Component                      | Import path |
+| ---------------------- | ------------------------------ | ----------- |
+| KPI / metric           | `MetricCard`                   | `@/components/ui/metric-card` |
+| Chart                  | `ChartCard`                    | `@/components/ui/chart-card` |
+| Standard panel         | `CardContainer`                | `@/components/ui/card-container` |
+| Form panel             | `CardContainer variant="form"` | `@/components/ui/card-container` |
+| Dialog / modal         | `ModalContainer`               | `@/components/ui/modal-container` |
+| Data table             | `DataTable`                    | `@/components/custom/DataTable` |
+| Report list            | `ReportListCard`               | `@/app/(dashboard)/reports/_components/shared/report-list-card` (reports only) |
+| Decorated hero section | Raw `Card`                     | `@/components/ui/card` |
 
-**Do not** hand-roll `Card` + `CardHeader` + `CardTitle` + `CardContent` on new
-pages — use **`CardContainer`** instead. **Do not** hand-roll `Dialog` +
-`DialogHeader` + `DialogBody` + `CardActions` on new pages — use
-**`ModalContainer`** instead. **Do not** replace `MetricCard`, `ChartCard`, or
-`ReportListCard` with `CardContainer`.
+### Rules
 
-```mermaid
-flowchart TD
-  Q1{KPI / stat tile?}
-  Q2{Chart visualization?}
-  Q3{Tabular columns + sort?}
-  Q4{Report row list?}
-  Q5{Form + footer actions?}
-  Q6{Decorated hero?}
-  MetricCard[MetricCard]
-  ChartCard[ChartCard]
-  DataTable[DataTable]
-  ReportListCard[ReportListCard]
-  CardContainer[CardContainer]
-  RawCard[Raw Card exception]
+- Use `CardContainer` for most dashboard panels.
+- Use `ModalContainer` for dialogs.
+- Use `MetricCard` for KPI tiles only.
+- Use `ChartCard` for chart visualizations.
+- Use `DataTable` for sortable tabular data.
+- Use `ReportListCard` for report result lists.
+- Do not hand-roll `CardHeader`, `CardContent`, and `CardTitle` for new pages.
+- Do not replace specialized components with generic cards.
 
-  Q1 -->|yes| MetricCard
-  Q1 -->|no| Q2
-  Q2 -->|yes| ChartCard
-  Q2 -->|no| Q3
-  Q3 -->|yes| DataTable
-  Q3 -->|no| Q4
-  Q4 -->|yes| ReportListCard
-  Q4 -->|no| Q5
-  Q5 -->|yes| CardContainer variant form
-  Q5 -->|no| Q6
-  Q6 -->|yes| RawCard
-  Q6 -->|no| CardContainer display
-```
+### CardContainer
 
-### `CardContainer` (default dashboard panel)
+Standard dashboard wrapper.
 
-The standard wrapper for lists, tables inside a card, intake forms, filter bars,
-settings sections, and read-only panels.
+Common use cases:
 
-| Prop | Purpose |
-| ---- | ------- |
-| `title` | Renders `CardTitle` (L3) |
-| `description` | Renders `CardDescription` |
-| `descriptionClassName` | Extra classes on `CardDescription` (e.g. `max-w-3xl leading-relaxed`) |
-| `icon` | Optional `LucideIcon` — accent tile before title, **top-aligned** (`items-start`) |
-| `action` | Top-right slot (`CardAction`) — links, buttons, row counts |
-| `footer` | Bottom row in `CardActions` |
-| `variant="display"` | Default — `CardHeader` + `CardContent`, card `gap-(--card-spacing)` |
-| `variant="form"` | `gap-0 py-0` shell; header/body spacing via slot padding; pair with `footer` |
-| `formControls` | Applies shared full-width select sizing (`settingsControlClassName`) |
-| `onSubmit` | Wraps body + footer in a `<form>` |
+- Lists
+- Forms
+- Settings panels
+- Filter sections
+- Read-only content panels
+
+Common props:
 
 ```tsx
-{/* Display — recent assets table, department template card */}
 <CardContainer
-  title="Recent Assets"
-  description="Latest hardware records onboarded into the tenant."
-  action={<Button variant="ghost" asChild><Link href="/hardware">View all</Link></Button>}
+  title=""
+  description=""
+  action={}
 >
-  <RecentAssetsTable />
-</CardContainer>
-
-{/* Form — intake tab, settings panel, list-page filter shell */}
-<CardContainer
-  variant="form"
-  title="Add hardware"
-  description="Register a new asset into inventory."
-  formControls
-  footer={<Button type="submit">Save</Button>}
-  onSubmit={handleSubmit}
->
-  …fields…
-</CardContainer>
-
-{/* Decorated header — Prompt report tab only */}
-<CardContainer
-  variant="form"
-  icon={Sparkles}
-  title="Prompt-based report"
-  description="…"
-  descriptionClassName="max-w-3xl leading-relaxed"
-  formControls
-  contentClassName="flex flex-col gap-6"
->
-  …fields…
+  ...
 </CardContainer>
 ```
 
-**Nested inset panels** inside a `CardContainer` with a header (e.g. CSV mapping
-panel, accordion body): use a **`div`** with `surfaceOutlineClassName` and
-`p-(--card-spacing)` — **not** a nested `Card` (nested cards lose top content
-padding when a sibling header exists).
+### ModalContainer
 
-**Header-only empty states:** pass `contentClassName="py-16"` with an `Empty`
-child; `CardContainer` skips empty `CardContent` when there is no body/footer.
+Use for all dashboard dialogs.
 
-### `ModalContainer` (standard dashboard modal)
+Features:
 
-Use for every **form, review, or confirmation dialog** on dashboard pages. It is a
-thin wrapper around the same structure documented under **Card actions → Dialogs**
-below — do not invent a alternate footer strip.
+- Title
+- Description
+- Scrollable body
+- Footer actions
+- Form support
 
-| Prop | Purpose |
-| ---- | ------- |
-| `open` / `onOpenChange` | Controlled dialog state |
-| `title` | Renders `DialogTitle` |
-| `description` | Renders `DialogDescription` |
-| `footer` | Bottom row rendered in **`CardActions`** (not `DialogFooter`) |
-| `size="default"` | `dialogShellClassName` — `sm:max-w-md` |
-| `size="wide"` | `dialogShellClassNameWide` — `sm:max-w-2xl` |
-| `size="xl"` | `dialogShellClassNameXl` — `sm:max-w-4xl` |
-| `contentClassName` | Custom shell classes — e.g. `sm:max-w-3xl` when presets are not enough |
-| `formControls` | Applies shared full-width select sizing (`settingsControlClassName`) |
-| `onSubmit` | Wraps body + footer in a `<form>` |
-| `bodyClassName` / `footerClassName` | Extra classes on body / footer rows |
+### Dialog mounting
+
+Render dialogs only when needed.
 
 ```tsx
-{/* Form modal — matches Add supplier / Register software dialogs */}
-<ModalContainer
-  open={open}
-  onOpenChange={setOpen}
-  title="Add supplier"
-  description="Vendor details and contact info."
-  formControls
-  onSubmit={handleSubmit}
-  footer={
-    <>
-      <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
-      <Button type="submit">Add supplier</Button>
-    </>
-  }
->
-  <FieldGroup>…fields…</FieldGroup>
-</ModalContainer>
+{addRequestOpen &&
+  <AddRequestDialog
+    open={addRequestOpen}
+    onOpenChange={setAddRequestOpen}
+  />
+}
+
+{reviewOpen && selectedItem &&
+  <ReviewDialog
+    open={reviewOpen}
+    onOpenChange={setReviewOpen}
+    item={selectedItem}
+  />
+}
 ```
 
-**Structure** (implemented in `src/components/ui/modal-container.tsx`):
+### Tabs as filters
 
-| Region | Primitive / classes |
-| ------ | ------------------- |
-| Shell | `DialogContent` + `dialogShellClassName` — `bg-card p-0 gap-0`, `[--dialog-chrome:10rem]` |
-| Header | `DialogHeader` + `dialogHeaderClassName` — `border-b border-border px-4 py-4 pr-12` |
-| Body | `DialogBody` + `dialogFormBodyClassName` — scrollable, `px-4 py-4` (same as supplier add/edit) |
-| Footer | **`CardActions`** — `p-5` inset (`p-4` when `Card size="sm"`), `bg-card`, no `border-t`, right-aligned buttons |
+For view filters such as Pending / All:
 
-**Do not** use `DialogFooter` (muted strip) for submit rows. **Do not** add
-`bg-muted/50` or `border-t` on dialog action rows — that diverges from the card
-surface pattern.
+- Use `TabNav`
+- Use `badge` for counts
+- Do not create custom segmented controls
 
-**Lazy mount on pages with multiple modals:** do not keep every dialog in the tree
-while closed. Gate each modal with page-level `open` state and render only when
-needed. Optional: `next/dynamic` only when the modal chunk is very heavy.
+### Card actions
 
-```tsx
-{addRequestOpen ? (
-  <AddRequestDialog open={addRequestOpen} onOpenChange={setAddRequestOpen} … />
-) : null}
+- Use `CardActions` for footer actions.
+- Use default button size.
+- Keep actions aligned right.
+- Do not use `DialogFooter` for primary form actions.
 
-{reviewOpen && selectedItem ? (
-  <ReviewDialog open={reviewOpen} onOpenChange={setReviewOpen} item={selectedItem} … />
-) : null}
-```
+### Raw Card exceptions
 
-Keep fetch / form reset logic inside the modal and keyed off `open` (or rely on
-unmount to reset local state). Inline dialogs on a single-action page (e.g. one
-Add supplier modal) may stay mounted; apply lazy mount when a page owns **several**
-modals or API-backed flows.
+Allowed only for:
 
-**View filters** (Pending / All with counts): use **`TabNav`** with `size="default"`
-inside a `<Tabs>` root — pass counts via the `badge` prop, not `(n)` in the label.
-Do not hand-roll segmented filter pills.
-
-### `MetricCard`
-
-Use for **numeric KPI tiles** only — overview stats, report KPI rows, page header
-metric grids. Pass `iconVariant="badge"` for the accent icon tile (overview /
-inventory pages). Optional `children` for progress bars, mini-lists, nested stats;
-optional `footer` for supplementary copy below an **inset** `border-t border-border`
-rule (`mx-(--card-spacing)` — does not touch the card shell). Footer band uses
-`pt-(--card-spacing)` / `pb-(--card-spacing)`; body keeps `pb-(--card-spacing)`
-above the rule.
-
-Typography: KPI value → `typeScale.titleMetric`; subtitle → `caption.meta`;
-footer overline → `caption.overline` + `text-foreground`; detail copy →
-`caption.meta` / `body.muted`; inline emphasis → `body.emphasis` /
-`body.tabularEmphasis`. Optional `descriptionClassName` overrides description tier.
-
-Do **not** use `MetricCard` where you need a title + free-form panel body — use
-`CardContainer`.
-
-### `ChartCard`
-
-Use for **Recharts / chart panels** with a standard chart header (title,
-description, optional `action` for legends or context badges). Do not fork
-chart wrappers per page.
-
-### `DataTable`
-
-Use when rows need **column headers**, sorting, optional column resize, and the
-shared pagination footer. Inventory pages (hardware, software, employees, …)
-compose `DataTable` inside `CardContainer` (filter bar in the card body, table
-below).
-
-Pagination footer pattern: `border-t border-border bg-muted/30 px-4 py-3`, text
-Previous/Next links, bordered page indicator — see `DataTable` implementation.
-
-### `ReportListCard` (reports only)
-
-A **list-shaped report panel** — not a columnar table. Used on hardware /
-software / certifications report tabs below the KPI grid.
-
-Characteristics:
-
-- **Custom header** (not `CardContainer`) — icon tile + `typeScale.title` +
-  caption meta + row count; required because reports use a decorated icon lockup.
-- Shell: `Card` with `gap-0 overflow-hidden py-0`; inner wrapper is a plain
-  **`div`**, not `CardContent` (avoids phantom top padding when no `CardHeader`).
-- **Header band:** `px-(--card-spacing) py-5`, `border-b border-border`, flex row
-  with `sm:items-center` (row count vertically centered against title block).
-- **List rows:** `px-(--card-spacing) py-3`, `items-center`, `divide-y divide-border`.
-- **Footer band:** `px-(--card-spacing) py-3`, `border-t border-border` — same
-  horizontal inset as header; pagination matches `DataTable` controls.
-- **Status pills:** `ReportStatusBadge` (`report-status-badge.tsx`) — semantic
-  variants (`success`, `info`, `warning`, `destructive`, …), not generic
-  `secondary` for every state. Map status in report data mappers
-  (`src/lib/reports/*`).
-
-```tsx
-<ReportListCard
-  title={reportData.config.title}
-  description={reportData.config.description}
-  generatedOn={reportData.generatedOn}
-  rows={reportData.rows}
-/>
-```
-
-Report filter bars use **`CardContainer`** with `formControls` (no title — body
-only with an overline label inside). Report “coming soon” placeholders use
-`CardContainer` with centered `Empty`.
-
-### Raw `Card` exceptions
-
-| Case | Pattern |
-| ---- | ------- |
-| Executive Signals hero (Overview) | `Card` + `CardContent`, gradient override; KPI grid `gap-5`, `*:h-full` on `MetricCard` row for equal tile height |
-| Prompt report executive summary | Decorated `Card`, gradient tint |
-| `ReportListCard` | Custom header/footer bands (see above) |
-| Auth forms | `AuthPageShell` / auth-specific layout |
-
-Everywhere else → **`CardContainer`**, **`ModalContainer`**, **`MetricCard`**, **`ChartCard`**, or
-**`DataTable`**.
-
-### Card padding (slot rules)
-
-`Card` owns horizontal rhythm via `--card-spacing` (default `--spacing(5)` ≈ 20px;
-`size="sm"` ≈ 16px). **Vertical inset lives on the slots**, not on the card shell —
-do not rely on ad-hoc `py-*` on the root `Card` for everyday display cards.
-
-| Slot                         | Padding                                                                                           |
-| ---------------------------- | ------------------------------------------------------------------------------------------------- |
-| `CardHeader`                 | `px-(--card-spacing) pt-(--card-spacing)`                                                         |
-| `CardContent`                | `px-(--card-spacing) pb-(--card-spacing)`; adds `pt-(--card-spacing)` when there is **no** header; **`pb-0`** when `CardActions` follows (use `settingsCardContentWithActionsClassName` if overriding padding) |
-| `CardActions` / `CardFooter` | `p-5` on actions (`p-4` when `Card size="sm"`); `CardFooter` uses `p-(--card-spacing)` |
-
-The root `Card` keeps `gap-(--card-spacing)` between slots. Use that default gap for
-`CardHeader` + `CardContent` display cards (department templates, chart panels, …).
-
-### When to use `gap-0 py-0` on the shell
-
-Reserve `className="gap-0 py-0"` for **scroll + actions** or **single-region** cards
-only:
-
-```tsx
-<Card className="gap-0 py-0">
-  <CardContent className="max-h-[min(52vh,22rem)] overflow-y-auto p-(--card-spacing)">
-    …fields or lists…
-  </CardContent>
-  <CardActions>
-    <Button variant="outline">Cancel</Button>
-    <Button type="submit">Save</Button>
-  </CardActions>
-</Card>
-```
-
-**Do not** pair `gap-0 py-0` with bare `CardHeader` + `CardContent` — those slots
-only apply horizontal padding unless you also supply full `p-(--card-spacing)` on
-each region. That mismatch is what causes content flush to the card edges.
-
-For multi-column card grids, add `items-start` so cards stay content-height instead
-of stretching with empty space at the bottom.
-
-**Vertical rhythm reference:** header bands that need the full card inset use
-`py-5` (20px, same as `--card-spacing`). Report list header uses
-`px-(--card-spacing) py-5`; footer uses `px-(--card-spacing) py-3`.
-
-Do not add ad-hoc `p-*` overrides to align cards — adjust `size`, compose with
-`--card-spacing`, or use the documented band classes instead.
-
-### Card actions (primary pattern)
-
-Use `CardActions` for every form / panel / dialog footer that lives on a card
-surface. Actions belong **on the card**, not on `DialogFooter` (muted strip) or
-floating outside the card.
-
-- `CardActions` is a sibling of `CardContent` inside `Card` (`gap-0 py-0` on the
-  card shell).
-- **No** `border-t` on `CardActions` — spacing comes from `CardContent` bottom
-  inset (`pb-0` when actions follow) plus `p-(--card-spacing)` on the action row.
-- Layout: `flex justify-end gap-2` with `p-(--card-spacing)`.
-- **Buttons:** use the default `Button` size (no `size="lg"`, `size="sm"`, or ad-hoc
-  `h-*` / `px-*` on save rows). Same rule as page header and intake form footers.
-- Long card bodies scroll in `CardContent`; actions stay pinned below the scroll
-  region via `CardActions`.
-
-**Dialogs:** use a single **`bg-card` dialog shell** — do not nest an inset
-`Card` with margins inside `DialogContent` (`bg-popover`). Structure:
-
-```tsx
-<DialogContent className="flex max-h-[calc(100vh-2.5rem)] flex-col gap-0 overflow-hidden bg-card p-0 text-card-foreground [--dialog-chrome:10rem] sm:max-w-md">
-  <DialogHeader className="shrink-0 border-b border-border px-4 py-4 pr-12">…</DialogHeader>
-  <DialogBody className="min-h-0 overflow-y-auto max-h-[calc(100vh-2.5rem-var(--dialog-chrome))] px-4 py-4">
-    …fields or lists…
-  </DialogBody>
-  <CardActions>…</CardActions>
-</DialogContent>
-```
-
-Use **`max-h-[calc(100vh-2.5rem-var(--dialog-chrome))] overflow-y-auto`** on `DialogBody` so height
-follows content until the shell cap; then the body scrolls. Do **not** set a fixed `h-[…]` on the shell —
-only `max-h-[calc(100vh-2.5rem)]`.
-`max-h` alone is not reliable inside flex dialogs. `CardActions` must include
-`bg-card` (built into the primitive) so the action row matches the card surface.
-Overlay: `bg-black/45` (`bg-black/35` when backdrop-filter is supported) +
-`backdrop-blur-sm` (shared `modalOverlayClassName` on dialogs, sheets, and alert
-dialogs).
-
-**Do not** use `DialogFooter` for form submit rows when the content is already
-card-based. `CardFooter` is for muted summary chrome only, not primary actions.
+- Executive dashboard hero sections
+- Decorated summary panels
+- Authentication layouts
+- Existing specialized report components
 
 ---
 
 ## 11. Reusable component rules
 
-- Prefer primitives in `src/components/ui/*`; never duplicate them.
+- Prefer primitives in `src/components/ui/*`; never duplicate them. Shared
+  non-ui building blocks live in `src/components/custom/*` (e.g. `DataTable`,
+  `CustomSelect`).
 - **Cards:** follow §10 — `CardContainer` for panels, `ModalContainer` for dialogs,
-  `MetricCard` / `ChartCard` /
-  `ReportListCard` / `DataTable` for their specialized shapes; do not fork
+  `MetricCard` / `ChartCard` for ui primitives; `DataTable` and `ReportListCard`
+  for their specialized shapes (see §10 import paths); do not fork
   `Card` + `CardTitle` + `CardContent` per page.
+- Do not use `PageLayout` (`src/components/layout/PageLayout.tsx`); it is a
+  legacy stub. Use `PageHeader` for all dashboard pages.
 - Global layout (`Sidebar`, `Navbar`, `DashboardLayout`) is shared — extend, do
   not fork per page.
 - Keep Server Components the default; add `"use client"` only where interactivity
@@ -881,55 +529,11 @@ Use **`CustomSelect`** (`src/components/custom/CustomSelect.tsx`) for every
 form select — intake, settings, organization, lifecycle templates, etc. Do not
 fork a one-off popover + list per page.
 
-| Prop | Purpose |
-| ---- | ------- |
-| `searchable` | Shows filter input above options (`CommandInput`) |
+| Prop           | Purpose                                                                  |
+| -------------- | ------------------------------------------------------------------------ |
+| `searchable`   | Shows filter input above options (`CommandInput`)                        |
 | `formControls` | (via parent) full-width trigger — pair with `CardContainer formControls` |
-| `isMultiple` | Multi-select with count label |
-| `showClear` | Clear affordance on trigger (default `true`) |
-
-**Dropdown shell** (implemented in `CustomSelect`):
-
-| Region | Classes / behavior |
-| ------ | ------------------ |
-| `Command` root | `gap-1 p-0` — vertical gap between search and list; no outer padding (scrollbar flush right) |
-| Search (`CommandInput`) | `variant="underline"` — full-width straight `border-b` only (`surfaceDividerBottomClassName`), no box or rounded corners |
-| `CommandList` | `hideScrollbar={false}`, `custom-scrollbar`, `pr-0`, `max-h-72` |
-| `CommandGroup` | `px-1` when searchable; `p-1` when list-only |
-| Scrollbar | §6 `custom-scrollbar` — visible when options exceed list cap |
-
-**Search input styling:** use `CommandInput` with **`variant="underline"`** — a plain
-flex row with icon + field and a straight bottom divider (`surfaceDividerBottomClassName`).
-No `InputGroup`, no rounded border, no focus ring. Do not reuse the default
-`CommandInput` box for select filters.
-
-**Scrolling:** long option lists scroll inside `CommandList` (`max-h-72`). The
-custom scrollbar sits on the popover’s right edge (`Command` has `p-0`,
-`CommandList` has `pr-0`). Do not wrap the list in `ScrollArea` or re-add
-`no-scrollbar` on this path.
-
-**`CommandList` elsewhere:** command palettes and comboboxes keep
-`hideScrollbar={true}` (default). Only opt in where users need a visible scroll
-affordance (currently `CustomSelect`).
+| `isMultiple`   | Multi-select with count label                                            |
+| `showClear`    | Clear affordance on trigger (default `true`)                             |
 
 ---
-
-## 12. Profile menu specifications
-
-The navbar avatar opens `UserMenu` — the canonical account experience. It is
-built on the shared `DropdownMenu` primitive, so it inherits open/close
-animation, click-outside + `Escape` dismissal, roving keyboard focus, and theme
-awareness with no extra work. Never hand-roll popover/outside-click logic.
-
-Structure (token-driven, `w-72`):
-
-- **Header:** organization name (`text-xs uppercase text-muted-foreground`) +
-  a `Sign out` action (`text-primary`).
-- **Identity:** `lg` avatar, full name (`text-sm font-semibold`), and email
-  (`text-xs text-muted-foreground`).
-- **Footer:** shortcut rows — `Settings` (`/settings`) and `Theme preferences`
-  (`/settings#theme`).
-
-Pass `user` (`{ name, email, avatarUrl?, organization? }`) and `onSignOut` down
-from `DashboardLayout`. To add a shortcut, add another row in the footer group;
-do not create a parallel menu.

@@ -1,6 +1,5 @@
 "use client"
 
-import * as React from "react"
 import Link from "next/link"
 import { ArrowRight, Boxes, CircleCheck, Clock, KeyRound, TriangleAlert } from "lucide-react"
 

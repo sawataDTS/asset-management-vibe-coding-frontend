@@ -44,29 +44,31 @@ function TabNav({
   ...props
 }: TabNavProps) {
   return (
-    <TabsList
-      variant={variant}
-      size={size}
-      className={cn(fill ? "w-full" : "w-fit max-w-full", className)}
-      {...props}
-    >
-      {items.map((item) => (
-        <TabsTrigger
-          key={item.value}
-          value={item.value}
-          disabled={item.disabled}
-          className={cn("gap-1.5 px-3", fill ? "flex-1" : "flex-none shrink-0", triggerClassName)}
-        >
-          {item.icon ? <item.icon /> : null}
-          {item.label}
-          {item.badge != null ? (
-            <span className="ml-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-muted px-1.5 text-xs font-medium text-muted-foreground tabular-nums group-data-[variant=default]/tabs-list:bg-card in-data-active:bg-accent in-data-active:text-primary">
-              {item.badge}
-            </span>
-          ) : null}
-        </TabsTrigger>
-      ))}
-    </TabsList>
+    <div className="w-full max-w-full min-w-0 overflow-x-auto overflow-y-hidden pb-0.5">
+      <TabsList
+        variant={variant}
+        size={size}
+        className={cn(fill ? "w-full" : "min-w-max", className)}
+        {...props}
+      >
+        {items.map((item) => (
+          <TabsTrigger
+            key={item.value}
+            value={item.value}
+            disabled={item.disabled}
+            className={cn("gap-1.5 px-3", fill ? "flex-1" : "flex-none shrink-0", triggerClassName)}
+          >
+            {item.icon ? <item.icon /> : null}
+            {item.label}
+            {item.badge != null ? (
+              <span className="ml-0.5 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-muted px-1.5 text-xs font-medium text-muted-foreground tabular-nums group-data-[variant=default]/tabs-list:bg-card in-data-active:bg-accent in-data-active:text-primary">
+                {item.badge}
+              </span>
+            ) : null}
+          </TabsTrigger>
+        ))}
+      </TabsList>
+    </div>
   )
 }
 

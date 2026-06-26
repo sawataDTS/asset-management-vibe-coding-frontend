@@ -139,7 +139,7 @@ function RolePermissionsPanel({
         </div>
       </div>
 
-      <CardContent className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-(--card-spacing) pt-4 pb-0">
+      <CardContent className="custom-scrollbar min-h-0 flex-1 overflow-y-auto overscroll-contain px-(--card-spacing) pt-4 pb-0">
         <div className="flex flex-col gap-3 pb-(--card-spacing)">
           {VISIBLE_PERMISSION_MODULES.map((module) => (
             <PermissionGroupCard key={module.id} title={module.label}>

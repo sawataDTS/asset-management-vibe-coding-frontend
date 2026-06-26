@@ -5,6 +5,7 @@ import { Dialog as SheetPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 import { modalOverlayClassName } from "@/lib/modal-overlay"
+import { sheetScrollBodyClassName } from "@/lib/sheet-layout"
 import { Button } from "@/components/ui/button"
 import { XIcon } from "lucide-react"
 
@@ -100,6 +101,13 @@ function SheetDescription({ className, ...props }: React.ComponentProps<typeof S
   )
 }
 
+/** Scrollable sheet body — styled scrollbar matches `CustomSelect` (`custom-scrollbar`). */
+function SheetBody({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div data-slot="sheet-body" className={cn(sheetScrollBodyClassName, className)} {...props} />
+  )
+}
+
 export {
   Sheet,
   SheetTrigger,
@@ -109,4 +117,5 @@ export {
   SheetFooter,
   SheetTitle,
   SheetDescription,
+  SheetBody,
 }

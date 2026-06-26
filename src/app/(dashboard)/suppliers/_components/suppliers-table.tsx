@@ -1,6 +1,5 @@
 "use client"
 
-import * as React from "react"
 import { useMemo } from "react"
 import { Inbox, Mail, Pencil, Phone, Trash2, Truck } from "lucide-react"
 
@@ -25,7 +24,9 @@ function SupplierCell({ row }: { row: Supplier }) {
       </span>
       <div className="min-w-0">
         <span className={cn("block truncate", typeScale.body.emphasis)}>{row.name}</span>
-        <span className={cn("block truncate", typeScale.caption.meta)}>{row.category || TABLE_EMPTY_CELL}</span>
+        <span className={cn("block truncate", typeScale.caption.meta)}>
+          {row.category || TABLE_EMPTY_CELL}
+        </span>
       </div>
     </div>
   )

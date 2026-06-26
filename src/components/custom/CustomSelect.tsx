@@ -209,7 +209,7 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
                 onPointerDown={(event) => event.stopPropagation()}
                 onPointerMove={() => setHasPointerMoved(true)}
               >
-                <CommandGroup className={cn("p-0", searchable ? "px-1" : "p-1")}>
+                <CommandGroup className={cn("p-0 px-1", !searchable && "pt-1")}>
                   {options.map((option, index) => {
                     const isSelected = selectedValues.includes(option.value)
 

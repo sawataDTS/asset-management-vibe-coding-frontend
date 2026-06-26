@@ -8,7 +8,7 @@ import { AppWindow, HardDrive, UserPlus, X } from "lucide-react"
 import { CustomSelect } from "@/components/custom/CustomSelect"
 import { settingsControlClassName } from "@/app/(dashboard)/settings/_components/settings-panel"
 import { Button } from "@/components/ui/button"
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import { Sheet, SheetBody, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/sheet"
 import {
   AVAILABLE_HARDWARE,
   AVAILABLE_SOFTWARE,
@@ -71,17 +71,17 @@ function EmployeeDetailSheet({
 
   return (
     <Sheet open={open} onOpenChange={handleOpenChange}>
-      <SheetContent className="w-full gap-0 overflow-y-auto bg-card p-0 sm:max-w-lg">
+      <SheetContent className="flex w-full flex-col gap-0 overflow-hidden bg-card p-0 sm:max-w-lg">
         {employee ? (
           <>
-            <SheetHeader className="border-b border-border px-4 py-4 pr-12">
+            <SheetHeader className="shrink-0 border-b border-border px-4 py-4 pr-12">
               <SheetTitle className={typeScale.heading}>{employee.name}</SheetTitle>
               <SheetDescription className={cn(typeScale.body.muted, "font-mono tabular-nums")}>
                 {employee.employeeId}
               </SheetDescription>
             </SheetHeader>
 
-            <div className={cn("space-y-6 p-4", settingsControlClassName)}>
+            <SheetBody className={cn("space-y-6 p-4", settingsControlClassName)}>
               <section className="space-y-3">
                 <h3 className={typeScale.body.emphasis}>Basic information</h3>
                 <dl className="space-y-2">
@@ -241,7 +241,7 @@ function EmployeeDetailSheet({
                   ) : null}
                 </div>
               </section>
-            </div>
+            </SheetBody>
           </>
         ) : null}
       </SheetContent>

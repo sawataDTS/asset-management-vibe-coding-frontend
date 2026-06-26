@@ -41,7 +41,7 @@ const tableHeadClassName = cn(
 )
 
 const flexTableHeadCellClassName = cn(
-  "group box-border h-auto px-3.5 py-2.5 align-middle whitespace-nowrap",
+  "group box-border h-auto bg-muted/50 px-3.5 py-2.5 align-middle whitespace-nowrap",
   typeScale.caption.tableHeader
 )
 
@@ -370,7 +370,7 @@ export function DataTable<T extends object>({
 
   return (
     <div className={cn("data-table-root w-full min-w-0", className)}>
-      <div className={cn("relative rounded-xl bg-card", surfaceOutlineClassName)}>
+      <div className={cn("relative overflow-hidden rounded-xl bg-card", surfaceOutlineClassName)}>
         {loading ? (
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-card/60 backdrop-blur-[1px]">
             <Spinner className="size-5 text-primary" />
@@ -380,20 +380,22 @@ export function DataTable<T extends object>({
         {useFlexLayout ? (
           <div
             data-slot="table-container"
-            className="relative w-full min-w-0 [scrollbar-width:thin] overflow-x-auto overflow-y-hidden"
+            className="custom-scrollbar relative w-full min-w-0 overflow-x-auto overflow-y-hidden"
           >
             <div role="table" className="w-max min-w-full text-sm">
               <div role="rowgroup">
                 <div
                   role="row"
-                  className="flex w-max min-w-full border-b border-border bg-muted/50 hover:bg-muted/50"
+                  className="flex w-max min-w-full border-b border-border hover:bg-muted/50"
                 >
-                  {columns.map((column) => {
+                  {columns.map((column, columnIndex) => {
                     const isSorted = sortColumnId === column.id
                     const resolvedWidth = getResolvedColumnWidth(column)
                     const layoutStyle = getColumnLayoutStyle(column, resolvedWidth)
                     const resizeLabel = typeof column.header === "string" ? column.header : column.id
                     const isResizing = resizingColumnId === column.id
+                    const isFirstColumn = columnIndex === 0
+                    const isLastColumn = columnIndex === columns.length - 1
 
                     return (
                       <div
@@ -411,6 +413,8 @@ export function DataTable<T extends object>({
                           column.resizable && "relative",
                           column.align === "right" && "text-right",
                           column.align === "center" && "text-center",
+                          isFirstColumn && "rounded-tl-xl",
+                          isLastColumn && "rounded-tr-xl",
                           column.headerClassName
                         )}
                       >
