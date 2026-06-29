@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react"
 import { Archive, HardDrive, Package, Plus, Search, UserCheck, Wrench } from "lucide-react"
-import { CustomSelect } from "@/components/custom/CustomSelect"
+import { CustomSelect, toSelectOptions } from "@/components/custom/CustomSelect"
 import { HardwareAssetsTable } from "./hardware-assets-table"
 import { PageHeader } from "@/components/layout/PageHeader"
 import { settingsControlClassName } from "@/app/(dashboard)/settings/_components/settings-panel"
@@ -13,6 +13,7 @@ import { MetricCard } from "@/components/ui/metric-card"
 
 import {
   ASSET_STATUSES,
+  HARDWARE_CATEGORIES,
   HARDWARE_EMPLOYEES,
   initialHardwareAssets,
   type HardwareAsset,
@@ -131,14 +132,7 @@ function HardwarePage() {
               className="w-full lg:w-48"
               value={selectedCategory}
               onChange={(value) => setSelectedCategory(typeof value === "string" ? value : "All Categories")}
-              options={[
-                { label: "All Categories", value: "All Categories" },
-                { label: "Laptops", value: "Laptop" },
-                { label: "Monitors", value: "Monitor" },
-                { label: "Phones", value: "Phone" },
-                { label: "Accessories", value: "Accessories" },
-                { label: "Other", value: "Other" },
-              ]}
+              options={toSelectOptions(HARDWARE_CATEGORIES)}
               showClear={false}
             />
           </div>

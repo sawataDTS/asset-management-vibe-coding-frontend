@@ -7,7 +7,7 @@ interface RetryRequestConfig extends InternalAxiosRequestConfig {
   _retry?: boolean
 }
 
-const apiClient = axios.create({
+const apiService = axios.create({
   baseURL: `https://${API_URL}`,
 })
 
@@ -92,7 +92,7 @@ const refreshAccessToken = async (): Promise<string> => {
   return newAccessToken
 }
 
-apiClient.interceptors.request.use(
+apiService.interceptors.request.use(
   (config) => {
     const token = sessionStorage.getItem("jwtToken")
 
@@ -109,7 +109,7 @@ apiClient.interceptors.request.use(
   (error) => Promise.reject(error)
 )
 
-apiClient.interceptors.response.use(
+apiService.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
     const originalRequest = error.config as RetryRequestConfig
@@ -121,7 +121,7 @@ apiClient.interceptors.response.use(
             resolve: (token: string) => {
               originalRequest.headers.Authorization = `Bearer ${token}`
 
-              resolve(apiClient(originalRequest))
+              resolve(apiService(originalRequest))
             },
             reject,
           })
@@ -138,7 +138,7 @@ apiClient.interceptors.response.use(
 
         originalRequest.headers.Authorization = `Bearer ${newToken}`
 
-        return apiClient(originalRequest)
+        return apiService(originalRequest)
       } catch (refreshError) {
         processQueue(refreshError, null)
 
@@ -158,4 +158,4 @@ apiClient.interceptors.response.use(
   }
 )
 
-export default apiClient
+export default apiService

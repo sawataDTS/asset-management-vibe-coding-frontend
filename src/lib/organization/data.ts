@@ -16,6 +16,7 @@ export type Organization = {
   companyPhone: string
   address: string
   website: string
+  logoUrl?: string
 }
 
 export const ORGANIZATION_STATUS_OPTIONS = [
@@ -138,6 +139,7 @@ export function createEmptyOrganization(): Organization {
     companyPhone: "",
     address: "",
     website: "",
+    logoUrl: "",
   }
 }
 

@@ -5,7 +5,7 @@ export type AuditEvent = {
   notes?: string
 }
 
-export type AssetStatus = "In Stock" | "Assigned" | "Repair" | "Retired"
+export type AssetStatus = "In Stock" | "Assigned" | "Loaner" | "Repair" | "Retired" | "Lost"
 
 export type HardwareAsset = {
   id: string
@@ -40,9 +40,29 @@ export const HARDWARE_SUPPLIERS = [
   "Logitech Store",
 ] as const
 
-export const HARDWARE_CATEGORIES = ["Laptop", "Monitor", "Phone", "Accessories", "Other"] as const
+export const HARDWARE_CATEGORIES = [
+  "Laptop",
+  "Desktop",
+  "Monitor",
+  "Phone",
+  "Tablet",
+  "Accessories",
+  "Server",
+  "Network",
+  "Peripheral",
+  "POS",
+  "Hand Held",
+  "Scanner",
+  "Printer",
+  "Keyboard",
+  "Mouse",
+  "Cartridge",
+  "Router",
+  "VOIP",
+  "Other",
+] as const
 
-export const ASSET_STATUSES: AssetStatus[] = ["In Stock", "Assigned", "Repair", "Retired"]
+export const ASSET_STATUSES: AssetStatus[] = ["In Stock", "Assigned", "Loaner", "Repair", "Retired", "Lost"]
 
 export const Condition = ["New", "Good", "Fair", "Poor", "Broken"] as const
 

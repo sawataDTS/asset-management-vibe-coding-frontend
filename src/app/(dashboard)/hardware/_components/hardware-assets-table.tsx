@@ -52,7 +52,13 @@ function ActionsCell({
 }) {
   return (
     <div className="flex w-full items-center justify-end gap-1">
-      <Button variant="ghost" size="icon-sm" aria-label="View history" onClick={() => onHistory(row)}>
+      <Button
+        variant="ghost"
+        size="icon-sm"
+        aria-label="View history"
+        onClick={() => onHistory(row)}
+        title="Lifecycle history"
+      >
         <History />
       </Button>
       <Button
@@ -60,6 +66,7 @@ function ActionsCell({
         size="icon-sm"
         aria-label={row.status === "Assigned" ? "Return asset" : "Assign asset"}
         onClick={() => onAssign(row)}
+        title="Assign"
       >
         <User />
       </Button>
@@ -68,10 +75,11 @@ function ActionsCell({
         size="icon-sm"
         aria-label={row.status === "Repair" ? "Resolve repair" : "Send to repair"}
         onClick={() => onRepair(row)}
+        title="Change Lifecycle status"
       >
         <Activity />
       </Button>
-      <Button variant="ghost" size="icon-sm" aria-label="Edit asset" onClick={() => onEdit(row)}>
+      <Button variant="ghost" size="icon-sm" aria-label="Edit asset" onClick={() => onEdit(row)} title="Edit">
         <Pencil />
       </Button>
       <Button
@@ -80,6 +88,7 @@ function ActionsCell({
         aria-label="Delete asset"
         className="text-destructive hover:bg-destructive/10 hover:text-destructive"
         onClick={() => onDelete(row)}
+        title="Delete"
       >
         <Trash2 />
       </Button>

@@ -40,6 +40,8 @@ export const SOFTWARE_CATEGORIES = ["Developer Tools", "Design", "Collaboration"
 
 export const LICENSE_STATUSES: LicenseStatus[] = ["Active", "Expiring Soon", "Expired"]
 
+export const BILLING_PERIOD = ["Annually", "Monthly", "Quarterly", "Half Yearly"]
+
 export const initialLicenses: SoftwareLicense[] = [
   {
     id: "1",

@@ -3,7 +3,9 @@
 import * as React from "react"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
 import { AuthCardHeader, AuthPageShell } from "./auth-shell"
 import { GoogleIcon, MicrosoftIcon } from "./oauth-icons"
 import { Button } from "@/components/ui/button"
@@ -11,22 +13,46 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Field, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Separator } from "@/components/ui/separator"
+import apiService from "@/services/apiService"
+import { showInfo } from "@/utils/showToaster"
 
-const DEMO_EMAIL = "john.doe@example.com"
-const DEMO_PASSWORD = "password123"
+// Zod validation schema
+const loginSchema = z.object({
+  email: z.string().min(1, "Email is required.").email("Please enter a valid email address."),
+  password: z.string().min(1, "Password is required.").min(6, "Password must be at least 6 characters long."),
+})
+
+type LoginFormData = z.infer<typeof loginSchema>
 
 function LoginForm({ className }: { className?: string }) {
   const router = useRouter()
-  const [email, setEmail] = React.useState(DEMO_EMAIL)
-  const [password, setPassword] = React.useState(DEMO_PASSWORD)
   const [submitting, setSubmitting] = React.useState(false)
 
-  async function handleEmailSignIn(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+  })
+
+  async function onSubmit(data: LoginFormData) {
     setSubmitting(true)
-    await new Promise((resolve) => setTimeout(resolve, 400))
-    setSubmitting(false)
-    router.push("/overview")
+    try {
+      const res = await apiService.post("api/auth/login", {
+        email: data.email,
+        password: data.password,
+      })
+      const user = res.data.user
+      if (!user?.is_active) return showInfo("Your account is not active.")
+      sessionStorage.setItem("jwtToken", res.data?.token)
+      sessionStorage.setItem("refreshToken", res.data?.refresh_token)
+      sessionStorage.setItem("role", res.data?.user?.role)
+      router.push("/overview")
+    } catch (error) {
+      console.error(error)
+      setSubmitting(false)
+    }
   }
 
   function handleOAuthSignIn(provider: "microsoft" | "google") {
@@ -42,16 +68,19 @@ function LoginForm({ className }: { className?: string }) {
             title="Sign in"
             description={
               <>
-                Sign in to your workspace. New companies are onboarded by the Asset360Hub team
-                {/* —{" "} <Link href="/" className="font-medium text-primary underline-offset-4 hover:underline">
-                  request early access
+                Sign in to your workspace. New companies are onboarded by the Asset360Hub team.{" "}
+                <Link
+                  href="/early-access"
+                  className="font-medium text-primary underline-offset-4 hover:underline"
+                >
+                  Request early access
                 </Link>{" "}
-                on our homepage. */}
+                if you don&apos;t have an account yet.
               </>
             }
           />
 
-          <form onSubmit={handleEmailSignIn} className="flex flex-col gap-5">
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5">
             <FieldGroup className="gap-4">
               <Field>
                 <FieldLabel htmlFor="login-email">Email</FieldLabel>
@@ -60,9 +89,8 @@ function LoginForm({ className }: { className?: string }) {
                   type="email"
                   autoComplete="email"
                   placeholder="you@company.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
+                  error={errors.email?.message}
+                  {...register("email")}
                 />
               </Field>
 
@@ -81,9 +109,8 @@ function LoginForm({ className }: { className?: string }) {
                   type="password"
                   autoComplete="current-password"
                   placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
+                  error={errors.password?.message}
+                  {...register("password")}
                 />
               </Field>
             </FieldGroup>

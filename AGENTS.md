@@ -14,6 +14,7 @@ Read [`DESIGN.md`](./DESIGN.md) before generating any UI. The following rules ar
 10. **Follow `DESIGN.md` before generating UI.** Layout, sidebar, navbar, header, token, scroll, card selection (§10), and responsive specifications are defined there.
 11. **Never use em dashes (—).** Do not use `—` (U+2014) in user-facing copy, labels, descriptions, placeholders, or comments. Prefer commas, periods, colons, or parentheses to preserve flow. In tables, never use em dashes for empty or missing values; use a plain hyphen (`-`) via `TABLE_EMPTY_CELL` from `@/lib/table-empty` (or `tableCellOrEmpty()` for optional strings).
 12. **Never implement frontend CRUD logic unless the prompt explicitly asks for API integration.** Real persistence will come from backend APIs later. Do not waste tokens building client-side create / update / delete flows that will be thrown away.
+13. **Always use Zod with React Hook Form for form validation.** All forms must use Zod schemas with React Hook Form for validation. Use `@hookform/resolvers/zod` to integrate Zod with React Hook Form. Define schemas with clear error messages, and display errors using `FieldError` from `@/components/ui/field`. Never use manual validation functions or inline validation logic.
 
 ---
 

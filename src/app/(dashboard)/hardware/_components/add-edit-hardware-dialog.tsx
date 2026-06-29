@@ -24,7 +24,7 @@ import {
   dialogFormClassName,
   dialogHeaderClassName,
   dialogScrollBodyClassName,
-  dialogShellClassName,
+  dialogShellClassNameWide,
 } from "@/lib/dialog-layout"
 import {
   ASSET_STATUSES,
@@ -152,7 +152,7 @@ export default function AddEditHardwareDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className={dialogShellClassName}>
+      <DialogContent className={dialogShellClassNameWide}>
         <DialogHeader className={dialogHeaderClassName}>
           <DialogTitle>{activeModal === "add" ? "New Hardware Asset" : "Edit Asset"}</DialogTitle>
           <DialogDescription>
@@ -342,7 +342,7 @@ export default function AddEditHardwareDialog({
                 Cancel
               </Button>
             </DialogClose>
-            <Button type="submit">{activeModal === "add" ? "Register Asset" : "Save Changes"}</Button>
+            <Button type="submit">{activeModal === "add" ? "Create Asset" : "Save Changes"}</Button>
           </CardActions>
         </form>
       </DialogContent>
